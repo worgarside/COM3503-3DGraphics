@@ -22,7 +22,7 @@ public class S02_GLEventListener implements GLEventListener {
   public void init(GLAutoDrawable drawable) {
     GL3 gl = drawable.getGL().getGL3();
     System.err.println("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
-    gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+    gl.glClearColor(0.94f, 0.1f, 0.94f, 1.0f); 
     gl.glClearDepth(1.0f);
     gl.glEnable(GL3.GL_DEPTH_TEST);
     gl.glDepthFunc(GL3.GL_LESS);
@@ -64,7 +64,8 @@ public class S02_GLEventListener implements GLEventListener {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
     gl.glUseProgram(shaderProgram);
     gl.glBindVertexArray(vertexArrayId[0]);
-    gl.glDrawArrays(GL.GL_TRIANGLES, 0, 3); // drawing one triangle
+    // gl.glDrawArrays(GL.GL_TRIANGLES, 0, 3); // drawing one triangle
+    gl.glDrawArrays(GL.GL_TRIANGLES, 0, 6); // drawing two triangles
     gl.glBindVertexArray(0);
   }
 
@@ -74,9 +75,12 @@ public class S02_GLEventListener implements GLEventListener {
    
   // one triangle
   private float[] vertices = {
-     0.0f,  0.5f, 0.0f,  // Top middle
-     0.5f, -0.5f, 0.0f,  // Bottom Right
-    -0.5f, -0.5f, 0.0f   // Bottom Left
+    -0.25f, 0.0f, 0.0f,  // Top middle
+     0.0f, -0.5f, 0.0f,  // Bottom Right
+    -0.5f, -0.5f, 0.0f,  // Bottom Left
+     0.25f, 0.0f, 0.0f,  // Top Middle #2
+     0.5f, -0.5f, 0.0f,  // Bottom Right #2
+     0.0f, -0.5f, 0.0f   // Bottom Left #2
   };
   
   // ***************************************************
@@ -143,7 +147,7 @@ public class S02_GLEventListener implements GLEventListener {
     "out vec4 color;\n" +
     "\n" +
     "void main(){\n" +
-    "  color = vec4(0.1f, 0.7f, 0.9f, 1.0f);\n" +
+    "  color = vec4(0.0f, 0.8f, 0.0f, 1.0f);\n" +
     "}";
     
   private int shaderProgram;
