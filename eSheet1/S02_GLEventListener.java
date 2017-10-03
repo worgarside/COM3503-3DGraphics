@@ -22,6 +22,7 @@ public class S02_GLEventListener implements GLEventListener {
   public void init(GLAutoDrawable drawable) {
     GL3 gl = drawable.getGL().getGL3();
     System.err.println("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
+    gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL3.GL_LINE); // Draws wireframe, rather than filling
     gl.glClearColor(0.94f, 0.1f, 0.94f, 1.0f); 
     gl.glClearDepth(1.0f);
     gl.glEnable(GL3.GL_DEPTH_TEST);
@@ -65,7 +66,7 @@ public class S02_GLEventListener implements GLEventListener {
     gl.glUseProgram(shaderProgram);
     gl.glBindVertexArray(vertexArrayId[0]);
     // gl.glDrawArrays(GL.GL_TRIANGLES, 0, 3); // drawing one triangle
-    gl.glDrawArrays(GL.GL_TRIANGLES, 0, 6); // drawing two triangles
+    gl.glDrawArrays(GL.GL_TRIANGLES, 0, 9); // drawing two triangles
     gl.glBindVertexArray(0);
   }
 
@@ -80,7 +81,10 @@ public class S02_GLEventListener implements GLEventListener {
     -0.5f, -0.5f, 0.0f,  // Bottom Left
      0.25f, 0.0f, 0.0f,  // Top Middle #2
      0.5f, -0.5f, 0.0f,  // Bottom Right #2
-     0.0f, -0.5f, 0.0f   // Bottom Left #2
+     0.0f, -0.5f, 0.0f,   // Bottom Left #2
+     0.0f,  0.5f, 0.0f,  // Top Middle #3
+     0.25f, 0.0f, 0.0f,  // Bottom Right #3
+    -0.25f, 0.0f, 0.0f   // Bottom Left #3
   };
   
   // ***************************************************
