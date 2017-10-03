@@ -18,8 +18,8 @@ import com.jogamp.opengl.util.FPSAnimator;
 
 public class S01 extends JFrame {   // A subclass of JFrame.
 
-  private static final int WIDTH = 1024;
-  private static final int HEIGHT = 768;
+  private static final int WIDTH = 1080;
+  private static final int HEIGHT = 720;
   private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
                                     // dimension is declared as static so it can be used in the main method,
                                     // which is static.
