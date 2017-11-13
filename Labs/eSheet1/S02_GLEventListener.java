@@ -26,6 +26,7 @@ public class S02_GLEventListener implements GLEventListener {
     gl.glClearDepth(1.0f);
     gl.glEnable(GL3.GL_DEPTH_TEST);
     gl.glDepthFunc(GL3.GL_LESS);
+    gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL3.GL_LINE); // Wireframe
     initialise(gl);
   }
   
@@ -64,7 +65,7 @@ public class S02_GLEventListener implements GLEventListener {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
     gl.glUseProgram(shaderProgram);
     gl.glBindVertexArray(vertexArrayId[0]);
-    gl.glDrawArrays(GL.GL_TRIANGLES, 0, 6); // drawing one triangle
+    gl.glDrawArrays(GL.GL_TRIANGLES, 0, 9); // drawing one triangle
     gl.glBindVertexArray(0);
   }
 
@@ -75,11 +76,14 @@ public class S02_GLEventListener implements GLEventListener {
   // one triangle
   private float[] vertices = {
      0.0f,  0.5f, 0.0f,  // Top middle
-     0.5f, -0.5f, 0.0f,  // Bottom Right
-    -0.5f, -0.5f, 0.0f,  // Bottom Left
-     0.0f,  1.0f, 0.0f,  // Top middle
-     1.0f,  0.5f, 0.0f,  // Bottom Right
-     -1.0f,  0.5f, 0.0f   // Bottom Left
+     0.8f, -0.5f, 0.0f,  // Bottom Right
+    -0.8f, -0.5f, 0.0f,  // Bottom Left
+          0.0f,  1.0f, 0.0f,  // Top middle
+          1.0f,  0.5f, 0.0f,  // Bottom Right
+          -1.0f,  0.5f, 0.0f,   // Bottom Left
+          0.0f,  1.5f, 0.0f,  // Top middle
+          1.0f,  0.5f, 0.0f,  // Bottom Right
+          -1.0f,  0.5f, 0.0f   // Bottom Left
   };
   
   // ***************************************************
