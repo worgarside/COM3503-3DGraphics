@@ -64,7 +64,7 @@ public class S02_GLEventListener implements GLEventListener {
     gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
     gl.glUseProgram(shaderProgram);
     gl.glBindVertexArray(vertexArrayId[0]);
-    gl.glDrawArrays(GL.GL_TRIANGLES, 0, 3); // drawing one triangle
+    gl.glDrawArrays(GL.GL_TRIANGLES, 0, 6); // drawing one triangle
     gl.glBindVertexArray(0);
   }
 
@@ -76,7 +76,10 @@ public class S02_GLEventListener implements GLEventListener {
   private float[] vertices = {
      0.0f,  0.5f, 0.0f,  // Top middle
      0.5f, -0.5f, 0.0f,  // Bottom Right
-    -0.5f, -0.5f, 0.0f   // Bottom Left
+    -0.5f, -0.5f, 0.0f,  // Bottom Left
+     0.0f,  1.0f, 0.0f,  // Top middle
+     1.0f,  0.5f, 0.0f,  // Bottom Right
+     -1.0f,  0.5f, 0.0f   // Bottom Left
   };
   
   // ***************************************************
@@ -143,7 +146,7 @@ public class S02_GLEventListener implements GLEventListener {
     "out vec4 color;\n" +
     "\n" +
     "void main(){\n" +
-    "  color = vec4(0.1f, 0.7f, 0.9f, 1.0f);\n" +
+    "  color = vec4(0.9f, 0.7f, 0.1f, 1.0f);\n" +
     "}";
     
   private int shaderProgram;
