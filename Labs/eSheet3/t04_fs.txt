@@ -1,0 +1,16 @@
+#version 330 core
+
+in vec3 ourColor;  // not needed
+in vec2 ourTexCoord;
+in vec2 movingTexCoord;
+
+out vec4 color;
+
+uniform sampler2D first_texture;
+uniform sampler2D second_texture;
+
+void main() {
+  color = vec4(mix(texture(first_texture, ourTexCoord),
+                   texture(second_texture, movingTexCoord),
+                   0.5f).rgb, 1.0f);
+}
