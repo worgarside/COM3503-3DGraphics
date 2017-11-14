@@ -87,13 +87,14 @@ public class M01_GLEventListener implements GLEventListener {
    
   private Camera camera;
   private Mat4 perspective;
-  private Mesh tt1, cube, sphere;
+  private Mesh tt1, cube, sphere, sphere2;
   private Light light;
   
   private void disposeMeshes(GL3 gl) {
     tt1.dispose(gl);
     cube.dispose(gl);
     sphere.dispose(gl);
+    sphere2.dispose(gl);
     light.dispose(gl);
   }
 
@@ -116,6 +117,11 @@ public class M01_GLEventListener implements GLEventListener {
     model = Mat4.multiply(Mat4Transform.scale(3,3,3), Mat4Transform.translate(0,0.5f,0));
     model = Mat4.multiply(Mat4Transform.translate(0,4,0), model);
     sphere.setModelMatrix(model);
+
+    sphere2 = new Sphere(gl, textureId3, textureId4);
+    model = Mat4.multiply(Mat4Transform.scale(1,1,1), Mat4Transform.translate(0,0.5f,0));
+    model = Mat4.multiply(Mat4Transform.translate(0,7,0), model);
+    sphere2.setModelMatrix(model);
     
     light = new Light(gl);
     light.setCamera(camera);
@@ -125,7 +131,9 @@ public class M01_GLEventListener implements GLEventListener {
     cube.setLight(light);
     cube.setCamera(camera);
     sphere.setLight(light);
-    sphere.setCamera(camera);  
+    sphere.setCamera(camera);
+    sphere2.setLight(light);
+    sphere2.setCamera(camera);
   }
  
   private void render(GL3 gl) {
@@ -139,6 +147,7 @@ public class M01_GLEventListener implements GLEventListener {
     tt1.render(gl);  
     cube.render(gl);
     sphere.render(gl);
+    sphere2.render(gl);
   }
   
   private void updatePerspectiveMatrices() {
@@ -148,6 +157,7 @@ public class M01_GLEventListener implements GLEventListener {
     tt1.setPerspective(perspective);
     cube.setPerspective(perspective);
     sphere.setPerspective(perspective);
+    sphere2.setPerspective(perspective);
   }
   
   // The light's postion is continually being changed, so needs to be calculated for each frame.
