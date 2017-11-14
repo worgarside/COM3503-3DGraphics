@@ -176,7 +176,8 @@ public class Arty_GLEventListener implements GLEventListener {
         cube2.setLight(light);
         cube2.setCamera(camera);
 
-        // make nodes
+        // ------------ MeshNodes + NameNodes ------------ \\
+
         MeshNode armShape = new MeshNode("Cube(arm)", cube);
         MeshNode palmShape = new MeshNode("Cube(palm)", cube);
         MeshNode fing1ProxShape = new MeshNode("Cube(fing1Prox)", cube);
@@ -194,7 +195,6 @@ public class Arty_GLEventListener implements GLEventListener {
         MeshNode thumbProxShape = new MeshNode("Cube(thumbProx)", cube);
         MeshNode thumbMiddShape = new MeshNode("Cube(thumbMidd)", cube);
         MeshNode thumbDistShape = new MeshNode("Cube(thumbDist)", cube);
-
 
         robotHand = new NameNode("root");
         NameNode arm = new NameNode("arm");
@@ -214,6 +214,8 @@ public class Arty_GLEventListener implements GLEventListener {
         NameNode thumbProx = new NameNode("thumbProx");
         NameNode thumbMidd = new NameNode("thumbMidd");
         NameNode thumbDist = new NameNode("thumbDist");
+
+        // ------------ Dimensions + Positions ------------ \\
 
         float armWidth = 2f;
         float armHeight = 5f;
@@ -249,14 +251,10 @@ public class Arty_GLEventListener implements GLEventListener {
         float fingMiddXLgVert = fingProxVert + fingXLgHeight;
         float fingMiddLrgVert = fingProxVert + fingLrgHeight;
         float fingMiddMedVert = fingProxVert + fingMedHeight;
-        float fingMiddSmlVert = fingProxVert + fingSmlHeight;
         float fingMiddXSmVert = fingProxVert + fingXSmHeight;
 
         float fingDistXLVert = fingMiddXLgVert + fingLrgHeight;
-        float fingDistLLVert = fingMiddLrgVert + fingLrgHeight;
-        float fingDistLMVert = fingMiddLrgVert + fingMedHeight;
         float fingDistMMVert = fingMiddMedVert + fingMedHeight;
-        float fingDistMSVert = fingMiddMedVert + fingSmlHeight;
         float fingDistSXVert = fingMiddXSmVert + fingXSmHeight;
 
         float fing1HrzPos = 1.5f;
@@ -272,17 +270,18 @@ public class Arty_GLEventListener implements GLEventListener {
         float thumbMiddHrz = thumbProxHrz + fingLrgHeight + 0.15f;
         float thumbDistHrz = thumbMiddHrz + fingMedHeight + 0.1f;
 
+
         // ------------ Arm + Palm ------------ \\
-        robotHandMoveTranslate = new TransformNode("robotHand transform",Mat4Transform.translate(xPosition,0,0));
-        TransformNode robotHandTranslate = new TransformNode("robotHand transform",Mat4Transform.translate(0,0,0));
+        robotHandMoveTranslate = new TransformNode("robotHand transform", Mat4Transform.translate(xPosition,0,0));
+        TransformNode robotHandTranslate = new TransformNode("robotHand transform", Mat4Transform.translate(0,0,0));
 
         Mat4 m = Mat4Transform.scale(armWidth, armHeight, armDepth);
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
         TransformNode armTransform = new TransformNode("arm transform", m);
 
         m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(0,armHeight,0));
-        m = Mat4.multiply(m, Mat4Transform.scale(palmWidth,palmHeight,palmDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(0, armHeight, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(palmWidth, palmHeight, palmDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
         TransformNode palmTransform = new TransformNode("palm transform", m);
 
@@ -297,7 +296,7 @@ public class Arty_GLEventListener implements GLEventListener {
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.translate(fing1HrzPos, fingMiddLrgVert, 0));
         m = Mat4.multiply(m, Mat4Transform.scale(fingMedWidth, fingMedHeight, fingMedDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
         TransformNode fing1MiddTransform = new TransformNode("fing1Midd transform", m);
 
         m = new Mat4(1);
@@ -399,14 +398,16 @@ public class Arty_GLEventListener implements GLEventListener {
                     arm.addChild(palm);
                         palm.addChild(palmTransform);
                             palmTransform.addChild(palmShape);
+
                         palm.addChild(fing1Prox);
                             fing1Prox.addChild(fing1ProxTransform);
                                 fing1ProxTransform.addChild(fing1ProxShape);
                             fing1Prox.addChild(fing1Midd);
                                 fing1Midd.addChild(fing1MiddTransform);
                                     fing1MiddTransform.addChild(fing1MiddShape);
-                                fing1Midd.addChild(fing1DistTransform);
-                                    fing1DistTransform.addChild(fing1DistShape);
+                                fing1Midd.addChild(fing1Dist);
+                                    fing1Dist.addChild(fing1DistTransform);
+                                        fing1DistTransform.addChild(fing1DistShape);
 
                         palm.addChild(fing2Prox);
                             fing2Prox.addChild(fing2ProxTransform);
@@ -414,8 +415,9 @@ public class Arty_GLEventListener implements GLEventListener {
                             fing2Prox.addChild(fing2Midd);
                                 fing2Midd.addChild(fing2MiddTransform);
                                     fing2MiddTransform.addChild(fing2MiddShape);
-                                fing2Midd.addChild(fing2DistTransform);
-                                    fing2DistTransform.addChild(fing2DistShape);
+                                fing2Midd.addChild(fing2Dist);
+                                    fing2Dist.addChild(fing2DistTransform);
+                                        fing2DistTransform.addChild(fing2DistShape);
 
                         palm.addChild(fing3Prox);
                             fing3Prox.addChild(fing3ProxTransform);
@@ -423,8 +425,9 @@ public class Arty_GLEventListener implements GLEventListener {
                             fing3Prox.addChild(fing3Midd);
                                 fing3Midd.addChild(fing3MiddTransform);
                                     fing3MiddTransform.addChild(fing3MiddShape);
-                                fing3Midd.addChild(fing3DistTransform);
-                                    fing3DistTransform.addChild(fing3DistShape);
+                                fing3Midd.addChild(fing3Dist);
+                                    fing3Dist.addChild(fing3DistTransform);
+                                        fing3DistTransform.addChild(fing3DistShape);
 
                         palm.addChild(fing4Prox);
                             fing4Prox.addChild(fing4ProxTransform);
@@ -432,8 +435,9 @@ public class Arty_GLEventListener implements GLEventListener {
                             fing4Prox.addChild(fing4Midd);
                                 fing4Midd.addChild(fing4MiddTransform);
                                     fing4MiddTransform.addChild(fing4MiddShape);
-                                fing4Midd.addChild(fing4DistTransform);
-                                    fing4DistTransform.addChild(fing4DistShape);
+                                fing4Midd.addChild(fing4Dist);
+                                    fing4Dist.addChild(fing4DistTransform);
+                                        fing4DistTransform.addChild(fing4DistShape);
 
                         palm.addChild(thumbProx);
                             thumbProx.addChild(thumbProxTransform);
@@ -444,9 +448,6 @@ public class Arty_GLEventListener implements GLEventListener {
                                 thumbMidd.addChild(thumbDist);
                                     thumbDist.addChild(thumbDistTransform);
                                         thumbDistTransform.addChild(thumbDistShape);
-
-
-
 
         robotHand.update();
     }
