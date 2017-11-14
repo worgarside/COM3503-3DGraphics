@@ -6,29 +6,29 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 
-public class M04robot extends JFrame implements ActionListener {
+public class Arty extends JFrame implements ActionListener {
   
   private static final int WIDTH = 1024;
   private static final int HEIGHT = 768;
   private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
   private GLCanvas canvas;
-  private M04robot_GLEventListener glEventListener;
+  private Arty_GLEventListener glEventListener;
   private final FPSAnimator animator; 
   private Camera camera;
 
   public static void main(String[] args) {
-    M04robot b1 = new M04robot("M04robot");
+    Arty b1 = new Arty("COM3503 - Robot Hand");
     b1.getContentPane().setPreferredSize(dimension);
     b1.pack();
     b1.setVisible(true);
   }
 
-  public M04robot(String textForTitleBar) {
+  public Arty(String textForTitleBar) {
     super(textForTitleBar);
     GLCapabilities glcapabilities = new GLCapabilities(GLProfile.get(GLProfile.GL3));
     canvas = new GLCanvas(glcapabilities);
     camera = new Camera(new Vec3(4f,12f,18f), Camera.DEFAULT_TARGET, Camera.DEFAULT_UP);
-    glEventListener = new M04robot_GLEventListener(camera);
+    glEventListener = new Arty_GLEventListener(camera);
     canvas.addGLEventListener(glEventListener);
     canvas.addMouseMotionListener(new MyMouseInput(camera));
     canvas.addKeyListener(new MyKeyboardInput(camera));

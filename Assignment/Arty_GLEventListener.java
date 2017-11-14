@@ -7,12 +7,12 @@ import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
   
-public class M04robot_GLEventListener implements GLEventListener {
+public class Arty_GLEventListener implements GLEventListener {
   
   private static final boolean DISPLAY_SHADERS = false;
   private float aspect;
     
-  public M04robot_GLEventListener(Camera camera) {
+  public Arty_GLEventListener(Camera camera) {
     this.camera = camera;
   }
   
