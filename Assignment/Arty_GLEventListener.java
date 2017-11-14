@@ -221,16 +221,56 @@ public class Arty_GLEventListener implements GLEventListener {
         float palmWidth = 4f;
         float palmHeight = 4f;
         float palmDepth = 1.25f;
+
+        float fingXLgHeight = 1.8f;
+
         float fingLrgWidth = 0.8f;
         float fingLrgHeight = 1.5f;
-        float fingLrgDepth = 1f;
-        float fingMedWidth = 0.7f;
+        float fingLrgDepth = 0.8f;
+
+        float fingMedWidth = 0.75f;
         float fingMedHeight = 1.3f;
-        float fingMedDepth = 0.9f;
-        float fingDistHeight = armHeight + palmHeight;
-        float fingMiddLrgHeight = fingDistHeight + fingLrgHeight;
-        float fingProxLMHeight = fingMiddLrgHeight + fingMedHeight;
-        float fingProxLLHeight = fingMiddLrgHeight + fingLrgHeight;
+        float fingMedDepth = 0.75f;
+
+        float fingSmlWidth = 0.7f;
+        float fingSmlHeight = 1.2f;
+        float fingSmlDepth = 0.7f;
+
+        float fingXSmWidth = 0.65f;
+        float fingXSmHeight = 1.1f;
+        float fingXSmDepth = 0.65f;
+
+        float fingXXSWidth = 0.55f;
+        float fingXXSHeight = 1f;
+        float fingXXSDepth = 0.55f;
+
+        float fingProxVert = armHeight + palmHeight;
+
+        float fingMiddXLgVert = fingProxVert + fingXLgHeight;
+        float fingMiddLrgVert = fingProxVert + fingLrgHeight;
+        float fingMiddMedVert = fingProxVert + fingMedHeight;
+        float fingMiddSmlVert = fingProxVert + fingSmlHeight;
+        float fingMiddXSmVert = fingProxVert + fingXSmHeight;
+
+        float fingDistXLVert = fingMiddXLgVert + fingLrgHeight;
+        float fingDistLLVert = fingMiddLrgVert + fingLrgHeight;
+        float fingDistLMVert = fingMiddLrgVert + fingMedHeight;
+        float fingDistMMVert = fingMiddMedVert + fingMedHeight;
+        float fingDistMSVert = fingMiddMedVert + fingSmlHeight;
+        float fingDistSXVert = fingMiddXSmVert + fingXSmHeight;
+
+        float fing1HrzPos = 1.5f;
+        float fing2HrzPos = 0.5f;
+        float fing3HrzPos = -0.5f;
+        float fing4HrzPos = -1.5f;
+
+        float thumbProxVert = armHeight + 0.3f;
+        float thumbMiddVert = thumbProxVert + 0.025f;
+        float thumbDistVert = thumbMiddVert + 0.025f;
+
+        float thumbProxHrz = 2.9f;
+        float thumbMiddHrz = thumbProxHrz + fingLrgHeight + 0.15f;
+        float thumbDistHrz = thumbMiddHrz + fingMedHeight + 0.1f;
 
         // ------------ Arm + Palm ------------ \\
         robotHandMoveTranslate = new TransformNode("robotHand transform",Mat4Transform.translate(xPosition,0,0));
@@ -249,44 +289,108 @@ public class Arty_GLEventListener implements GLEventListener {
         // ------------ Finger #1 (Index) ------------ \\
 
         m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(-1.5f, fingDistHeight, 0));
+        m = Mat4.multiply(m, Mat4Transform.translate(fing1HrzPos, fingProxVert, 0));
         m = Mat4.multiply(m, Mat4Transform.scale(fingLrgWidth, fingLrgHeight, fingLrgDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode fing1DistTransform = new TransformNode("fing1Dist transform", m);
+        TransformNode fing1ProxTransform = new TransformNode("fing1Prox transform", m);
 
         m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(-1.5f, fingMiddLrgHeight, 0));
+        m = Mat4.multiply(m, Mat4Transform.translate(fing1HrzPos, fingMiddLrgVert, 0));
         m = Mat4.multiply(m, Mat4Transform.scale(fingMedWidth, fingMedHeight, fingMedDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
         TransformNode fing1MiddTransform = new TransformNode("fing1Midd transform", m);
 
         m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(-1.5f, fingProxLMHeight, 0));
-        m = Mat4.multiply(m, Mat4Transform.scale(fingMedWidth, fingMedHeight, fingMedDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(fing1HrzPos, fingDistMMVert, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(fingSmlWidth, fingSmlHeight, fingSmlDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode fing1ProxTransform = new TransformNode("fing1Prox transform", m);
+        TransformNode fing1DistTransform = new TransformNode("fing1Dist transform", m);
 
         // ------------ Finger #2 (Middle) ------------ \\
 
         m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(-0.5f, fingDistHeight, 0));
-        m = Mat4.multiply(m, Mat4Transform.scale(fingLrgWidth, fingLrgHeight, fingLrgDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(fing2HrzPos, fingProxVert, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(fingLrgWidth, fingXLgHeight, fingLrgDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode fing2DistTransform = new TransformNode("fing2Dist transform", m);
+        TransformNode fing2ProxTransform = new TransformNode("fing2Prox transform", m);
 
         m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(-0.5f, fingMiddLrgHeight, 0));
+        m = Mat4.multiply(m, Mat4Transform.translate(fing2HrzPos, fingMiddXLgVert, 0));
         m = Mat4.multiply(m, Mat4Transform.scale(fingMedWidth, fingLrgHeight, fingMedDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
         TransformNode fing2MiddTransform = new TransformNode("fing2Midd transform", m);
 
         m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(-0.5f, fingProxLLHeight, 0));
+        m = Mat4.multiply(m, Mat4Transform.translate(fing2HrzPos, fingDistXLVert, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(fingSmlWidth, fingSmlHeight, fingSmlDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        TransformNode fing2DistTransform = new TransformNode("fing2Dist transform", m);
+
+        // ------------ Finger #3 (Ring) ------------ \\
+
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(fing3HrzPos, fingProxVert, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(fingLrgWidth, fingLrgHeight, fingLrgDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        TransformNode fing3ProxTransform = new TransformNode("fing3Prox transform", m);
+
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(fing3HrzPos, fingMiddLrgVert, 0));
         m = Mat4.multiply(m, Mat4Transform.scale(fingMedWidth, fingMedHeight, fingMedDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode fing2ProxTransform = new TransformNode("fing2Prox transform", m);
+        TransformNode fing3MiddTransform = new TransformNode("fing3Midd transform", m);
 
-        // make scene graph
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(fing3HrzPos, fingDistMMVert, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(fingSmlWidth, fingSmlHeight, fingSmlDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        TransformNode fing3DistTransform = new TransformNode("fing3Dist transform", m);
+
+        // ------------ Finger #4 (Little) ------------ \\
+
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(fing4HrzPos, fingProxVert, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(fingSmlWidth, fingXSmHeight, fingSmlDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        TransformNode fing4ProxTransform = new TransformNode("fing4Prox transform", m);
+
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(fing4HrzPos, fingMiddXSmVert, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(fingXSmWidth, fingXSmHeight, fingXSmDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        TransformNode fing4MiddTransform = new TransformNode("fing4Midd transform", m);
+
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(fing4HrzPos, fingDistSXVert, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(fingXXSWidth, fingXXSHeight, fingXXSDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        TransformNode fing4DistTransform = new TransformNode("fing4Dist transform", m);
+
+        // ------------ Thumb ------------ \\
+
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(thumbProxHrz, thumbProxVert, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(fingXLgHeight, fingLrgWidth, fingLrgDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        TransformNode thumbProxTransform = new TransformNode("thumbProx transform", m);
+
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(thumbMiddHrz, thumbMiddVert, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(fingLrgHeight, fingMedWidth, fingMedDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        TransformNode thumbMiddTransform = new TransformNode("thumbMidd transform", m);
+
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.translate(thumbDistHrz, thumbDistVert, 0));
+        m = Mat4.multiply(m, Mat4Transform.scale(fingMedHeight, fingSmlWidth, fingSmlDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        TransformNode thumbDistTransform = new TransformNode("thumbDist transform", m);
+
+
+
+
+        // ------------ Scene Graph ------------ \\
+
         robotHand.addChild(robotHandMoveTranslate);
             robotHandMoveTranslate.addChild(robotHandTranslate);
                 robotHandTranslate.addChild(arm);
@@ -295,24 +399,51 @@ public class Arty_GLEventListener implements GLEventListener {
                     arm.addChild(palm);
                         palm.addChild(palmTransform);
                             palmTransform.addChild(palmShape);
-                        palm.addChild(fing1Dist);
-                            fing1Dist.addChild(fing1DistTransform);
-                                fing1DistTransform.addChild(fing1DistShape);
-                            fing1Dist.addChild(fing1Midd);
+                        palm.addChild(fing1Prox);
+                            fing1Prox.addChild(fing1ProxTransform);
+                                fing1ProxTransform.addChild(fing1ProxShape);
+                            fing1Prox.addChild(fing1Midd);
                                 fing1Midd.addChild(fing1MiddTransform);
                                     fing1MiddTransform.addChild(fing1MiddShape);
-                                fing1Midd.addChild(fing1ProxTransform);
-                                    fing1ProxTransform.addChild(fing1ProxShape);
-                        palm.addChild(fing2Dist);
-                            fing2Dist.addChild(fing2DistTransform);
-                                fing2DistTransform.addChild(fing2DistShape);
-                            fing2Dist.addChild(fing2Midd);
+                                fing1Midd.addChild(fing1DistTransform);
+                                    fing1DistTransform.addChild(fing1DistShape);
+
+                        palm.addChild(fing2Prox);
+                            fing2Prox.addChild(fing2ProxTransform);
+                                fing2ProxTransform.addChild(fing2ProxShape);
+                            fing2Prox.addChild(fing2Midd);
                                 fing2Midd.addChild(fing2MiddTransform);
                                     fing2MiddTransform.addChild(fing2MiddShape);
-                                fing2Midd.addChild(fing2ProxTransform);
-                                    fing2ProxTransform.addChild(fing2ProxShape);
-//                        palm.addChild(fing3Dist);
-//                        palm.addChild(fing4Dist);
+                                fing2Midd.addChild(fing2DistTransform);
+                                    fing2DistTransform.addChild(fing2DistShape);
+
+                        palm.addChild(fing3Prox);
+                            fing3Prox.addChild(fing3ProxTransform);
+                                fing3ProxTransform.addChild(fing3ProxShape);
+                            fing3Prox.addChild(fing3Midd);
+                                fing3Midd.addChild(fing3MiddTransform);
+                                    fing3MiddTransform.addChild(fing3MiddShape);
+                                fing3Midd.addChild(fing3DistTransform);
+                                    fing3DistTransform.addChild(fing3DistShape);
+
+                        palm.addChild(fing4Prox);
+                            fing4Prox.addChild(fing4ProxTransform);
+                                fing4ProxTransform.addChild(fing4ProxShape);
+                            fing4Prox.addChild(fing4Midd);
+                                fing4Midd.addChild(fing4MiddTransform);
+                                    fing4MiddTransform.addChild(fing4MiddShape);
+                                fing4Midd.addChild(fing4DistTransform);
+                                    fing4DistTransform.addChild(fing4DistShape);
+
+                        palm.addChild(thumbProx);
+                            thumbProx.addChild(thumbProxTransform);
+                                thumbProxTransform.addChild(thumbProxShape);
+                            thumbProx.addChild(thumbMidd);
+                                thumbMidd.addChild(thumbMiddTransform);
+                                    thumbMiddTransform.addChild(thumbMiddShape);
+                                thumbMidd.addChild(thumbDist);
+                                    thumbDist.addChild(thumbDistTransform);
+                                        thumbDistTransform.addChild(thumbDistShape);
 
 
 
