@@ -42,32 +42,32 @@ public class Arty extends JFrame implements ActionListener {
         fileMenu.add(quitItem);
     menuBar.add(fileMenu);
     
-    JPanel p = new JPanel();
-      JButton b = new JButton("camera X");
-      b.addActionListener(this);
-      p.add(b);
-      b = new JButton("camera Z");
-      b.addActionListener(this);
-      p.add(b);
-      b = new JButton("start");
-      b.addActionListener(this);
-      p.add(b);
-      b = new JButton("stop");
-      b.addActionListener(this);
-      p.add(b);
-      b = new JButton("increase X position");
-      b.addActionListener(this);
-      p.add(b);
-      b = new JButton("decrease X position");
-      b.addActionListener(this);
-      p.add(b);
-      b = new JButton("lowered arms");
-      b.addActionListener(this);
-      p.add(b);
-      b = new JButton("raised arms");
-      b.addActionListener(this);
-      p.add(b);
-    this.add(p, BorderLayout.SOUTH);
+    JPanel panel = new JPanel();
+      JButton btn = new JButton("camera X");
+      btn.addActionListener(this);
+      panel.add(btn);
+      btn = new JButton("camera Z");
+      btn.addActionListener(this);
+      panel.add(btn);
+      btn = new JButton("start");
+      btn.addActionListener(this);
+      panel.add(btn);
+      btn = new JButton("stop");
+      btn.addActionListener(this);
+      panel.add(btn);
+      btn = new JButton("increase X position");
+      btn.addActionListener(this);
+      panel.add(btn);
+      btn = new JButton("decrease X position");
+      btn.addActionListener(this);
+      panel.add(btn);
+      btn = new JButton("lowered arms");
+      btn.addActionListener(this);
+      panel.add(btn);
+      btn = new JButton("raised arms");
+      btn.addActionListener(this);
+      panel.add(btn);
+    this.add(panel, BorderLayout.SOUTH);
     
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {

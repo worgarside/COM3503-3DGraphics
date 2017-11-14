@@ -112,24 +112,24 @@ public class Arty_GLEventListener implements GLEventListener {
   }
  
   private void updateMove() {
-    robotMoveTranslate.setTransform(Mat4Transform.translate(xPosition,0,0));
-    robotMoveTranslate.update();
+    robotHandMoveTranslate.setTransform(Mat4Transform.translate(xPosition,0,0));
+    robotHandMoveTranslate.update();
   }
   
   public void loweredArms() {
     stopAnimation();
-    leftArmRotate.setTransform(Mat4Transform.rotateAroundX(180));
-    leftArmRotate.update();
-    rightArmRotate.setTransform(Mat4Transform.rotateAroundX(180));
-    rightArmRotate.update();    
+//    leftArmRotate.setTransform(Mat4Transform.rotateAroundX(180));
+//    leftArmRotate.update();
+//    rightArmRotate.setTransform(Mat4Transform.rotateAroundX(180));
+//    rightArmRotate.update();
   }
    
   public void raisedArms() {
     stopAnimation();
-    leftArmRotate.setTransform(Mat4Transform.rotateAroundX(0));
-    leftArmRotate.update();
-    rightArmRotate.setTransform(Mat4Transform.rotateAroundX(0));
-    rightArmRotate.update();    
+//    leftArmRotate.setTransform(Mat4Transform.rotateAroundX(0));
+//    leftArmRotate.update();
+//    rightArmRotate.setTransform(Mat4Transform.rotateAroundX(0));
+//    rightArmRotate.update();
   }
   
   // ***************************************************
@@ -142,10 +142,10 @@ public class Arty_GLEventListener implements GLEventListener {
   private Mat4 perspective;
   private Mesh floor, sphere, cube, cube2;
   private Light light;
-  private SGNode robot;
+  private SGNode robotHand;
   
   private float xPosition = 0;
-  private TransformNode translateX, robotMoveTranslate, leftArmRotate, rightArmRotate;
+  private TransformNode translateX, robotHandMoveTranslate; //, leftArmRotate, rightArmRotate;
   
   private void initialise(GL3 gl) {
     createRandomNumbers();
@@ -172,119 +172,129 @@ public class Arty_GLEventListener implements GLEventListener {
     sphere.setLight(light);
     sphere.setCamera(camera);
     cube.setLight(light);
-    cube.setCamera(camera);  
+    cube.setCamera(camera);
     cube2.setLight(light);
-    cube2.setCamera(camera);  
+    cube2.setCamera(camera);
     
     // make nodes
-    MeshNode bodyShape = new MeshNode("Cube(body)", cube);
-    MeshNode headShape = new MeshNode("Sphere(head)", sphere);
-    MeshNode leftArmShape = new MeshNode("Cube(left arm)", cube2);
-    MeshNode rightArmShape = new MeshNode("Cube(right arm)", cube2);
-    MeshNode leftLegShape = new MeshNode("Cube(leftleg)", cube);
-    MeshNode rightLegShape = new MeshNode("Cube(rightleg)", cube);
-    
-    robot = new NameNode("root");
-    NameNode body = new NameNode("body");
-    NameNode head = new NameNode("head");
-    NameNode leftarm = new NameNode("left arm");
-    NameNode rightarm = new NameNode("right arm");
-    NameNode leftleg = new NameNode("left leg");
-    NameNode rightleg = new NameNode("right leg");
-    
-    float bodyHeight = 3f;
-    float bodyWidth = 2f;
-    float bodyDepth = 1f;
-    float headScale = 2f;
-    float armLength = 3.5f;
-    float armScale = 0.5f;
-    float legLength = 3.5f;
-    float legScale = 0.67f;
-    
-    robotMoveTranslate = new TransformNode("robot transform",Mat4Transform.translate(xPosition,0,0));
-    TransformNode robotTranslate = new TransformNode("robot transform",Mat4Transform.translate(0,legLength,0));
-    
-    Mat4 m = Mat4Transform.scale(bodyWidth,bodyHeight,bodyDepth);
-    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode bodyTransform = new TransformNode("body transform", m);
-     
-    m = new Mat4(1);
-    m = Mat4.multiply(m, Mat4Transform.translate(0,bodyHeight,0));
-    m = Mat4.multiply(m, Mat4Transform.scale(headScale,headScale,headScale));
-    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode headTransform = new TransformNode("head transform", m);
-   
-    TransformNode leftArmTranslate = new TransformNode("leftarm translate", 
-                                           Mat4Transform.translate((bodyWidth*0.5f)+(armScale*0.5f),bodyHeight,0));
-    leftArmRotate = new TransformNode("leftarm rotate",Mat4Transform.rotateAroundX(180));
-    m = new Mat4(1);
-    m = Mat4.multiply(m, Mat4Transform.scale(armScale,armLength,armScale));
-    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode leftArmScale = new TransformNode("leftarm scale", m);
-    
-    TransformNode rightArmTranslate = new TransformNode("rightarm translate", 
-                                          Mat4Transform.translate(-(bodyWidth*0.5f)-(armScale*0.5f),bodyHeight,0));
-    rightArmRotate = new TransformNode("rightarm rotate",Mat4Transform.rotateAroundX(180));
-    m = new Mat4(1);
-    m = Mat4.multiply(m, Mat4Transform.scale(armScale,armLength,armScale));
-    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode rightArmScale = new TransformNode("rightarm scale", m);
-    
-    m = new Mat4(1);
-    m = Mat4.multiply(m, Mat4Transform.translate((bodyWidth*0.5f)-(legScale*0.5f),0,0));
-    m = Mat4.multiply(m, Mat4Transform.rotateAroundX(180));
-    m = Mat4.multiply(m, Mat4Transform.scale(legScale,legLength,legScale));
-    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode leftlegTransform = new TransformNode("leftleg transform", m);
+    MeshNode armShape = new MeshNode("Cube(arm)", cube);
+    MeshNode palmShape = new MeshNode("Cube(palm)", cube);
+    MeshNode fing1ProxShape = new MeshNode("Cube(fing1Prox)", cube);
+    MeshNode fing1MiddShape = new MeshNode("Cube(fing1Midd)", cube);
+    MeshNode fing1DistShape = new MeshNode("Cube(fing1Dist)", cube);
+    MeshNode fing2ProxShape = new MeshNode("Cube(fing2Prox)", cube);
+    MeshNode fing2MiddShape = new MeshNode("Cube(fing2Midd)", cube);
+    MeshNode fing2DistShape = new MeshNode("Cube(fing2Dist)", cube);
+    MeshNode fing3ProxShape = new MeshNode("Cube(fing3Prox)", cube);
+    MeshNode fing3MiddShape = new MeshNode("Cube(fing3Midd)", cube);
+    MeshNode fing3DistShape = new MeshNode("Cube(fing3Dist)", cube);
+    MeshNode fing4ProxShape = new MeshNode("Cube(fing4Prox)", cube);
+    MeshNode fing4MiddShape = new MeshNode("Cube(fing4Midd)", cube);
+    MeshNode fing4DistShape = new MeshNode("Cube(fing4Dist)", cube);
+    MeshNode thumbProxShape = new MeshNode("Cube(thumbProx)", cube);
+    MeshNode thumbMiddShape = new MeshNode("Cube(thumbMidd)", cube);
+    MeshNode thumbDistShape = new MeshNode("Cube(thumbDist)", cube);
 
-    m = new Mat4(1);
-    m = Mat4.multiply(m, Mat4Transform.translate(-(bodyWidth*0.5f)+(legScale*0.5f),0,0));
-    m = Mat4.multiply(m, Mat4Transform.rotateAroundX(180));
-    m = Mat4.multiply(m, Mat4Transform.scale(legScale,legLength,legScale));
+    
+    robotHand = new NameNode("root");
+    NameNode arm = new NameNode("arm");
+    NameNode palm = new NameNode("palm");
+    NameNode fing1Prox = new NameNode("fing1Prox");
+    NameNode fing1Midd = new NameNode("fing1Midd");
+    NameNode fing1Dist = new NameNode("fing1Dist");
+    NameNode fing2Prox = new NameNode("fing2Prox");
+    NameNode fing2Midd = new NameNode("fing2Midd");
+    NameNode fing2Dist = new NameNode("fing2Dist");
+    NameNode fing3Prox = new NameNode("fing3Prox");
+    NameNode fing3Midd = new NameNode("fing3Midd");
+    NameNode fing3Dist = new NameNode("fing3Dist");
+    NameNode fing4Prox = new NameNode("fing4Prox");
+    NameNode fing4Midd = new NameNode("fing4Midd");
+    NameNode fing4Dist = new NameNode("fing4Dist");
+    NameNode thumbProx = new NameNode("thumbProx");
+    NameNode thumbMidd = new NameNode("thumbMidd");
+    NameNode thumbDist = new NameNode("thumbDist");
+      
+    float armWidth = 2f;
+    float armHeight = 5f;
+    float armDepth = 1.25f;
+    float palmWidth = 4f;
+    float palmHeight = 4f;
+    float palmDepth = 1.25f;
+//    float headScale = 2f;
+//    float armLength = 3.5f;
+//    float armScale = 0.5f;
+//    float legLength = 3.5f;
+//    float legScale = 0.67f;
+    
+    robotHandMoveTranslate = new TransformNode("robotHand transform",Mat4Transform.translate(xPosition,0,0));
+    TransformNode robotHandTranslate = new TransformNode("robotHand transform",Mat4Transform.translate(0,0,0));
+    
+    Mat4 m = Mat4Transform.scale(armWidth, armHeight, armDepth);
     m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-    TransformNode rightlegTransform = new TransformNode("rightleg transform", m);
+    TransformNode armTransform = new TransformNode("arm transform", m);
+     
+//    m = new Mat4(1);
+//    m = Mat4.multiply(m, Mat4Transform.translate(0,armHeight,0));
+//    m = Mat4.multiply(m, Mat4Transform.scale(headScale,headScale,headScale));
+//    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+//    TransformNode headTransform = new TransformNode("head transform", m);
+//
+//    TransformNode leftArmTranslate = new TransformNode("leftarm translate",
+//                                           Mat4Transform.translate((armWidth*0.5f)+(armScale*0.5f),armHeight,0));
+//    leftArmRotate = new TransformNode("leftarm rotate",Mat4Transform.rotateAroundX(180));
+//    m = new Mat4(1);
+//    m = Mat4.multiply(m, Mat4Transform.scale(armScale,armLength,armScale));
+//    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+//    TransformNode leftArmScale = new TransformNode("leftarm scale", m);
+//
+//    TransformNode rightArmTranslate = new TransformNode("rightarm translate",
+//                                          Mat4Transform.translate(-(armWidth*0.5f)-(armScale*0.5f),armHeight,0));
+//    rightArmRotate = new TransformNode("rightarm rotate",Mat4Transform.rotateAroundX(180));
+//    m = new Mat4(1);
+//    m = Mat4.multiply(m, Mat4Transform.scale(armScale,armLength,armScale));
+//    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+//    TransformNode rightArmScale = new TransformNode("rightarm scale", m);
+//
+//    m = new Mat4(1);
+//    m = Mat4.multiply(m, Mat4Transform.translate((armWidth*0.5f)-(legScale*0.5f),0,0));
+//    m = Mat4.multiply(m, Mat4Transform.rotateAroundX(180));
+//    m = Mat4.multiply(m, Mat4Transform.scale(legScale,legLength,legScale));
+//    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+//    TransformNode leftlegTransform = new TransformNode("leftleg transform", m);
+//
+//    m = new Mat4(1);
+//    m = Mat4.multiply(m, Mat4Transform.translate(-(armWidth*0.5f)+(legScale*0.5f),0,0));
+//    m = Mat4.multiply(m, Mat4Transform.rotateAroundX(180));
+//    m = Mat4.multiply(m, Mat4Transform.scale(legScale,legLength,legScale));
+//    m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+//    TransformNode rightlegTransform = new TransformNode("rightleg transform", m);
         
     // make scene graph
-    robot.addChild(robotMoveTranslate);
-      robotMoveTranslate.addChild(robotTranslate);
-        robotTranslate.addChild(body);
-          body.addChild(bodyTransform);
-            bodyTransform.addChild(bodyShape);
-          body.addChild(head);
-            head.addChild(headTransform);
-            headTransform.addChild(headShape);
-          body.addChild(leftarm);
-            leftarm.addChild(leftArmTranslate);
-            leftArmTranslate.addChild(leftArmRotate);
-            leftArmRotate.addChild(leftArmScale);
-            leftArmScale.addChild(leftArmShape);
-          body.addChild(rightarm);
-            rightarm.addChild(rightArmTranslate);
-            rightArmTranslate.addChild(rightArmRotate);
-            rightArmRotate.addChild(rightArmScale);
-            rightArmScale.addChild(rightArmShape);
-          body.addChild(leftleg);
-            leftleg.addChild(leftlegTransform);
-            leftlegTransform.addChild(leftLegShape);
-          body.addChild(rightleg);
-            rightleg.addChild(rightlegTransform);
-            rightlegTransform.addChild(rightLegShape);
-    
-    robot.update();  // IMPORTANT - don't forget this
+    robotHand.addChild(robotHandMoveTranslate);
+        robotHandMoveTranslate.addChild(robotHandTranslate);
+            robotHandTranslate.addChild(arm);
+                arm.addChild(armTransform);
+                    armTransform.addChild(armShape);
+                arm.addChild(palm);
+                    palm.addChild(palmTransform);
+                    headTransform.addChild(palmShape);
+
+    robotHand.update();
   }
  
-  private void render(GL3 gl) {
-    gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-    updatePerspectiveMatrices();
-    
-    light.setPosition(getLightPosition());  // changing light position each frame
-    light.render(gl);
+    private void render(GL3 gl) {
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+        updatePerspectiveMatrices();
 
-    floor.render(gl); 
-    
-    if (animation) updateLeftArm();
-    robot.draw(gl);
-  }
+        light.setPosition(getLightPosition());  // changing light position each frame
+        light.render(gl);
+
+        floor.render(gl);
+
+        //    if (animation) updateLeftArm();
+        robotHand.draw(gl);
+    }
     
   private void updatePerspectiveMatrices() {
     // needs to be changed if user resizes the window
@@ -304,15 +314,15 @@ public class Arty_GLEventListener implements GLEventListener {
     cube2.dispose(gl);
   }
   
-  private void updateLeftArm() {
-    double elapsedTime = getSeconds()-startTime;
-    float rotateAngle = 180f+90f*(float)Math.sin(elapsedTime);
-    leftArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
-    leftArmRotate.update();
-    rotateAngle = -rotateAngle;
-    rightArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
-    rightArmRotate.update();
-  }
+//  private void updateLeftArm() {
+//    double elapsedTime = getSeconds()-startTime;
+//    float rotateAngle = 180f+90f*(float)Math.sin(elapsedTime);
+//    leftArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
+//    leftArmRotate.update();
+//    rotateAngle = -rotateAngle;
+//    rightArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
+//    rightArmRotate.update();
+//  }
   
   // The light's postion is continually being changed, so needs to be calculated for each frame.
   private Vec3 getLightPosition() {
