@@ -68,12 +68,6 @@ public class Arty extends JFrame implements ActionListener {
         btn = new JButton("Z--");
         btn.addActionListener(this);
         panel.add(btn);
-//        btn = new JButton("Rot++");
-//        btn.addActionListener(this);
-//        panel.add(btn);
-//        btn = new JButton("Rot--");
-//        btn.addActionListener(this);
-//        panel.add(btn);
         JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
         armAngleSlider.addChangeListener(sliderListener);
         panel.add(armAngleSlider);
@@ -126,12 +120,6 @@ public class Arty extends JFrame implements ActionListener {
         else if (e.getActionCommand().equalsIgnoreCase("Z--")) {
             glEventListener.rotPalmZNeg();
         }
-//        else if (e.getActionCommand().equalsIgnoreCase("Rot++")) {
-//            glEventListener.rotClockwise();
-//        }
-//        else if (e.getActionCommand().equalsIgnoreCase("Rot--")) {
-//            glEventListener.rotAntiClockwise();
-//        }
         else if(e.getActionCommand().equalsIgnoreCase("quit")){
             System.exit(0);
         }

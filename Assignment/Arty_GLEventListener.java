@@ -55,12 +55,22 @@ public class Arty_GLEventListener implements GLEventListener {
         disposeMeshes(gl);
     }
 
+    // ***************************************************
+    /* TIME
+    */
+
+    private double startTime;
+
+    private double getSeconds() {
+        return System.currentTimeMillis()/1000.0;
+    }
+
       // ***************************************************
       /* An array of random numbers
        */
   
-    private int NUM_RANDOMS = 1000;
-    private float[] randoms;
+      private int NUM_RANDOMS = 1000;
+      private float[] randoms;
   
     private void createRandomNumbers() {
         randoms = new float[NUM_RANDOMS];
@@ -74,6 +84,20 @@ public class Arty_GLEventListener implements GLEventListener {
     *
     *
     */
+
+    private boolean animation = false;
+    private double savedTime = 0;
+
+    public void startAnimation() {
+        animation = true;
+        startTime = getSeconds()-savedTime;
+    }
+
+    public void stopAnimation() {
+        animation = false;
+        double elapsedTime = getSeconds()-startTime;
+        savedTime = elapsedTime;
+    }
 
     public void rotPalmXPos() {
         palmXAngle++;
@@ -89,13 +113,13 @@ public class Arty_GLEventListener implements GLEventListener {
 
     public void rotPalmZPos() {
         palmZAngle++;
-        palmRotateZ.setTransform(Mat4Transform.rotateAroundX(palmZAngle));
+        palmRotateZ.setTransform(Mat4Transform.rotateAroundZ(palmZAngle));
         palmRotateZ.update();
     }
 
     public void rotPalmZNeg() {
         palmZAngle--;
-        palmRotateZ.setTransform(Mat4Transform.rotateAroundX(palmZAngle));
+        palmRotateZ.setTransform(Mat4Transform.rotateAroundZ(palmZAngle));
         palmRotateZ.update();
     }
 
@@ -119,7 +143,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private float xPosition = 0;
     private int palmXAngle = 0;
     private int palmZAngle = 0;
-    private TransformNode armRotateY, palmRotateX;
+    private TransformNode armRotateY, palmRotateX, palmRotateZ;
   
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -261,6 +285,7 @@ public class Arty_GLEventListener implements GLEventListener {
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
         TransformNode palmTransform = new TransformNode("palm transform", m);
         palmRotateX = new TransformNode("palmX rotate",Mat4Transform.rotateAroundX(0));
+        palmRotateZ = new TransformNode("palmZ rotate",Mat4Transform.rotateAroundZ(0));
 
         // ------------ Finger #1 (Index) ------------ \\
 
@@ -462,16 +487,6 @@ public class Arty_GLEventListener implements GLEventListener {
         cube.dispose(gl);
         cube2.dispose(gl);
     }
-  
-//  private void updateLeftArm() {
-//    double elapsedTime = getSeconds()-startTime;
-//    float rotateAngle = 180f+90f*(float)Math.sin(elapsedTime);
-//    leftArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
-//    leftArmRotate.update();
-//    rotateAngle = -rotateAngle;
-//    rightArmRotate.setTransform(Mat4Transform.rotateAroundX(rotateAngle));
-//    rightArmRotate.update();
-//  }
   
     // The light's postion is continually being changed, so needs to be calculated for each frame.
     private Vec3 getLightPosition() {
