@@ -128,10 +128,20 @@ public class Arty_GLEventListener implements GLEventListener {
         armRotateY.update();
     }
 
-    public void curlIndex(){
-        if (indexStraight){
-            indexAnim = true;
-        }
+    public void curlFing1(){
+        fing1Anim = true;
+    }
+
+    public void curlFing2(){
+        fing2Anim = true;
+    }
+
+    public void curlFing3(){
+        fing3Anim = true;
+    }
+
+    public void curlFing4(){
+        fing4Anim = true;
     }
 
     // ***************************************************
@@ -147,10 +157,31 @@ public class Arty_GLEventListener implements GLEventListener {
     private SGNode robotHand;
 
     private float xPosition = 0;
-    private int palmXAngle, palmZAngle, fing1ProxAngleX, fing1MiddAngleX, fing1DistAngleX; // default to 0
-    private boolean indexStraight = true;
-    private boolean indexAnim = false;
-    private TransformNode armRotateY, palmRotateX, palmRotateZ, fing1ProxRotateX, fing1ProxRotateZ, fing1MiddRotateX, fing1DistRotateX;
+    private int palmXAngle, palmZAngle;
+
+
+    
+    private boolean fing1Straight = true;
+    private boolean fing1Anim = false;
+    private TransformNode fing1ProxRotateX, fing1ProxRotateZ, fing1MiddRotateX, fing1DistRotateX;
+    private int fing1ProxAngleX, fing1MiddAngleX, fing1DistAngleX; // default to 0
+
+    private boolean fing2Straight = true;
+    private boolean fing2Anim = false;
+    private TransformNode fing2ProxRotateX, fing2ProxRotateZ, fing2MiddRotateX, fing2DistRotateX;
+    private int fing2ProxAngleX, fing2MiddAngleX, fing2DistAngleX; // default to 0
+
+    private boolean fing3Straight = true;
+    private boolean fing3Anim = false;
+    private TransformNode fing3ProxRotateX, fing3ProxRotateZ, fing3MiddRotateX, fing3DistRotateX;
+    private int fing3ProxAngleX, fing3MiddAngleX, fing3DistAngleX; // default to 0
+
+    private boolean fing4Straight = true;
+    private boolean fing4Anim = false;
+    private TransformNode fing4ProxRotateX, fing4ProxRotateZ, fing4MiddRotateX, fing4DistRotateX;
+    private int fing4ProxAngleX, fing4MiddAngleX, fing4DistAngleX; // default to 0
+    
+    private TransformNode armRotateY, palmRotateX, palmRotateZ;
   
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -323,23 +354,32 @@ public class Arty_GLEventListener implements GLEventListener {
 
         // ------------ Finger #2 (Middle) ------------ \\
 
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(fing2HrzPos, fingProxVert, 0));
+        TransformNode fing2ProxTranslate = new TransformNode("fing2Prox translate",
+                Mat4Transform.translate(fing2HrzPos, palmHeight, 0));
+        m = new Mat4(2);
         m = Mat4.multiply(m, Mat4Transform.scale(fingLrgWidth, fingXLgHeight, fingLrgDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
         TransformNode fing2ProxTransform = new TransformNode("fing2Prox transform", m);
+        fing2ProxRotateX = new TransformNode("fing2Prox Xrotate", Mat4Transform.rotateAroundX(0));
+        fing2ProxRotateZ = new TransformNode("fing2Prox Zrotate", Mat4Transform.rotateAroundZ(0));
 
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(fing2HrzPos, fingMiddXLgVert, 0));
+
+        TransformNode fing2MiddTranslate = new TransformNode("fing2Midd translate",
+                Mat4Transform.translate(0, fingXLgHeight, 0));
+        m = new Mat4(2);
         m = Mat4.multiply(m, Mat4Transform.scale(fingMedWidth, fingLrgHeight, fingMedDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
         TransformNode fing2MiddTransform = new TransformNode("fing2Midd transform", m);
+        fing2MiddRotateX = new TransformNode("fing2Midd Xrotate", Mat4Transform.rotateAroundX(0));
 
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(fing2HrzPos, fingDistXLVert, 0));
+
+        TransformNode fing2DistTranslate = new TransformNode("fing2Dist translate",
+                Mat4Transform.translate(0, fingLrgHeight, 0));
+        m = new Mat4(2);
         m = Mat4.multiply(m, Mat4Transform.scale(fingSmlWidth, fingSmlHeight, fingSmlDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
         TransformNode fing2DistTransform = new TransformNode("fing2Dist transform", m);
+        fing2DistRotateX = new TransformNode("fing2Dist Xrotate", Mat4Transform.rotateAroundX(0));
 
         // ------------ Finger #3 (Ring) ------------ \\
 
@@ -434,6 +474,22 @@ public class Arty_GLEventListener implements GLEventListener {
                                                                         fing1DistRotateX.addChild(fing1DistTransform);
                                                                             fing1DistTransform.addChild(fing1DistShape);
 
+                                    palmRotateZ.addChild(fing2ProxTranslate);
+                                        fing2ProxTranslate.addChild(fing2Prox);
+                                            fing2Prox.addChild(fing2ProxRotateX);
+                                                fing2ProxRotateX.addChild(fing2ProxTransform);
+                                                    fing2ProxTransform.addChild(fing2ProxShape);
+                                                fing2ProxRotateX.addChild(fing2MiddTranslate);
+                                                    fing2MiddTranslate.addChild(fing2Midd);
+                                                        fing2Midd.addChild(fing2MiddRotateX);
+                                                            fing2MiddRotateX.addChild(fing2MiddTransform);
+                                                                fing2MiddTransform.addChild(fing2MiddShape);
+                                                            fing2MiddRotateX.addChild(fing2DistTranslate);
+                                                                fing2DistTranslate.addChild(fing2Dist);
+                                                                    fing2Dist.addChild(fing2DistRotateX);
+                                                                        fing2DistRotateX.addChild(fing2DistTransform);
+                                                                            fing2DistTransform.addChild(fing2DistShape);
+
                                     /*palmRotateZ.addChild(fing2Prox);
                                         fing2Prox.addChild(fing2ProxTransform);
                                             fing2ProxTransform.addChild(fing2ProxShape);
@@ -483,26 +539,81 @@ public class Arty_GLEventListener implements GLEventListener {
 
         light.setPosition(getLightPosition());  // changing light position each frame
         light.render(gl);
-
         floor.render(gl);
 
-//        if (anim2) updateFing1();
+        if (fing1Anim) {
+            if (fing1Straight) {
+                fing1ProxAngleX++;
+                fing1ProxRotateX.setTransform(Mat4Transform.rotateAroundX(fing1ProxAngleX));
+                fing1ProxRotateX.update();
 
-        if (indexAnim) {
-            fing1ProxAngleX++;
-            fing1ProxRotateX.setTransform(Mat4Transform.rotateAroundX(fing1ProxAngleX));
-            fing1ProxRotateX.update();
+                fing1MiddAngleX++;
+                fing1MiddRotateX.setTransform(Mat4Transform.rotateAroundX(fing1MiddAngleX));
+                fing1MiddRotateX.update();
 
-            fing1MiddAngleX++;
-            fing1MiddRotateX.setTransform(Mat4Transform.rotateAroundX(fing1MiddAngleX));
-            fing1MiddRotateX.update();
+                fing1DistAngleX++;
+                fing1DistRotateX.setTransform(Mat4Transform.rotateAroundX(fing1DistAngleX));
+                fing1DistRotateX.update();
 
-            fing1DistAngleX++;
-            fing1DistRotateX.setTransform(Mat4Transform.rotateAroundX(fing1DistAngleX));
-            fing1DistRotateX.update();
+                if (fing1ProxAngleX > 90) {
+                    fing1Anim = false;
+                    fing1Straight = false;
+                }
+            }else{
+                fing1ProxAngleX--;
+                fing1ProxRotateX.setTransform(Mat4Transform.rotateAroundX(fing1ProxAngleX));
+                fing1ProxRotateX.update();
 
-            if (fing1ProxAngleX > 90) {
-                indexAnim = false;
+                fing1MiddAngleX--;
+                fing1MiddRotateX.setTransform(Mat4Transform.rotateAroundX(fing1MiddAngleX));
+                fing1MiddRotateX.update();
+
+                fing1DistAngleX--;
+                fing1DistRotateX.setTransform(Mat4Transform.rotateAroundX(fing1DistAngleX));
+                fing1DistRotateX.update();
+
+                if (fing1ProxAngleX < 1) {
+                    fing1Anim = false;
+                    fing1Straight = true;
+                }
+            }
+        }
+
+        if (fing2Anim) {
+            if (fing2Straight) {
+                fing2ProxAngleX++;
+                fing2ProxRotateX.setTransform(Mat4Transform.rotateAroundX(fing2ProxAngleX));
+                fing2ProxRotateX.update();
+
+                fing2MiddAngleX++;
+                fing2MiddRotateX.setTransform(Mat4Transform.rotateAroundX(fing2MiddAngleX));
+                fing2MiddRotateX.update();
+
+                fing2DistAngleX++;
+                fing2DistRotateX.setTransform(Mat4Transform.rotateAroundX(fing2DistAngleX));
+                fing2DistRotateX.update();
+
+                if (fing2ProxAngleX > 90) {
+                    fing2Anim = false;
+                    fing2Straight = false;
+                }
+            }else{
+                fing2ProxAngleX--;
+                fing2ProxRotateX.setTransform(Mat4Transform.rotateAroundX(fing2ProxAngleX));
+                fing2ProxRotateX.update();
+
+                fing2MiddAngleX--;
+                fing2MiddRotateX.setTransform(Mat4Transform.rotateAroundX(fing2MiddAngleX));
+                fing2MiddRotateX.update();
+
+                fing2DistAngleX--;
+                fing2DistRotateX.setTransform(Mat4Transform.rotateAroundX(fing2DistAngleX));
+                fing2DistRotateX.update();
+
+                if (fing2ProxAngleX < 2) {
+                    fing2Anim = false;
+                    fing2Straight = true;
+                }
             }
         }
 
