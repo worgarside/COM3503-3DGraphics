@@ -55,22 +55,12 @@ public class Arty_GLEventListener implements GLEventListener {
         disposeMeshes(gl);
     }
 
-    // ***************************************************
-    /* TIME
-    */
-  
-    private double startTime;
-
-    private double getSeconds() {
-    return System.currentTimeMillis()/1000.0;
-  }
-
       // ***************************************************
       /* An array of random numbers
        */
   
-      private int NUM_RANDOMS = 1000;
-      private float[] randoms;
+    private int NUM_RANDOMS = 1000;
+    private float[] randoms;
   
     private void createRandomNumbers() {
         randoms = new float[NUM_RANDOMS];
@@ -85,51 +75,33 @@ public class Arty_GLEventListener implements GLEventListener {
     *
     */
 
-      private boolean animation = false;
-      private double savedTime = 0;
-
-    public void startAnimation() {
-        animation = true;
-        startTime = getSeconds()-savedTime;
-    }
-   
-    public void stopAnimation() {
-        animation = false;
-        double elapsedTime = getSeconds()-startTime;
-        savedTime = elapsedTime;
+    public void rotPalmXPos() {
+        palmXAngle++;
+        palmRotateX.setTransform(Mat4Transform.rotateAroundX(palmXAngle));
+        palmRotateX.update();
     }
 
-    public void incXPosition() {
-        xPosition += 0.5f;
-        if (xPosition>5f) xPosition = 5f;
-        updateMove();
+    public void rotPalmXNeg() {
+        palmXAngle--;
+        palmRotateX.setTransform(Mat4Transform.rotateAroundX(palmXAngle));
+        palmRotateX.update();
     }
-   
-    public void decXPosition() {
-        xPosition -= 0.5f;
-        if (xPosition<-5f) xPosition = -5f;
-        updateMove();
+
+    public void rotPalmZPos() {
+        palmZAngle++;
+        palmRotateZ.setTransform(Mat4Transform.rotateAroundX(palmZAngle));
+        palmRotateZ.update();
     }
- 
-    private void updateMove() {
-        robotHandMoveTranslate.setTransform(Mat4Transform.translate(xPosition,0,0));
-        robotHandMoveTranslate.update();
+
+    public void rotPalmZNeg() {
+        palmZAngle--;
+        palmRotateZ.setTransform(Mat4Transform.rotateAroundX(palmZAngle));
+        palmRotateZ.update();
     }
-  
-    public void loweredArms() {
-        stopAnimation();
-    //    leftArmRotate.setTransform(Mat4Transform.rotateAroundX(180));
-    //    leftArmRotate.update();
-    //    rightArmRotate.setTransform(Mat4Transform.rotateAroundX(180));
-    //    rightArmRotate.update();
-    }
-   
-    public void raisedArms() {
-        stopAnimation();
-    //    leftArmRotate.setTransform(Mat4Transform.rotateAroundX(0));
-    //    leftArmRotate.update();
-    //    rightArmRotate.setTransform(Mat4Transform.rotateAroundX(0));
-    //    rightArmRotate.update();
+
+    public void rotToAngle(int angle) {
+        armRotateY.setTransform(Mat4Transform.rotateAroundY(angle));
+        armRotateY.update();
     }
 
     // ***************************************************
@@ -145,7 +117,9 @@ public class Arty_GLEventListener implements GLEventListener {
     private SGNode robotHand;
 
     private float xPosition = 0;
-    private TransformNode translateX, robotHandMoveTranslate; //, leftArmRotate, rightArmRotate;
+    private int palmXAngle = 0;
+    private int palmZAngle = 0;
+    private TransformNode armRotateY, palmRotateX;
   
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -272,18 +246,21 @@ public class Arty_GLEventListener implements GLEventListener {
 
 
         // ------------ Arm + Palm ------------ \\
-        robotHandMoveTranslate = new TransformNode("robotHand transform", Mat4Transform.translate(xPosition,0,0));
-        TransformNode robotHandTranslate = new TransformNode("robotHand transform", Mat4Transform.translate(0,0,0));
 
-        Mat4 m = Mat4Transform.scale(armWidth, armHeight, armDepth);
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        Mat4 m = Mat4Transform.scale(armWidth, armHeight, armDepth); // Sets dimensions of arm
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0)); // Move up by 0.5*height for origin
         TransformNode armTransform = new TransformNode("arm transform", m);
+        armRotateY = new TransformNode("arm rotate",Mat4Transform.rotateAroundY(0));
+
+
+        TransformNode palmTranslate = new TransformNode("palm translate", Mat4Transform.translate(0,armHeight,0));
 
         m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(0, armHeight, 0));
         m = Mat4.multiply(m, Mat4Transform.scale(palmWidth, palmHeight, palmDepth));
+
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
         TransformNode palmTransform = new TransformNode("palm transform", m);
+        palmRotateX = new TransformNode("palmX rotate",Mat4Transform.rotateAroundX(0));
 
         // ------------ Finger #1 (Index) ------------ \\
 
@@ -390,64 +367,67 @@ public class Arty_GLEventListener implements GLEventListener {
 
         // ------------ Scene Graph ------------ \\
 
-        robotHand.addChild(robotHandMoveTranslate);
-            robotHandMoveTranslate.addChild(robotHandTranslate);
-                robotHandTranslate.addChild(arm);
-                    arm.addChild(armTransform);
-                        armTransform.addChild(armShape);
-                    arm.addChild(palm);
-                        palm.addChild(palmTransform);
-                            palmTransform.addChild(palmShape);
+        robotHand.addChild(arm);
+            arm.addChild(armRotateY);
+                armRotateY.addChild(armTransform);
+                    armTransform.addChild(armShape);
+                    armRotateY.addChild(palm);
 
-                        palm.addChild(fing1Prox);
-                            fing1Prox.addChild(fing1ProxTransform);
-                                fing1ProxTransform.addChild(fing1ProxShape);
-                            fing1Prox.addChild(fing1Midd);
-                                fing1Midd.addChild(fing1MiddTransform);
-                                    fing1MiddTransform.addChild(fing1MiddShape);
-                                fing1Midd.addChild(fing1Dist);
-                                    fing1Dist.addChild(fing1DistTransform);
-                                        fing1DistTransform.addChild(fing1DistShape);
+                        palm.addChild(palmTranslate);
+                            palmTranslate.addChild(palmRotateX);
+                                palmRotateX.addChild(palmRotateZ);
+                                    palmRotateZ.addChild(palmTransform);
+                                        palmTransform.addChild(palmShape);
 
-                        palm.addChild(fing2Prox);
-                            fing2Prox.addChild(fing2ProxTransform);
-                                fing2ProxTransform.addChild(fing2ProxShape);
-                            fing2Prox.addChild(fing2Midd);
-                                fing2Midd.addChild(fing2MiddTransform);
-                                    fing2MiddTransform.addChild(fing2MiddShape);
-                                fing2Midd.addChild(fing2Dist);
-                                    fing2Dist.addChild(fing2DistTransform);
-                                        fing2DistTransform.addChild(fing2DistShape);
+                                    palmRotateZ.addChild(fing1Prox);
+                                        fing1Prox.addChild(fing1ProxTransform);
+                                            fing1ProxTransform.addChild(fing1ProxShape);
+                                        fing1Prox.addChild(fing1Midd);
+                                            fing1Midd.addChild(fing1MiddTransform);
+                                                fing1MiddTransform.addChild(fing1MiddShape);
+                                            fing1Midd.addChild(fing1Dist);
+                                                fing1Dist.addChild(fing1DistTransform);
+                                                    fing1DistTransform.addChild(fing1DistShape);
 
-                        palm.addChild(fing3Prox);
-                            fing3Prox.addChild(fing3ProxTransform);
-                                fing3ProxTransform.addChild(fing3ProxShape);
-                            fing3Prox.addChild(fing3Midd);
-                                fing3Midd.addChild(fing3MiddTransform);
-                                    fing3MiddTransform.addChild(fing3MiddShape);
-                                fing3Midd.addChild(fing3Dist);
-                                    fing3Dist.addChild(fing3DistTransform);
-                                        fing3DistTransform.addChild(fing3DistShape);
+                                    palmRotateZ.addChild(fing2Prox);
+                                        fing2Prox.addChild(fing2ProxTransform);
+                                            fing2ProxTransform.addChild(fing2ProxShape);
+                                        fing2Prox.addChild(fing2Midd);
+                                            fing2Midd.addChild(fing2MiddTransform);
+                                                fing2MiddTransform.addChild(fing2MiddShape);
+                                            fing2Midd.addChild(fing2Dist);
+                                                fing2Dist.addChild(fing2DistTransform);
+                                                    fing2DistTransform.addChild(fing2DistShape);
 
-                        palm.addChild(fing4Prox);
-                            fing4Prox.addChild(fing4ProxTransform);
-                                fing4ProxTransform.addChild(fing4ProxShape);
-                            fing4Prox.addChild(fing4Midd);
-                                fing4Midd.addChild(fing4MiddTransform);
-                                    fing4MiddTransform.addChild(fing4MiddShape);
-                                fing4Midd.addChild(fing4Dist);
-                                    fing4Dist.addChild(fing4DistTransform);
-                                        fing4DistTransform.addChild(fing4DistShape);
+                                    palmRotateZ.addChild(fing3Prox);
+                                        fing3Prox.addChild(fing3ProxTransform);
+                                            fing3ProxTransform.addChild(fing3ProxShape);
+                                        fing3Prox.addChild(fing3Midd);
+                                            fing3Midd.addChild(fing3MiddTransform);
+                                                fing3MiddTransform.addChild(fing3MiddShape);
+                                            fing3Midd.addChild(fing3Dist);
+                                                fing3Dist.addChild(fing3DistTransform);
+                                                    fing3DistTransform.addChild(fing3DistShape);
 
-                        palm.addChild(thumbProx);
-                            thumbProx.addChild(thumbProxTransform);
-                                thumbProxTransform.addChild(thumbProxShape);
-                            thumbProx.addChild(thumbMidd);
-                                thumbMidd.addChild(thumbMiddTransform);
-                                    thumbMiddTransform.addChild(thumbMiddShape);
-                                thumbMidd.addChild(thumbDist);
-                                    thumbDist.addChild(thumbDistTransform);
-                                        thumbDistTransform.addChild(thumbDistShape);
+                                    palmRotateZ.addChild(fing4Prox);
+                                        fing4Prox.addChild(fing4ProxTransform);
+                                            fing4ProxTransform.addChild(fing4ProxShape);
+                                        fing4Prox.addChild(fing4Midd);
+                                            fing4Midd.addChild(fing4MiddTransform);
+                                                fing4MiddTransform.addChild(fing4MiddShape);
+                                            fing4Midd.addChild(fing4Dist);
+                                                fing4Dist.addChild(fing4DistTransform);
+                                                    fing4DistTransform.addChild(fing4DistShape);
+
+                                    palmRotateZ.addChild(thumbProx);
+                                        thumbProx.addChild(thumbProxTransform);
+                                            thumbProxTransform.addChild(thumbProxShape);
+                                        thumbProx.addChild(thumbMidd);
+                                            thumbMidd.addChild(thumbMiddTransform);
+                                                thumbMiddTransform.addChild(thumbMiddShape);
+                                            thumbMidd.addChild(thumbDist);
+                                                thumbDist.addChild(thumbDistTransform);
+                                                    thumbDistTransform.addChild(thumbDistShape);
 
         robotHand.update();
     }
