@@ -68,6 +68,9 @@ public class Arty extends JFrame implements ActionListener {
         btn = new JButton("Z--");
         btn.addActionListener(this);
         panel.add(btn);
+        btn = new JButton("curlIndex");
+        btn.addActionListener(this);
+        panel.add(btn);
         JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
         armAngleSlider.addChangeListener(sliderListener);
         panel.add(armAngleSlider);
@@ -120,6 +123,9 @@ public class Arty extends JFrame implements ActionListener {
         else if (e.getActionCommand().equalsIgnoreCase("Z--")) {
             glEventListener.rotPalmZNeg();
         }
+        else if (e.getActionCommand().equalsIgnoreCase("curlIndex")) {
+            glEventListener.curlIndex();
+        }
         else if(e.getActionCommand().equalsIgnoreCase("quit")){
             System.exit(0);
         }
@@ -134,18 +140,19 @@ class MyKeyboardInput extends KeyAdapter  {
     this.camera = camera;
   }
   
-  public void keyPressed(KeyEvent e) {
-    Camera.Movement m = Camera.Movement.NO_MOVEMENT;
-    switch (e.getKeyCode()) {
-      case KeyEvent.VK_LEFT:  m = Camera.Movement.LEFT;  break;
-      case KeyEvent.VK_RIGHT: m = Camera.Movement.RIGHT; break;
-      case KeyEvent.VK_UP:    m = Camera.Movement.UP;    break;
-      case KeyEvent.VK_DOWN:  m = Camera.Movement.DOWN;  break;
-      case KeyEvent.VK_A:  m = Camera.Movement.FORWARD;  break;
-      case KeyEvent.VK_Z:  m = Camera.Movement.BACK;  break;
+    public void keyPressed(KeyEvent e) {
+        Camera.Movement m = Camera.Movement.NO_MOVEMENT;
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_LEFT:  m = Camera.Movement.LEFT;  break;
+            case KeyEvent.VK_RIGHT: m = Camera.Movement.RIGHT; break;
+            case KeyEvent.VK_UP:    m = Camera.Movement.UP;    break;
+            case KeyEvent.VK_DOWN:  m = Camera.Movement.DOWN;  break;
+            case KeyEvent.VK_A:  m = Camera.Movement.FORWARD;  break;
+            case KeyEvent.VK_Z:  m = Camera.Movement.BACK;  break;
+            case KeyEvent.VK_ESCAPE:  System.exit(0);  break;
+        }
+        camera.keyboardInput(m);
     }
-    camera.keyboardInput(m);
-  }
 }
 
 class MyMouseInput extends MouseMotionAdapter {
