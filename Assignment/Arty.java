@@ -80,6 +80,9 @@ public class Arty extends JFrame implements ActionListener {
         btn = new JButton("curlFing4");
         btn.addActionListener(this);
         panel.add(btn);
+        btn = new JButton("curlThumb");
+        btn.addActionListener(this);
+        panel.add(btn);
         JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
         armAngleSlider.addChangeListener(sliderListener);
         panel.add(armAngleSlider);
@@ -143,6 +146,9 @@ public class Arty extends JFrame implements ActionListener {
         }
         else if (e.getActionCommand().equalsIgnoreCase("curlFing4")) {
             glEventListener.curlFing4();
+        }
+        else if (e.getActionCommand().equalsIgnoreCase("curlThumb")) {
+            glEventListener.curlThumb();
         }
         else if(e.getActionCommand().equalsIgnoreCase("quit")){
             System.exit(0);
