@@ -191,14 +191,14 @@ public class Arty_GLEventListener implements GLEventListener {
     private int[] currentSecAngles = new int[DIGIT_COUNT];
 
     private int[][] digitPrmAngleW = {
-            {45, 90, 0},    // digit[0] - XZZZ
-            {45, 45, 0},       // digit[1] - XZXX
-            {0, 45, 0},      // digit[2] - XZXX
-            {45, 0, 90},       // digit[3] - XZXX
-            {0, 10, 0}        // digit[4] - XZXX
+            {90, 85, 25},
+            {0, 0, 0},
+            {0, 0, 0},
+            {0, 0, 0},
+            {90, 90, 0}
     };
 
-    private int[] digitSecAngleW = {10, -10, 10, -15};
+    private int[] digitSecAngleW = {35, -10, 0, 10, 30};
 
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -300,9 +300,10 @@ public class Arty_GLEventListener implements GLEventListener {
         System.out.println("Variables initialised");
 
         // Thumb-Specific Angles
-        maxPrmAngle[0][0] = 50;
+        maxPrmAngle[0][0] = 90;
         maxPrmAngle[0][1] = 60;
         maxPrmAngle[0][2] = 90;
+        maxSecAngle[0] = 90;
         minSecAngle[0] = 0;
 
 
@@ -404,12 +405,12 @@ public class Arty_GLEventListener implements GLEventListener {
                                     for (int d = 1; d < DIGIT_COUNT; d++) {
                                         palmRotateZ.addChild(phalTLate[d][0]);
                                             phalTLate[d][0].addChild(digit[d][0]);
-                                                digit[d][0].addChild(phalRotX[d][0]);
-                                                    phalRotX[d][0].addChild(phalRotZ[d][0]);
-                                                        phalRotZ[d][0].addChild(phalTForm[d][0]);
+                                                digit[d][0].addChild(phalRotZ[d][0]);
+                                                    phalRotZ[d][0].addChild(phalRotX[d][0]);
+                                                        phalRotX[d][0].addChild(phalTForm[d][0]);
                                                             phalTForm[d][0].addChild(phalangeShape[d][0]);
 
-                                                        phalRotZ[d][0].addChild(phalTLate[d][1]);
+                                                        phalRotX[d][0].addChild(phalTLate[d][1]);
                                                             phalTLate[d][1].addChild(digit[d][1]);
                                                                 digit[d][1].addChild(phalRotX[d][1]);
                                                                     phalRotX[d][1].addChild(phalTForm[d][1]);
@@ -438,15 +439,27 @@ public class Arty_GLEventListener implements GLEventListener {
                 //Primary Angles
                 for (int p = 0; p < PHALANGE_COUNT; p++){
                     if (currentPrmAngles[d][p] - digitPrmAngleW[d][p] < 0) {
-                        currentPrmAngles[d][p]++;
+                        if (currentPrmAngles[d][p] < maxPrmAngle[d][p]){
+                            currentPrmAngles[d][p]++;
+                        }
                     } else if (currentPrmAngles[d][p] - digitPrmAngleW[d][p] > 0) {
-                        currentPrmAngles[d][p]--;
+                        if (currentPrmAngles[d][p] > minPrmAngle[d][p]){
+                            currentPrmAngles[d][p]--;
+
+                        }
                     }
                 }
 
                 //Secondary Angles
-
-                //if all angles are found, set digitAnim[d] = false
+                if (currentSecAngles[d] - digitSecAngleW[d] < 0) {
+                    if (currentSecAngles[d] < maxSecAngle[d]) {
+                        currentSecAngles[d]++;
+                    }
+                } else if (currentSecAngles[d] - digitSecAngleW[d] > 0) {
+                    if (currentSecAngles[d] > minSecAngle[d]) {
+                        currentSecAngles[d]--;
+                    }
+                }
             }
         }
 
