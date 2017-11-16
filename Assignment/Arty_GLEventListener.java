@@ -10,6 +10,8 @@ import com.jogamp.opengl.util.glsl.*;
 public class Arty_GLEventListener implements GLEventListener {
   
     private static final boolean DISPLAY_SHADERS = false;
+    private static final int DIGIT_COUNT = 5;
+    private static final int PHALANGE_COUNT = 3;
     private float aspect;
 
     public Arty_GLEventListener(Camera camera) {
@@ -129,23 +131,23 @@ public class Arty_GLEventListener implements GLEventListener {
     }
 
     public void curlFing1(){
-        fing1Anim = true;
+//        fing1Anim = true;
     }
 
     public void curlFing2(){
-        fing2Anim = true;
+//        fing2Anim = true;
     }
 
     public void curlFing3(){
-        fing3Anim = true;
+//        fing3Anim = true;
     }
 
     public void curlFing4(){
-        fing4Anim = true;
+//        fing4Anim = true;
     }
 
     public void curlThumb(){
-        thumbAnim = true;
+//        fing0Anim = true;
     }
 
     // ***************************************************
@@ -160,37 +162,45 @@ public class Arty_GLEventListener implements GLEventListener {
     private Light light;
     private SGNode robotHand;
 
-    private float xPosition = 0;
     private int palmXAngle, palmZAngle;
 
-
-    
-    private boolean fing1Straight = true;
-    private boolean fing1Anim = false;
-    private TransformNode fing1ProxRotateX, fing1ProxRotateZ, fing1MiddRotateX, fing1DistRotateX;
-    private int fing1ProxAngleX, fing1MiddAngleX, fing1DistAngleX; // default to 0
-
-    private boolean fing2Straight = true;
-    private boolean fing2Anim = false;
-    private TransformNode fing2ProxRotateX, fing2ProxRotateZ, fing2MiddRotateX, fing2DistRotateX;
-    private int fing2ProxAngleX, fing2MiddAngleX, fing2DistAngleX; // default to 0
-
-    private boolean fing3Straight = true;
-    private boolean fing3Anim = false;
-    private TransformNode fing3ProxRotateX, fing3ProxRotateZ, fing3MiddRotateX, fing3DistRotateX;
-    private int fing3ProxAngleX, fing3MiddAngleX, fing3DistAngleX; // default to 0
-
-    private boolean fing4Straight = true;
-    private boolean fing4Anim = false;
-    private TransformNode fing4ProxRotateX, fing4ProxRotateZ, fing4MiddRotateX, fing4DistRotateX;
-    private int fing4ProxAngleX, fing4MiddAngleX, fing4DistAngleX; // default to 0
-
-    private boolean thumbStraight = true;
-    private boolean thumbAnim = false;
-    private TransformNode thumbProxRotateX, thumbProxRotateZ, thumbMiddRotateZ, thumbDistRotateZ;
-    private int thumbProxAngleX, thumbProxAngleZ, thumbMiddAngleZ, thumbDistAngleZ; // default to 0
-    
+    private int[][] maxAngle = new int[DIGIT_COUNT][PHALANGE_COUNT];                        // Maximum angle phalange can be (most acute)
+    private int[][] minAngle = new int[DIGIT_COUNT][PHALANGE_COUNT];                        // Minimum angle phalange can be (most obtuse)
+    private int[][] angleX = new int[DIGIT_COUNT][PHALANGE_COUNT];                          // Current angle of phalange
+//    private boolean[][] digitStraight = new boolean[DIGIT_COUNT][PHALANGE_COUNT];           // Boolean to check if the digit is straight
+    private boolean[] digitAnim = new boolean[DIGIT_COUNT];                                 // Boolean to check if digit is animating
+    private TransformNode[][] phalRotX = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating phalanges about X-axis
+    private TransformNode[] proxRotZ = new TransformNode[DIGIT_COUNT];                      // TransformNodes for rotating proximal phalanges about Z-axis
+    private int fing0ProxAngleZ;                                                            // Z-angle of fing0 (thumb) proximal phalange
     private TransformNode armRotateY, palmRotateX, palmRotateZ;
+
+
+//    private boolean fing1Straight = true;
+//    private boolean fing1Anim = false;
+//    private TransformNode fing1ProxRotateX, fing1ProxRotateZ, fing1MiddRotateX, fing1DistRotateX;
+//    private int fing1ProxAngleX, fing1MiddAngleX, fing1DistAngleX; // default to 0
+
+//    private boolean fing2Straight = true;
+//    private boolean fing2Anim = false;
+//    private TransformNode fing2ProxRotateX, fing2ProxRotateZ, fing2MiddRotateX, fing2DistRotateX;
+//    private int fing2ProxAngleX, fing2MiddAngleX, fing2DistAngleX; // default to 0
+
+//    private boolean fing3Straight = true;
+//    private boolean fing3Anim = false;
+//    private TransformNode fing3ProxRotateX, fing3ProxRotateZ, fing3MiddRotateX, fing3DistRotateX;
+//    private int fing3ProxAngleX, fing3MiddAngleX, fing3DistAngleX; // default to 0
+
+//    private boolean fing4Straight = true;
+//    private boolean fing4Anim = false;
+//    private TransformNode fing4ProxRotateX, fing4ProxRotateZ, fing4MiddRotateX, fing4DistRotateX;
+//    private int fing4ProxAngleX, fing4MiddAngleX, fing4DistAngleX; // default to 0
+
+//    private boolean fing0Straight = true;
+//    private boolean fing0Anim = false;
+//    private TransformNode fing0ProxRotateX, fing0ProxRotateZ, fing0MiddRotateZ, fing0DistRotateZ;
+//    private int fing0ProxAngleX, fing0ProxAngleZ, fing0MiddAngleZ, fing0DistAngleZ; // default to 0
+
+
   
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -221,44 +231,36 @@ public class Arty_GLEventListener implements GLEventListener {
         cube2.setLight(light);
         cube2.setCamera(camera);
 
-        // ------------ MeshNodes + NameNodes ------------ \\
+        // ------------ MeshNodes, NameNodes, TranslationNodes ------------ \\
 
+        MeshNode phalangeShape[][] = new MeshNode[DIGIT_COUNT][PHALANGE_COUNT];
         MeshNode armShape = new MeshNode("Cube(arm)", cube);
         MeshNode palmShape = new MeshNode("Cube(palm)", cube);
-        MeshNode fing1ProxShape = new MeshNode("Cube(fing1Prox)", cube);
-        MeshNode fing1MiddShape = new MeshNode("Cube(fing1Midd)", cube);
-        MeshNode fing1DistShape = new MeshNode("Cube(fing1Dist)", cube);
-        MeshNode fing2ProxShape = new MeshNode("Cube(fing2Prox)", cube);
-        MeshNode fing2MiddShape = new MeshNode("Cube(fing2Midd)", cube);
-        MeshNode fing2DistShape = new MeshNode("Cube(fing2Dist)", cube);
-        MeshNode fing3ProxShape = new MeshNode("Cube(fing3Prox)", cube);
-        MeshNode fing3MiddShape = new MeshNode("Cube(fing3Midd)", cube);
-        MeshNode fing3DistShape = new MeshNode("Cube(fing3Dist)", cube);
-        MeshNode fing4ProxShape = new MeshNode("Cube(fing4Prox)", cube);
-        MeshNode fing4MiddShape = new MeshNode("Cube(fing4Midd)", cube);
-        MeshNode fing4DistShape = new MeshNode("Cube(fing4Dist)", cube);
-        MeshNode thumbProxShape = new MeshNode("Cube(thumbProx)", cube);
-        MeshNode thumbMiddShape = new MeshNode("Cube(thumbMidd)", cube);
-        MeshNode thumbDistShape = new MeshNode("Cube(thumbDist)", cube);
 
+        NameNode digit[][] = new NameNode[DIGIT_COUNT][PHALANGE_COUNT];
         robotHand = new NameNode("root");
         NameNode arm = new NameNode("arm");
         NameNode palm = new NameNode("palm");
-        NameNode fing1Prox = new NameNode("fing1Prox");
-        NameNode fing1Midd = new NameNode("fing1Midd");
-        NameNode fing1Dist = new NameNode("fing1Dist");
-        NameNode fing2Prox = new NameNode("fing2Prox");
-        NameNode fing2Midd = new NameNode("fing2Midd");
-        NameNode fing2Dist = new NameNode("fing2Dist");
-        NameNode fing3Prox = new NameNode("fing3Prox");
-        NameNode fing3Midd = new NameNode("fing3Midd");
-        NameNode fing3Dist = new NameNode("fing3Dist");
-        NameNode fing4Prox = new NameNode("fing4Prox");
-        NameNode fing4Midd = new NameNode("fing4Midd");
-        NameNode fing4Dist = new NameNode("fing4Dist");
-        NameNode thumbProx = new NameNode("thumbProx");
-        NameNode thumbMidd = new NameNode("thumbMidd");
-        NameNode thumbDist = new NameNode("thumbDist");
+
+        TransformNode phalTlate[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];
+        
+        // ------------ Initialise all Arrays ------------ \\
+
+        for (int d = 0; d < DIGIT_COUNT; d++) {
+            for (int p = 0; p < PHALANGE_COUNT; p++) {
+                if (d != 0){
+                    maxAngle[d][p] = 90;
+                    minAngle[d][p] = 0;
+                }
+
+                phalangeShape[d][p] = new MeshNode("Cube(digit" + Integer.toString(d) + "-phal" + Integer.toString(p) + "])", cube);
+                digit[d][p] = new NameNode("[" + Integer.toString(d) + "][" + Integer.toString(p) + "]");
+            }
+            digitAnim[d] = false;
+        }
+        System.out.println("Variables initialised");
+
+        // Set thumb-specific angles etc.
 
         // ------------ Dimensions + Positions ------------ \\
 
@@ -287,37 +289,17 @@ public class Arty_GLEventListener implements GLEventListener {
         float fingXSmHeight = 1.1f;
         float fingXSmDepth = 0.65f;
 
-        float fingXXSWidth = 0.55f;
-        float fingXXSHeight = 1f;
-        float fingXXSDepth = 0.55f;
+        float[] digitHrzPos = {palmWidth/2, 1.5f, 0.5f, -0.5f, -1.5f};
 
-        float fingProxVert = 0;//armHeight;// + palmHeight;
-
-        float fingMiddXLgVert = fingProxVert + fingXLgHeight;
-        float fingMiddLrgVert = fingProxVert + fingLrgHeight;
-        float fingMiddMedVert = fingProxVert + fingMedHeight;
-        float fingMiddXSmVert = fingProxVert + fingXSmHeight;
-
-        float fingDistXLVert = fingMiddXLgVert + fingLrgHeight;
-        float fingDistLMVert = fingMiddLrgVert + fingMedHeight;
-        float fingDistMMVert = fingMiddMedVert + fingMedHeight;
-        float fingDistSXVert = fingMiddXSmVert + fingXSmHeight;
-
-        float fing1HrzPos = 1.5f;
-        float fing2HrzPos = 0.5f;
-        float fing3HrzPos = -0.5f;
-        float fing4HrzPos = -1.5f;
-
-        float thumbProxVert = armHeight + 0.3f;
-        float thumbMiddVert = thumbProxVert + 0.025f;
-        float thumbDistVert = thumbMiddVert + 0.025f;
-
-        float thumbProxHrz = palmWidth/2;
-        float thumbMiddHrz = thumbProxHrz + fingLrgHeight + 0.15f;
-        float thumbDistHrz = thumbMiddHrz + fingMedHeight + 0.1f;
-
+//        float fing1HrzPos = 1.5f;
+//        float fing2HrzPos = 0.5f;
+//        float fing3HrzPos = -0.5f;
+//        float fing4HrzPos = -1.5f;
+//
+//        float fing0ProxHrz = palmWidth/2;
 
         // ------------ Arm + Palm ------------ \\
+
 
         Mat4 m = Mat4Transform.scale(armWidth, armHeight, armDepth); // Sets dimensions of arm
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0)); // Move up by 0.5*height for origin
@@ -332,35 +314,32 @@ public class Arty_GLEventListener implements GLEventListener {
         palmRotateX = new TransformNode("palmX rotate",Mat4Transform.rotateAroundX(0));
         palmRotateZ = new TransformNode("palmZ rotate",Mat4Transform.rotateAroundZ(0));
 
+
         // ------------ Finger #1 (Index) ------------ \\
 
-        TransformNode fing1ProxTranslate = new TransformNode("fing1Prox translate",
-                Mat4Transform.translate(fing1HrzPos, palmHeight, 0));
+        phalTlate[1][0] = new TransformNode("phalTlate[1][0]", Mat4Transform.translate(digitHrzPos[1], palmHeight, 0));
+        phalTlate[1][1] = new TransformNode("phalTlate[1][1]", Mat4Transform.translate(0, fingLrgHeight, 0));
+        phalTlate[1][2] = new TransformNode("phalTlate[1][2]", Mat4Transform.translate(0, fingMedHeight, 0));
+
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.scale(fingLrgWidth, fingLrgHeight, fingLrgDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode fing1ProxTransform = new TransformNode("fing1Prox transform", m);
-        fing1ProxRotateX = new TransformNode("fing1Prox Xrotate", Mat4Transform.rotateAroundX(1));
-        fing1ProxRotateZ = new TransformNode("fing1Prox Zrotate", Mat4Transform.rotateAroundZ(0));
+        TransformNode phalTForm1_0 = new TransformNode("phalTForm1_0", m);
+        phalRotX[1][0] = new TransformNode("phalRotX[1][0]", Mat4Transform.rotateAroundX(1));
+        proxRotZ[1] = new TransformNode("proxRotZ[1]", Mat4Transform.rotateAroundZ(0));
 
-
-        TransformNode fing1MiddTranslate = new TransformNode("fing1Midd translate",
-                Mat4Transform.translate(0, fingLrgHeight, 0));
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.scale(fingMedWidth, fingMedHeight, fingMedDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-        TransformNode fing1MiddTransform = new TransformNode("fing1Midd transform", m);
-        fing1MiddRotateX = new TransformNode("fing1Midd Xrotate", Mat4Transform.rotateAroundX(1));
+        TransformNode phalTForm1_1 = new TransformNode("phalTForm1_1", m);
+        phalRotX[1][1] = new TransformNode("phalRotX[1][1]", Mat4Transform.rotateAroundX(1));
 
-
-        TransformNode fing1DistTranslate = new TransformNode("fing1Dist translate",
-                Mat4Transform.translate(0, fingMedHeight, 0));
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.scale(fingSmlWidth, fingSmlHeight, fingSmlDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode fing1DistTransform = new TransformNode("fing1Dist transform", m);
-        fing1DistRotateX = new TransformNode("fing1Dist Xrotate", Mat4Transform.rotateAroundX(1));
-
+        TransformNode phalTForm1_2 = new TransformNode("phalTForm1_2", m);
+        phalRotX[1][2] = new TransformNode("phalRotX[1][2]", Mat4Transform.rotateAroundX(1));
+/*
         // ------------ Finger #2 (Middle) ------------ \\
 
         TransformNode fing2ProxTranslate = new TransformNode("fing2Prox translate",
@@ -451,34 +430,34 @@ public class Arty_GLEventListener implements GLEventListener {
 
         // ------------ Thumb ------------ \\
 
-        TransformNode thumbProxTranslate = new TransformNode("thumbProx translate",
-                Mat4Transform.translate(thumbProxHrz, 1f, 0.5f));
+        TransformNode fing0ProxTranslate = new TransformNode("fing0Prox translate",
+                Mat4Transform.translate(fing0ProxHrz, 1f, 0.5f));
         m = new Mat4(4);
         m = Mat4.multiply(m, Mat4Transform.scale(fingXLgHeight, fingLrgWidth, fingLrgDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0.5f, 0, 0));
-        TransformNode thumbProxTransform = new TransformNode("thumbProx transform", m);
-        thumbProxRotateX = new TransformNode("thumbProx Yrotate", Mat4Transform.rotateAroundX(0));
-        thumbProxRotateZ = new TransformNode("thumbProx Zrotate", Mat4Transform.rotateAroundZ(0));
+        TransformNode fing0ProxTransform = new TransformNode("fing0Prox transform", m);
+        fing0ProxRotateX = new TransformNode("fing0Prox Yrotate", Mat4Transform.rotateAroundX(0));
+        fing0ProxRotateZ = new TransformNode("fing0Prox Zrotate", Mat4Transform.rotateAroundZ(0));
 
 
-        TransformNode thumbMiddTranslate = new TransformNode("thumbMidd translate",
+        TransformNode fing0MiddTranslate = new TransformNode("fing0Midd translate",
                 Mat4Transform.translate(fingXLgHeight, 0, 0));
         m = new Mat4(4);
         m = Mat4.multiply(m, Mat4Transform.scale(fingLrgHeight, fingMedWidth, fingMedDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0.5f, 0, 0));
-        TransformNode thumbMiddTransform = new TransformNode("thumbMidd transform", m);
-        thumbMiddRotateZ = new TransformNode("thumbMidd Zrotate", Mat4Transform.rotateAroundZ(0));
+        TransformNode fing0MiddTransform = new TransformNode("fing0Midd transform", m);
+        fing0MiddRotateZ = new TransformNode("fing0Midd Zrotate", Mat4Transform.rotateAroundZ(0));
 
 
-        TransformNode thumbDistTranslate = new TransformNode("thumbDist translate",
+        TransformNode fing0DistTranslate = new TransformNode("fing0Dist translate",
                 Mat4Transform.translate(fingLrgHeight, 0, 0));
         m = new Mat4(4);
         m = Mat4.multiply(m, Mat4Transform.scale(fingMedHeight, fingSmlWidth, fingSmlDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0.5f, 0, 0));
-        TransformNode thumbDistTransform = new TransformNode("thumbDist transform", m);
-        thumbDistRotateZ = new TransformNode("thumbDist Zrotate", Mat4Transform.rotateAroundZ(0));
+        TransformNode fing0DistTransform = new TransformNode("fing0Dist transform", m);
+        fing0DistRotateZ = new TransformNode("fing0Dist Zrotate", Mat4Transform.rotateAroundZ(0));
 
-
+        */
 
 
         // ------------ Scene Graph ------------ \\
@@ -495,22 +474,24 @@ public class Arty_GLEventListener implements GLEventListener {
                                     palmRotateZ.addChild(palmTransform);
                                         palmTransform.addChild(palmShape);
 
-                                    palmRotateZ.addChild(fing1ProxTranslate);
-                                        fing1ProxTranslate.addChild(fing1Prox);
-                                            fing1Prox.addChild(fing1ProxRotateX);
-                                                fing1ProxRotateX.addChild(fing1ProxTransform);
-                                                    fing1ProxTransform.addChild(fing1ProxShape);
-                                                fing1ProxRotateX.addChild(fing1MiddTranslate);
-                                                    fing1MiddTranslate.addChild(fing1Midd);
-                                                        fing1Midd.addChild(fing1MiddRotateX);
-                                                            fing1MiddRotateX.addChild(fing1MiddTransform);
-                                                                fing1MiddTransform.addChild(fing1MiddShape);
-                                                            fing1MiddRotateX.addChild(fing1DistTranslate);
-                                                                fing1DistTranslate.addChild(fing1Dist);
-                                                                    fing1Dist.addChild(fing1DistRotateX);
-                                                                        fing1DistRotateX.addChild(fing1DistTransform);
-                                                                            fing1DistTransform.addChild(fing1DistShape);
+                                    palmRotateZ.addChild(phalTlate[1][0]);
+                                        phalTlate[1][0].addChild(digit[1][0]);
+                                            digit[1][0].addChild(phalRotX[1][0]);
+                                                phalRotX[1][0].addChild(phalTForm1_0);
+                                                    phalTForm1_0.addChild(phalangeShape[1][0]);
 
+                                                phalRotX[1][0].addChild(phalTlate[1][1]);
+                                                    phalTlate[1][1].addChild(digit[1][1]);
+                                                        digit[1][1].addChild(phalRotX[1][1]);
+                                                            phalRotX[1][1].addChild(phalTForm1_1);
+                                                                phalTForm1_1.addChild(phalangeShape[1][1]);
+
+                                                            phalRotX[1][1].addChild(phalTlate[1][2]);
+                                                                phalTlate[1][2].addChild(digit[1][2]);
+                                                                    digit[1][2].addChild(phalRotX[1][2]);
+                                                                        phalRotX[1][2].addChild(phalTForm1_2);
+                                                                            phalTForm1_2.addChild(phalangeShape[1][2]);
+/*
                                     palmRotateZ.addChild(fing2ProxTranslate);
                                         fing2ProxTranslate.addChild(fing2Prox);
                                             fing2Prox.addChild(fing2ProxRotateX);
@@ -559,24 +540,26 @@ public class Arty_GLEventListener implements GLEventListener {
                                                                         fing4DistRotateX.addChild(fing4DistTransform);
                                                                             fing4DistTransform.addChild(fing4DistShape);
 
-                                    palmRotateZ.addChild(thumbProxTranslate);
-                                        thumbProxTranslate.addChild(thumbProx);
-                                            thumbProx.addChild(thumbProxRotateX);
-                                                thumbProxRotateX.addChild(thumbProxRotateZ);
-                                                    thumbProxRotateZ.addChild(thumbMiddTranslate);
-                                                        thumbMiddTranslate.addChild(thumbMidd);
-                                                            thumbMidd.addChild(thumbMiddRotateZ);
-                                                                thumbMiddRotateZ.addChild(thumbDistTranslate);
-                                                                    thumbDistTranslate.addChild(thumbDist);
-                                                                        thumbDist.addChild(thumbDistRotateZ);
-                                                                            thumbDistRotateZ.addChild(thumbDistTransform);
-                                                                                thumbDistTransform.addChild(thumbDistShape);
-                                                                thumbMiddRotateZ.addChild(thumbMiddTransform);
-                                                                    thumbMiddTransform.addChild(thumbMiddShape);
-                                                    thumbProxRotateZ.addChild(thumbProxTransform);
-                                                        thumbProxTransform.addChild(thumbProxShape);
-
+                                    palmRotateZ.addChild(fing0ProxTranslate);
+                                        fing0ProxTranslate.addChild(fing0Prox);
+                                            fing0Prox.addChild(fing0ProxRotateX);
+                                                fing0ProxRotateX.addChild(fing0ProxRotateZ);
+                                                    fing0ProxRotateZ.addChild(fing0MiddTranslate);
+                                                        fing0MiddTranslate.addChild(fing0Midd);
+                                                            fing0Midd.addChild(fing0MiddRotateZ);
+                                                                fing0MiddRotateZ.addChild(fing0DistTranslate);
+                                                                    fing0DistTranslate.addChild(fing0Dist);
+                                                                        fing0Dist.addChild(fing0DistRotateZ);
+                                                                            fing0DistRotateZ.addChild(fing0DistTransform);
+                                                                                fing0DistTransform.addChild(fing0DistShape);
+                                                                fing0MiddRotateZ.addChild(fing0MiddTransform);
+                                                                    fing0MiddTransform.addChild(fing0MiddShape);
+                                                    fing0ProxRotateZ.addChild(fing0ProxTransform);
+                                                        fing0ProxTransform.addChild(fing0ProxShape);
+        */
         robotHand.update();
+
+
     }
     private int count = 0;
     private void render(GL3 gl) {
@@ -587,6 +570,7 @@ public class Arty_GLEventListener implements GLEventListener {
         light.render(gl);
         floor.render(gl);
 
+        /*
         if (fing1Anim) {
             if (fing1Straight) {
                 fing1ProxAngleX++;
@@ -739,84 +723,65 @@ public class Arty_GLEventListener implements GLEventListener {
             }
         }
 
-        if (thumbAnim) {
-            if (thumbStraight) {
-                if (thumbProxAngleX < 50) {
-                    thumbProxAngleX++;
-                    thumbProxRotateX.setTransform(Mat4Transform.rotateAroundX(thumbProxAngleX));
-                    thumbProxRotateX.update();
+        if (fing0Anim) {
+            if (fing0Straight) {
+                if (fing0ProxAngleX < 50) {
+                    fing0ProxAngleX++;
+                    fing0ProxRotateX.setTransform(Mat4Transform.rotateAroundX(fing0ProxAngleX));
+                    fing0ProxRotateX.update();
                 }
 
-                if (thumbProxAngleZ < 60) {
-                    thumbProxAngleZ++;
-                    thumbProxRotateZ.setTransform(Mat4Transform.rotateAroundZ(thumbProxAngleZ));
-                    thumbProxRotateZ.update();
+                if (fing0ProxAngleZ < 60) {
+                    fing0ProxAngleZ++;
+                    fing0ProxRotateZ.setTransform(Mat4Transform.rotateAroundZ(fing0ProxAngleZ));
+                    fing0ProxRotateZ.update();
                 }
 
-                if (thumbMiddAngleZ < 60) {
-                    thumbMiddAngleZ++;
-                    thumbMiddRotateZ.setTransform(Mat4Transform.rotateAroundZ(thumbMiddAngleZ));
-                    thumbMiddRotateZ.update();
+                if (fing0MiddAngleZ < 60) {
+                    fing0MiddAngleZ++;
+                    fing0MiddRotateZ.setTransform(Mat4Transform.rotateAroundZ(fing0MiddAngleZ));
+                    fing0MiddRotateZ.update();
                 }
 
-                thumbDistAngleZ++;
-                thumbDistRotateZ.setTransform(Mat4Transform.rotateAroundZ(thumbDistAngleZ));
-                thumbDistRotateZ.update();
+                fing0DistAngleZ++;
+                fing0DistRotateZ.setTransform(Mat4Transform.rotateAroundZ(fing0DistAngleZ));
+                fing0DistRotateZ.update();
 
-                if (thumbDistAngleZ > 90) {
-                    thumbAnim = false;
-                    thumbStraight = false;
+                if (fing0DistAngleZ > 90) {
+                    fing0Anim = false;
+                    fing0Straight = false;
                 }
 
             }else{
-                if (thumbProxAngleX > 0) {
-                    thumbProxAngleX--;
-                    thumbProxRotateX.setTransform(Mat4Transform.rotateAroundX(thumbProxAngleX));
-                    thumbProxRotateX.update();
+                if (fing0ProxAngleX > 0) {
+                    fing0ProxAngleX--;
+                    fing0ProxRotateX.setTransform(Mat4Transform.rotateAroundX(fing0ProxAngleX));
+                    fing0ProxRotateX.update();
                 }
 
-                if (thumbProxAngleZ > 0) {
-                    thumbProxAngleZ--;
-                    thumbProxRotateZ.setTransform(Mat4Transform.rotateAroundZ(thumbProxAngleZ));
-                    thumbProxRotateZ.update();
+                if (fing0ProxAngleZ > 0) {
+                    fing0ProxAngleZ--;
+                    fing0ProxRotateZ.setTransform(Mat4Transform.rotateAroundZ(fing0ProxAngleZ));
+                    fing0ProxRotateZ.update();
                 }
 
-                if (thumbMiddAngleZ > 0) {
-                    thumbMiddAngleZ--;
-                    thumbMiddRotateZ.setTransform(Mat4Transform.rotateAroundZ(thumbMiddAngleZ));
-                    thumbMiddRotateZ.update();
+                if (fing0MiddAngleZ > 0) {
+                    fing0MiddAngleZ--;
+                    fing0MiddRotateZ.setTransform(Mat4Transform.rotateAroundZ(fing0MiddAngleZ));
+                    fing0MiddRotateZ.update();
                 }
 
-                thumbDistAngleZ--;
-                thumbDistRotateZ.setTransform(Mat4Transform.rotateAroundZ(thumbDistAngleZ));
-                thumbDistRotateZ.update();
+                fing0DistAngleZ--;
+                fing0DistRotateZ.setTransform(Mat4Transform.rotateAroundZ(fing0DistAngleZ));
+                fing0DistRotateZ.update();
 
-                if (thumbDistAngleZ == 0) {
-                    thumbAnim = false;
-                    thumbStraight = true;
+                if (fing0DistAngleZ == 0) {
+                    fing0Anim = false;
+                    fing0Straight = true;
                 }
-//                thumbProxAngleX--;
-//                thumbProxRotateX.setTransform(Mat4Transform.rotateAroundY(thumbProxAngleX));
-//                thumbProxRotateX.update();
-//
-//                thumbProxAngleZ--;
-//                thumbProxRotateZ.setTransform(Mat4Transform.rotateAroundZ(thumbProxAngleZ));
-//                thumbProxRotateZ.update();
-//
-//                thumbMiddAngleZ--;
-//                thumbMiddRotateZ.setTransform(Mat4Transform.rotateAroundZ(thumbMiddAngleZ));
-//                thumbMiddRotateZ.update();
-//
-//                thumbDistAngleZ--;
-//                thumbDistRotateZ.setTransform(Mat4Transform.rotateAroundZ(thumbDistAngleZ));
-//                thumbDistRotateZ.update();
-//
-//                if (thumbProxAngleX > 1) {
-//                    thumbAnim = false;
-//                    thumbStraight = true;
-//                }
             }
         }
+        */
 
         // rotate fing1Prox about Z
         // stop when angle reached
