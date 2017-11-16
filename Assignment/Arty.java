@@ -68,6 +68,9 @@ public class Arty extends JFrame implements ActionListener {
         btn = new JButton("Z--");
         btn.addActionListener(this);
         panel.add(btn);
+        btn = new JButton("Neutral");
+        btn.addActionListener(this);
+        panel.add(btn);
 //        btn = new JButton("curlDigit0");
 //        btn.addActionListener(this);
 //        panel.add(btn);
@@ -87,6 +90,9 @@ public class Arty extends JFrame implements ActionListener {
         btn.addActionListener(this);
         panel.add(btn);
         btn = new JButton("aslI");
+        btn.addActionListener(this);
+        panel.add(btn);
+        btn = new JButton("aslL");
         btn.addActionListener(this);
         panel.add(btn);
         JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
@@ -156,11 +162,17 @@ public class Arty extends JFrame implements ActionListener {
 //        else if (e.getActionCommand().equalsIgnoreCase("curlDigit4")) {
 //            glEventListener.curlDigit(4);
 //        }
+        else if (e.getActionCommand().equalsIgnoreCase("Neutral")) {
+            glEventListener.asl('N');
+        }
         else if (e.getActionCommand().equalsIgnoreCase("aslW")) {
             glEventListener.asl('W');
         }
         else if (e.getActionCommand().equalsIgnoreCase("aslI")) {
             glEventListener.asl('I');
+        }
+        else if (e.getActionCommand().equalsIgnoreCase("aslL")) {
+            glEventListener.asl('L');
         }
         else if(e.getActionCommand().equalsIgnoreCase("quit")){
             System.exit(0);
