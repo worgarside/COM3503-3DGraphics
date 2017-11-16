@@ -13,6 +13,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private static final int DIGIT_COUNT = 5;
     private static final int PHALANGE_COUNT = 3;
     private float aspect;
+    private char currentASLPos;
 
     public Arty_GLEventListener(Camera camera) {
     this.camera = camera;
@@ -130,24 +131,36 @@ public class Arty_GLEventListener implements GLEventListener {
         armRotateY.update();
     }
 
-    public void curlFing1(){
-//        fing1Anim = true;
+    public void curlDigit(int digit){
+        digitAnim[digit] = true;
+        System.out.println("RUN");
     }
 
-    public void curlFing2(){
-//        fing2Anim = true;
+    public void asl(char letter){
+        for (int d = 0; d < DIGIT_COUNT; d++){
+            digitAnim[d] = true;
+        }
+        currentASLPos = 'W';
+        System.out.println(letter);
     }
 
-    public void curlFing3(){
-//        fing3Anim = true;
-    }
+    public void updateAngles(){
+        for (int d = 0; d < DIGIT_COUNT; d++) {
+            for (int p = 0; p < PHALANGE_COUNT; p++) {
+                if (d!=0){
+                    phalRotX[d][p].setTransform(Mat4Transform.rotateAroundX(currentPrmAngles[d][p]));
+                    phalRotX[d][p].update();
+                    phalRotZ[d][p].setTransform(Mat4Transform.rotateAroundZ(currentSecAngles[d]));
+                    phalRotZ[d][p].update();
+                }else{
+                    phalRotZ[d][p].setTransform(Mat4Transform.rotateAroundZ(currentPrmAngles[d][p]));
+                    phalRotZ[d][p].update();
+                    phalRotX[d][p].setTransform(Mat4Transform.rotateAroundX(currentSecAngles[d]));
+                    phalRotX[d][p].update();
+                }
+            }
 
-    public void curlFing4(){
-//        fing4Anim = true;
-    }
-
-    public void curlThumb(){
-//        fing0Anim = true;
+        }
     }
 
     // ***************************************************
@@ -164,14 +177,28 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private int palmXAngle, palmZAngle;
 
-    private int[][] maxAngle = new int[DIGIT_COUNT][PHALANGE_COUNT];                        // Maximum angle phalange can be (most acute)
-    private int[][] minAngle = new int[DIGIT_COUNT][PHALANGE_COUNT];                        // Minimum angle phalange can be (most obtuse)
+    private int[][] maxPrmAngle = new int[DIGIT_COUNT][PHALANGE_COUNT];                     // Maximum angle phalange can be (most acute)
+    private int[][] minPrmAngle = new int[DIGIT_COUNT][PHALANGE_COUNT];                     // Minimum angle phalange can be (most obtuse)
+    private int[] maxSecAngle = new int[DIGIT_COUNT];                                       // Maximum angle prox can be (most acute)
+    private int[] minSecAngle = new int[DIGIT_COUNT];                                       // Minimum angle prox can be (most obtuse)
     private int[][] angleX = new int[DIGIT_COUNT][PHALANGE_COUNT];                          // Current angle of phalange
     private boolean[] digitAnim = new boolean[DIGIT_COUNT];                                 // Boolean to check if digit is animating
     private TransformNode[][] phalRotX = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating phalanges about X-axis
     private TransformNode[][] phalRotZ = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating proximal phalanges about Z-axis
-    private int fing0ProxAngleZ;                                                            // Z-angle of fing0 (thumb) proximal phalange
+//    private int fing0ProxAngleZ;                                                            // Z-angle of fing0 (thumb) proximal phalange
     private TransformNode armRotateY, palmRotateX, palmRotateZ;
+    private int[][] currentPrmAngles = new int[DIGIT_COUNT][PHALANGE_COUNT];
+    private int[] currentSecAngles = new int[DIGIT_COUNT];
+
+    private int[][] digitPrmAngleW = {
+            {45, 90, 0},    // digit[0] - XZZZ
+            {45, 45, 0},       // digit[1] - XZXX
+            {0, 45, 0},      // digit[2] - XZXX
+            {45, 0, 90},       // digit[3] - XZXX
+            {0, 10, 0}        // digit[4] - XZXX
+    };
+
+    private int[] digitSecAngleW = {10, -10, 10, -15};
 
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -253,23 +280,30 @@ public class Arty_GLEventListener implements GLEventListener {
                 {{fingSmlWidth, fingXSmHeight, fingSmlDepth}, {fingXSmWidth, fingXSmHeight, fingXSmDepth}, {fingXSmWidth, fingXSmHeight, fingXSmDepth}}
         };
 
+
         // ------------ Initialise all Arrays ------------ \\
 
         for (int d = 0; d < DIGIT_COUNT; d++) {
+            maxSecAngle[d] = 20;
+            minSecAngle[d] = -20;
             for (int p = 0; p < PHALANGE_COUNT; p++) {
+                currentPrmAngles[d][p] = 1;
                 if (d != 0){
-                    maxAngle[d][p] = 90;
-                    minAngle[d][p] = 0;
+                    maxPrmAngle[d][p] = 90;
                 }
-
-                phalangeShape[d][p] = new MeshNode("Cube(digit" + Integer.toString(d) + "-phal" + Integer.toString(p) + "])", cube);
+                minPrmAngle[d][p] = 0;
+                phalangeShape[d][p] = new MeshNode("Cube(digit" + Integer.toString(d) + "-phal" + Integer.toString(p) + ")", cube);
                 digit[d][p] = new NameNode("[" + Integer.toString(d) + "][" + Integer.toString(p) + "]");
             }
             digitAnim[d] = false;
         }
         System.out.println("Variables initialised");
 
-        // Set thumb-specific angles etc.
+        // Thumb-Specific Angles
+        maxPrmAngle[0][0] = 50;
+        maxPrmAngle[0][1] = 60;
+        maxPrmAngle[0][2] = 90;
+        minSecAngle[0] = 0;
 
 
         // ------------ Initialising TranslationNodes ------------ \\ -- could go in loop
@@ -323,8 +357,14 @@ public class Arty_GLEventListener implements GLEventListener {
                     m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
                 }
                 phalTForm[d][p] = new TransformNode("phalTForm[" + d + "][" + Integer.toString(p) + "]", m);
-                phalRotX[d][p] = new TransformNode("phalRotX[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundX(1));
-                phalRotZ[d][p] = new TransformNode("phalRotZ[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundZ(0));
+                if (d==0) {
+                    phalRotX[d][p] = new TransformNode("phalRotX[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundX(currentSecAngles[d]));
+                    phalRotZ[d][p] = new TransformNode("phalRotZ[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundZ(currentPrmAngles[d][p]));
+                } else {
+                    phalRotX[d][p] = new TransformNode("phalRotX[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundX(currentPrmAngles[d][p]));
+                    phalRotZ[d][p] = new TransformNode("phalRotZ[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundZ(currentSecAngles[d]));
+                }
+
             }
         }
 
@@ -342,24 +382,43 @@ public class Arty_GLEventListener implements GLEventListener {
                                     palmRotateZ.addChild(palmTransform);
                                         palmTransform.addChild(palmShape);
 
-                                    for (int d = 0; d < DIGIT_COUNT; d++) {
+                                    palmRotateZ.addChild(phalTLate[0][0]);
+                                        phalTLate[0][0].addChild(digit[0][0]);
+                                            digit[0][0].addChild(phalRotX[0][0]);
+                                                phalRotX[0][0].addChild(phalRotZ[0][0]);
+                                                    phalRotZ[0][0].addChild(phalTForm[0][0]);
+                                                        phalTForm[0][0].addChild(phalangeShape[0][0]);
+
+                                                    phalRotZ[0][0].addChild(phalTLate[0][1]);
+                                                        phalTLate[0][1].addChild(digit[0][1]);
+                                                            digit[0][1].addChild(phalRotZ[0][1]);
+                                                                phalRotZ[0][1].addChild(phalTForm[0][1]);
+                                                                    phalTForm[0][1].addChild(phalangeShape[0][1]);
+
+                                                                phalRotZ[0][1].addChild(phalTLate[0][2]);
+                                                                    phalTLate[0][2].addChild(digit[0][2]);
+                                                                        digit[0][2].addChild(phalRotZ[0][2]);
+                                                                            phalRotZ[0][2].addChild(phalTForm[0][2]);
+                                                                                phalTForm[0][2].addChild(phalangeShape[0][2]);
+
+                                    for (int d = 1; d < DIGIT_COUNT; d++) {
                                         palmRotateZ.addChild(phalTLate[d][0]);
                                             phalTLate[d][0].addChild(digit[d][0]);
                                                 digit[d][0].addChild(phalRotX[d][0]);
                                                     phalRotX[d][0].addChild(phalRotZ[d][0]);
                                                         phalRotZ[d][0].addChild(phalTForm[d][0]);
                                                             phalTForm[d][0].addChild(phalangeShape[d][0]);
-                        
+
                                                         phalRotZ[d][0].addChild(phalTLate[d][1]);
                                                             phalTLate[d][1].addChild(digit[d][1]);
-                                                                digit[d][1].addChild(phalRotZ[d][1]);
-                                                                    phalRotZ[d][1].addChild(phalTForm[d][1]);
+                                                                digit[d][1].addChild(phalRotX[d][1]);
+                                                                    phalRotX[d][1].addChild(phalTForm[d][1]);
                                                                         phalTForm[d][1].addChild(phalangeShape[d][1]);
-                                    
-                                                                    phalRotZ[d][1].addChild(phalTLate[d][2]);
+
+                                                                    phalRotX[d][1].addChild(phalTLate[d][2]);
                                                                         phalTLate[d][2].addChild(digit[d][2]);
-                                                                            digit[d][2].addChild(phalRotZ[d][2]);
-                                                                                phalRotZ[d][2].addChild(phalTForm[d][2]);
+                                                                            digit[d][2].addChild(phalRotX[d][2]);
+                                                                                phalRotX[d][2].addChild(phalTForm[d][2]);
                                                                                     phalTForm[d][2].addChild(phalangeShape[d][2]);
                                     }
 
@@ -374,8 +433,28 @@ public class Arty_GLEventListener implements GLEventListener {
         light.render(gl);
         floor.render(gl);
 
+        for (int d = 0; d < DIGIT_COUNT; d++) {
+            if (digitAnim[d]){
+                //Primary Angles
+                for (int p = 0; p < PHALANGE_COUNT; p++){
+                    if (currentPrmAngles[d][p] - digitPrmAngleW[d][p] < 0) {
+                        currentPrmAngles[d][p]++;
+                    } else if (currentPrmAngles[d][p] - digitPrmAngleW[d][p] > 0) {
+                        currentPrmAngles[d][p]--;
+                    }
+                }
+
+                //Secondary Angles
+
+                //if all angles are found, set digitAnim[d] = false
+            }
+        }
+
+        updateAngles();
         robotHand.draw(gl);
     }
+
+
 
     private void updatePerspectiveMatrices() {
         // needs to be changed if user resizes the window

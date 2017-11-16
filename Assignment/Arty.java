@@ -68,19 +68,22 @@ public class Arty extends JFrame implements ActionListener {
         btn = new JButton("Z--");
         btn.addActionListener(this);
         panel.add(btn);
-        btn = new JButton("curlFing1");
+        btn = new JButton("curlDigit0");
         btn.addActionListener(this);
         panel.add(btn);
-        btn = new JButton("curlFing2");
+        btn = new JButton("curlDigit1");
         btn.addActionListener(this);
         panel.add(btn);
-        btn = new JButton("curlFing3");
+        btn = new JButton("curlDigit2");
         btn.addActionListener(this);
         panel.add(btn);
-        btn = new JButton("curlFing4");
+        btn = new JButton("curlDigit3");
         btn.addActionListener(this);
         panel.add(btn);
-        btn = new JButton("curlThumb");
+        btn = new JButton("curlDigit4");
+        btn.addActionListener(this);
+        panel.add(btn);
+        btn = new JButton("aslW");
         btn.addActionListener(this);
         panel.add(btn);
         JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
@@ -117,12 +120,12 @@ public class Arty extends JFrame implements ActionListener {
             camera.setCamera(Camera.CameraType.Z);
             canvas.requestFocusInWindow();
         }
-        else if (e.getActionCommand().equalsIgnoreCase("start")) {
-            glEventListener.startAnimation();
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("stop")) {
-            glEventListener.stopAnimation();
-        }
+//        else if (e.getActionCommand().equalsIgnoreCase("start")) {
+//            glEventListener.startAnimation();
+//        }
+//        else if (e.getActionCommand().equalsIgnoreCase("stop")) {
+//            glEventListener.stopAnimation();
+//        }
         else if (e.getActionCommand().equalsIgnoreCase("X++")) {
             glEventListener.rotPalmXPos();
         }
@@ -135,20 +138,23 @@ public class Arty extends JFrame implements ActionListener {
         else if (e.getActionCommand().equalsIgnoreCase("Z--")) {
             glEventListener.rotPalmZNeg();
         }
-        else if (e.getActionCommand().equalsIgnoreCase("curlFing1")) {
-            glEventListener.curlFing1();
+        else if (e.getActionCommand().equalsIgnoreCase("curlDigit0")) {
+            glEventListener.curlDigit(0);
         }
-        else if (e.getActionCommand().equalsIgnoreCase("curlFing2")) {
-            glEventListener.curlFing2();
+        else if (e.getActionCommand().equalsIgnoreCase("curlDigit1")) {
+            glEventListener.curlDigit(1);
         }
-        else if (e.getActionCommand().equalsIgnoreCase("curlFing3")) {
-            glEventListener.curlFing3();
+        else if (e.getActionCommand().equalsIgnoreCase("curlDigit2")) {
+            glEventListener.curlDigit(2);
         }
-        else if (e.getActionCommand().equalsIgnoreCase("curlFing4")) {
-            glEventListener.curlFing4();
+        else if (e.getActionCommand().equalsIgnoreCase("curlDigit3")) {
+            glEventListener.curlDigit(3);
         }
-        else if (e.getActionCommand().equalsIgnoreCase("curlThumb")) {
-            glEventListener.curlThumb();
+        else if (e.getActionCommand().equalsIgnoreCase("curlDigit4")) {
+            glEventListener.curlDigit(4);
+        }
+        else if (e.getActionCommand().equalsIgnoreCase("aslW")) {
+            glEventListener.asl('W');
         }
         else if(e.getActionCommand().equalsIgnoreCase("quit")){
             System.exit(0);
