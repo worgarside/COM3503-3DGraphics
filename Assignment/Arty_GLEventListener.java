@@ -341,7 +341,7 @@ public class Arty_GLEventListener implements GLEventListener {
         palmRotateZ = new TransformNode("palmZ rotate",Mat4Transform.rotateAroundZ(0));
 
 
-        // ------------ Thumb ------------ \\
+        // ------------ Node Generation ------------ \\
 
         for (int d = 0; d < DIGIT_COUNT; d++) {
             for (int p = 0; p < PHALANGE_COUNT; p++) {
@@ -357,111 +357,7 @@ public class Arty_GLEventListener implements GLEventListener {
                 phalRotZ[d][p] = new TransformNode("phalRotZ[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundZ(0));
             }
         }
-/*
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingXLgHeight, fingLrgWidth, fingLrgDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0.5f, 0, 0));
-        phalTForm[0][0] = new TransformNode("phalTForm[0][0]", m);
-        phalRotX[0][0] = new TransformNode("phalRotX[0][0]", Mat4Transform.rotateAroundX(1));
-        phalRotZ[0][0] = new TransformNode("phalRotZ[0]", Mat4Transform.rotateAroundZ(0));
 
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingLrgHeight, fingMedWidth, fingMedDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0.5f, 0, 0));
-        phalTForm[0][1] = new TransformNode("phalTForm[0][1]", m);
-        phalRotZ[0][1] = new TransformNode("phalRotX[0][1]", Mat4Transform.rotateAroundX(1));
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingMedHeight, fingSmlWidth, fingSmlDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0.5f, 0, 0));
-        phalTForm[0][2] = new TransformNode("phalTForm[0][2]", m);
-        phalRotZ[0][2] = new TransformNode("phalRotX[0][2]", Mat4Transform.rotateAroundX(1));
-
-        // ------------ Finger #1 (Index) ------------ \\
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingLrgWidth, fingLrgHeight, fingLrgDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        phalTForm[1][0] = new TransformNode("phalTForm[1][0]", m);
-        phalRotX[1][0] = new TransformNode("phalRotX[1][0]", Mat4Transform.rotateAroundX(1));
-        phalRotZ[1][0] = new TransformNode("phalRotZ[1]", Mat4Transform.rotateAroundZ(0));
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingMedWidth, fingMedHeight, fingMedDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-        phalTForm[1][1] = new TransformNode("phalTForm[1][1]", m);
-        phalRotX[1][1] = new TransformNode("phalRotX[1][1]", Mat4Transform.rotateAroundX(1));
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingSmlWidth, fingSmlHeight, fingSmlDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        phalTForm[1][2] = new TransformNode("phalTForm[1][2]", m);
-        phalRotX[1][2] = new TransformNode("phalRotX[1][2]", Mat4Transform.rotateAroundX(1));
-
-        // ------------ Finger #2 (Middle) ------------ \\
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingLrgWidth, fingXLgHeight, fingLrgDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        phalTForm[2][0] = new TransformNode("phalTForm[2][0]", m);
-        phalRotX[2][0] = new TransformNode("phalRotX[2][0]", Mat4Transform.rotateAroundX(1));
-        phalRotZ[2][0] = new TransformNode("phalRotZ[2]", Mat4Transform.rotateAroundZ(0));
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingMedWidth, fingLrgHeight, fingMedDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-        phalTForm[2][1] = new TransformNode("phalTForm[2][1]", m);
-        phalRotX[2][1] = new TransformNode("phalRotX[2][1]", Mat4Transform.rotateAroundX(1));
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingSmlWidth, fingSmlHeight, fingSmlDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        phalTForm[2][2] = new TransformNode("phalTForm[2][2]", m);
-        phalRotX[2][2] = new TransformNode("phalRotX[2][2]", Mat4Transform.rotateAroundX(1));
-
-        // ------------ Finger #3 (Ring) ------------ \\
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingLrgWidth, fingLrgHeight, fingLrgDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        phalTForm[3][0] = new TransformNode("phalTForm[3][0]", m);
-        phalRotX[3][0] = new TransformNode("phalRotX[3][0]", Mat4Transform.rotateAroundX(1));
-        phalRotZ[3][0] = new TransformNode("phalRotZ[3]", Mat4Transform.rotateAroundZ(0));
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingMedWidth, fingMedHeight, fingMedDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-        phalTForm[3][1] = new TransformNode("phalTForm[3][1]", m);
-        phalRotX[3][1] = new TransformNode("phalRotX[3][1]", Mat4Transform.rotateAroundX(1));
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingSmlWidth, fingSmlHeight, fingSmlDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        phalTForm[3][2] = new TransformNode("phalTForm[3][2]", m);
-        phalRotX[3][2] = new TransformNode("phalRotX[3][2]", Mat4Transform.rotateAroundX(1));
-
-
-        // ------------ Finger #4 (Little) ------------ \\
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingSmlWidth, fingXSmHeight, fingSmlDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        phalTForm[4][0] = new TransformNode("phalTForm[4][0]", m);
-        phalRotX[4][0] = new TransformNode("phalRotX[4][0]", Mat4Transform.rotateAroundX(1));
-        phalRotZ[4][0] = new TransformNode("phalRotZ[4]", Mat4Transform.rotateAroundZ(0));
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingXSmWidth, fingXSmHeight, fingXSmDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-        phalTForm[4][1] = new TransformNode("phalTForm[4][1]", m);
-        phalRotX[4][1] = new TransformNode("phalRotX[4][1]", Mat4Transform.rotateAroundX(1));
-
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(fingXSmWidth, fingXSmHeight, fingXSmDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        phalTForm[4][2] = new TransformNode("phalTForm[4][2]", m);
-        phalRotX[4][2] = new TransformNode("phalRotX[4][2]", Mat4Transform.rotateAroundX(1));
-*/
         // ------------ Scene Graph ------------ \\
 
         robotHand.addChild(arm);
@@ -496,77 +392,25 @@ public class Arty_GLEventListener implements GLEventListener {
                                                                             phalRotZ[0][2].addChild(phalTForm[0][2]);
                                                                                 phalTForm[0][2].addChild(phalangeShape[0][2]);
 
-                                    palmRotateZ.addChild(phalTLate[1][0]);
-                                        phalTLate[1][0].addChild(digit[1][0]);
-                                            digit[1][0].addChild(phalRotX[1][0]);
-                                                phalRotX[1][0].addChild(phalTForm[1][0]);
-                                                    phalTForm[1][0].addChild(phalangeShape[1][0]);
+                                    for (int d = 1; d < DIGIT_COUNT; d++) {
+                                        palmRotateZ.addChild(phalTLate[d][0]);
+                                            phalTLate[d][0].addChild(digit[d][0]);
+                                                digit[d][0].addChild(phalRotX[d][0]);
+                                                    phalRotX[d][0].addChild(phalTForm[d][0]);
+                                                        phalTForm[d][0].addChild(phalangeShape[d][0]);
 
-                                                phalRotX[1][0].addChild(phalTLate[1][1]);
-                                                    phalTLate[1][1].addChild(digit[1][1]);
-                                                        digit[1][1].addChild(phalRotX[1][1]);
-                                                            phalRotX[1][1].addChild(phalTForm[1][1]);
-                                                                phalTForm[1][1].addChild(phalangeShape[1][1]);
+                                                    phalRotX[d][0].addChild(phalTLate[d][1]);
+                                                        phalTLate[d][1].addChild(digit[d][1]);
+                                                            digit[d][1].addChild(phalRotX[d][1]);
+                                                                phalRotX[d][1].addChild(phalTForm[d][1]);
+                                                                    phalTForm[d][1].addChild(phalangeShape[d][1]);
 
-                                                            phalRotX[1][1].addChild(phalTLate[1][2]);
-                                                                phalTLate[1][2].addChild(digit[1][2]);
-                                                                    digit[1][2].addChild(phalRotX[1][2]);
-                                                                        phalRotX[1][2].addChild(phalTForm[1][2]);
-                                                                            phalTForm[1][2].addChild(phalangeShape[1][2]);
-
-                                    palmRotateZ.addChild(phalTLate[2][0]);
-                                        phalTLate[2][0].addChild(digit[2][0]);
-                                            digit[2][0].addChild(phalRotX[2][0]);
-                                                phalRotX[2][0].addChild(phalTForm[2][0]);
-                                                    phalTForm[2][0].addChild(phalangeShape[2][0]);
-                                            
-                                                phalRotX[2][0].addChild(phalTLate[2][1]);
-                                                    phalTLate[2][1].addChild(digit[2][1]);
-                                                        digit[2][1].addChild(phalRotX[2][1]);
-                                                            phalRotX[2][1].addChild(phalTForm[2][1]);
-                                                                phalTForm[2][1].addChild(phalangeShape[2][1]);
-                                                        
-                                                            phalRotX[2][1].addChild(phalTLate[2][2]);
-                                                                phalTLate[2][2].addChild(digit[2][2]);
-                                                                    digit[2][2].addChild(phalRotX[2][2]);
-                                                                        phalRotX[2][2].addChild(phalTForm[2][2]);
-                                                                            phalTForm[2][2].addChild(phalangeShape[2][2]);
-
-                                    palmRotateZ.addChild(phalTLate[3][0]);
-                                        phalTLate[3][0].addChild(digit[3][0]);
-                                            digit[3][0].addChild(phalRotX[3][0]);
-                                                phalRotX[3][0].addChild(phalTForm[3][0]);
-                                                    phalTForm[3][0].addChild(phalangeShape[3][0]);
-                                            
-                                                phalRotX[3][0].addChild(phalTLate[3][1]);
-                                                    phalTLate[3][1].addChild(digit[3][1]);
-                                                        digit[3][1].addChild(phalRotX[3][1]);
-                                                            phalRotX[3][1].addChild(phalTForm[3][1]);
-                                                                phalTForm[3][1].addChild(phalangeShape[3][1]);
-                                                        
-                                                            phalRotX[3][1].addChild(phalTLate[3][2]);
-                                                                phalTLate[3][2].addChild(digit[3][2]);
-                                                                    digit[3][2].addChild(phalRotX[3][2]);
-                                                                        phalRotX[3][2].addChild(phalTForm[3][2]);
-                                                                            phalTForm[3][2].addChild(phalangeShape[3][2]);
-
-                                    palmRotateZ.addChild(phalTLate[4][0]);
-                                        phalTLate[4][0].addChild(digit[4][0]);
-                                            digit[4][0].addChild(phalRotX[4][0]);
-                                                phalRotX[4][0].addChild(phalTForm[4][0]);
-                                                    phalTForm[4][0].addChild(phalangeShape[4][0]);
-                                            
-                                                phalRotX[4][0].addChild(phalTLate[4][1]);
-                                                    phalTLate[4][1].addChild(digit[4][1]);
-                                                        digit[4][1].addChild(phalRotX[4][1]);
-                                                            phalRotX[4][1].addChild(phalTForm[4][1]);
-                                                                phalTForm[4][1].addChild(phalangeShape[4][1]);
-                                                        
-                                                            phalRotX[4][1].addChild(phalTLate[4][2]);
-                                                                phalTLate[4][2].addChild(digit[4][2]);
-                                                                    digit[4][2].addChild(phalRotX[4][2]);
-                                                                        phalRotX[4][2].addChild(phalTForm[4][2]);
-                                                                            phalTForm[4][2].addChild(phalangeShape[4][2]);
+                                                                phalRotX[d][1].addChild(phalTLate[d][2]);
+                                                                    phalTLate[d][2].addChild(digit[d][2]);
+                                                                        digit[d][2].addChild(phalRotX[d][2]);
+                                                                            phalRotX[d][2].addChild(phalTForm[d][2]);
+                                                                                phalTForm[d][2].addChild(phalangeShape[d][2]);
+                                    }
 
         robotHand.update();
 
