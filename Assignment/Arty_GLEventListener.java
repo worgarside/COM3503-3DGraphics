@@ -175,7 +175,7 @@ public class Arty_GLEventListener implements GLEventListener {
         armRotateY.update();
     }
 
-    public void asl(char letter){
+    public void changeHandPos(char letter){
         switch(letter) {
             case 'W':
                 for (int d = 0; d < DIGIT_COUNT; d++) {
@@ -251,8 +251,8 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private Camera camera;
     private Mat4 perspective;
-    private Mesh floor, sphere, cube, cube2;
-    private Light light;
+    private Mesh floor, sphere, cube, cube2, cube3;
+    private Light light, ringLight;
     private SGNode robotHand;
 
     private int palmXAngle, palmZAngle;
@@ -286,8 +286,10 @@ public class Arty_GLEventListener implements GLEventListener {
         sphere = new Sphere(gl, textureId1, textureId2);
         cube = new Cube(gl, textureId3, textureId4);
         cube2 = new Cube(gl, textureId5, textureId6);
+        cube3 = new Cube(gl, textureId1, textureId1);
 
         light = new Light(gl);
+        //ringLight = new Light(gl);
         light.setCamera(camera);
 
         floor.setLight(light);
@@ -296,19 +298,25 @@ public class Arty_GLEventListener implements GLEventListener {
         sphere.setCamera(camera);
         cube.setLight(light);
         cube.setCamera(camera);
-        cube2.setLight(light);
+        cube2.setLight(light);//ringLight);
         cube2.setCamera(camera);
+        cube3.setLight(light);
+        cube3.setCamera(camera);
 
         // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
 
         MeshNode phalangeShape[][] = new MeshNode[DIGIT_COUNT][PHALANGE_COUNT];
         MeshNode armShape = new MeshNode("Cube(arm)", cube);
         MeshNode palmShape = new MeshNode("Cube(palm)", cube);
+        MeshNode ringBandShape = new MeshNode("Cube(ringBand", cube2);
+        MeshNode ringGemShape = new MeshNode("Cube(ringGem", cube3);
 
         NameNode digit[][] = new NameNode[DIGIT_COUNT][PHALANGE_COUNT];
         robotHand = new NameNode("root");
         NameNode arm = new NameNode("arm");
         NameNode palm = new NameNode("palm");
+        NameNode ringBand = new NameNode("ringBand");
+        NameNode ringGem = new NameNode("ringGem");
 
         TransformNode phalTLate[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];
         TransformNode phalTForm[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];
@@ -322,32 +330,32 @@ public class Arty_GLEventListener implements GLEventListener {
         float palmHeight = 4f;
         float palmDepth = 1.25f;
 
-        float fingXLgHeight = 1.8f;
+        float phalXLgHeight = 1.8f;
 
-        float fingLrgWidth = 0.8f;
-        float fingLrgHeight = 1.5f;
-        float fingLrgDepth = 0.8f;
+        float phalLrgWidth = 0.8f;
+        float phalLrgHeight = 1.5f;
+        float phalLrgDepth = 0.8f;
 
-        float fingMedWidth = 0.75f;
-        float fingMedHeight = 1.3f;
-        float fingMedDepth = 0.75f;
+        float phalMedWidth = 0.75f;
+        float phalMedHeight = 1.3f;
+        float phalMedDepth = 0.75f;
 
-        float fingSmlWidth = 0.7f;
-        float fingSmlHeight = 1.2f;
-        float fingSmlDepth = 0.7f;
+        float phalSmlWidth = 0.7f;
+        float phalSmlHeight = 1.2f;
+        float phalSmlDepth = 0.7f;
 
-        float fingXSmWidth = 0.65f;
-        float fingXSmHeight = 1.1f;
-        float fingXSmDepth = 0.65f;
+        float phalXSmWidth = 0.65f;
+        float phalXSmHeight = 1.1f;
+        float phalXSmDepth = 0.65f;
 
         float[] digitHrzPos = {palmWidth/2, 1.5f, 0.5f, -0.5f, -1.5f};
 
         float[][][] phalDims = {
-                {{fingXLgHeight, fingLrgWidth, fingLrgDepth}, {fingLrgHeight, fingMedWidth, fingMedDepth}, {fingMedHeight, fingSmlWidth, fingSmlDepth}},
-                {{fingLrgWidth, fingLrgHeight, fingLrgDepth}, {fingMedWidth, fingMedHeight, fingMedDepth}, {fingSmlWidth, fingSmlHeight, fingSmlDepth}},
-                {{fingLrgWidth, fingXLgHeight, fingLrgDepth}, {fingMedWidth, fingLrgHeight, fingMedDepth}, {fingSmlWidth, fingSmlHeight, fingSmlDepth}},
-                {{fingLrgWidth, fingLrgHeight, fingLrgDepth}, {fingMedWidth, fingMedHeight, fingMedDepth}, {fingSmlWidth, fingSmlHeight, fingSmlDepth}},
-                {{fingSmlWidth, fingXSmHeight, fingSmlDepth}, {fingXSmWidth, fingXSmHeight, fingXSmDepth}, {fingXSmWidth, fingXSmHeight, fingXSmDepth}}
+                {{phalXLgHeight, phalLrgWidth, phalLrgDepth}, {phalLrgHeight, phalMedWidth, phalMedDepth}, {phalMedHeight, phalSmlWidth, phalSmlDepth}},
+                {{phalLrgWidth, phalLrgHeight, phalLrgDepth}, {phalMedWidth, phalMedHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
+                {{phalLrgWidth, phalXLgHeight, phalLrgDepth}, {phalMedWidth, phalLrgHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
+                {{phalLrgWidth, phalLrgHeight, phalLrgDepth}, {phalMedWidth, phalMedHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
+                {{phalSmlWidth, phalXSmHeight, phalSmlDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}}
         };
 
 
@@ -382,24 +390,24 @@ public class Arty_GLEventListener implements GLEventListener {
         // ------------ Initialising TranslationNodes ------------ \\ -- could go in loop
 
         phalTLate[0][0] = new TransformNode("phalTLate[0][0]", Mat4Transform.translate(digitHrzPos[0], 1f, 0.5f));
-        phalTLate[0][1] = new TransformNode("phalTLate[0][1]", Mat4Transform.translate(fingXLgHeight, 0, 0));
-        phalTLate[0][2] = new TransformNode("phalTLate[0][2]", Mat4Transform.translate(fingLrgHeight, 0, 0));
+        phalTLate[0][1] = new TransformNode("phalTLate[0][1]", Mat4Transform.translate(phalXLgHeight, 0, 0));
+        phalTLate[0][2] = new TransformNode("phalTLate[0][2]", Mat4Transform.translate(phalLrgHeight, 0, 0));
 
         phalTLate[1][0] = new TransformNode("phalTLate[1][0]", Mat4Transform.translate(digitHrzPos[1], palmHeight, 0));
-        phalTLate[1][1] = new TransformNode("phalTLate[1][1]", Mat4Transform.translate(0, fingLrgHeight, 0));
-        phalTLate[1][2] = new TransformNode("phalTLate[1][2]", Mat4Transform.translate(0, fingMedHeight, 0));
+        phalTLate[1][1] = new TransformNode("phalTLate[1][1]", Mat4Transform.translate(0, phalLrgHeight, 0));
+        phalTLate[1][2] = new TransformNode("phalTLate[1][2]", Mat4Transform.translate(0, phalMedHeight, 0));
 
         phalTLate[2][0] = new TransformNode("phalTLate[2][0]", Mat4Transform.translate(digitHrzPos[2], palmHeight, 0));
-        phalTLate[2][1] = new TransformNode("phalTLate[2][1]", Mat4Transform.translate(0, fingXLgHeight, 0));
-        phalTLate[2][2] = new TransformNode("phalTLate[2][2]", Mat4Transform.translate(0, fingLrgHeight, 0));
+        phalTLate[2][1] = new TransformNode("phalTLate[2][1]", Mat4Transform.translate(0, phalXLgHeight, 0));
+        phalTLate[2][2] = new TransformNode("phalTLate[2][2]", Mat4Transform.translate(0, phalLrgHeight, 0));
 
         phalTLate[3][0] = new TransformNode("phalTLate[3][0]", Mat4Transform.translate(digitHrzPos[3], palmHeight, 0));
-        phalTLate[3][1] = new TransformNode("phalTLate[3][1]", Mat4Transform.translate(0, fingLrgHeight, 0));
-        phalTLate[3][2] = new TransformNode("phalTLate[3][2]", Mat4Transform.translate(0, fingMedHeight, 0));
+        phalTLate[3][1] = new TransformNode("phalTLate[3][1]", Mat4Transform.translate(0, phalLrgHeight, 0));
+        phalTLate[3][2] = new TransformNode("phalTLate[3][2]", Mat4Transform.translate(0, phalMedHeight, 0));
 
         phalTLate[4][0] = new TransformNode("phalTLate[4][0]", Mat4Transform.translate(digitHrzPos[4], palmHeight, 0));
-        phalTLate[4][1] = new TransformNode("phalTLate[4][1]", Mat4Transform.translate(0, fingXSmHeight, 0));
-        phalTLate[4][2] = new TransformNode("phalTLate[4][2]", Mat4Transform.translate(0, fingXSmHeight, 0));
+        phalTLate[4][1] = new TransformNode("phalTLate[4][1]", Mat4Transform.translate(0, phalXSmHeight, 0));
+        phalTLate[4][2] = new TransformNode("phalTLate[4][2]", Mat4Transform.translate(0, phalXSmHeight, 0));
 
 
         // ------------ Arm + Palm ------------ \\
@@ -418,7 +426,7 @@ public class Arty_GLEventListener implements GLEventListener {
         palmRotateZ = new TransformNode("palmZ rotate",Mat4Transform.rotateAroundZ(0));
 
 
-        // ------------ Node Generation ------------ \\
+        // ------------ Digit Node Generation ------------ \\
 
         for (int d = 0; d < DIGIT_COUNT; d++) {
             for (int p = 0; p < PHALANGE_COUNT; p++) {
@@ -439,6 +447,23 @@ public class Arty_GLEventListener implements GLEventListener {
                 }
             }
         }
+
+        // ------------ Ring Node Gen ------------ \\
+
+        TransformNode ringBandTranslate = new TransformNode("ringBand translate", Mat4Transform.translate(0, 0.5f*phalLrgHeight, 0));
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.scale(1.5f*phalLrgWidth, 0.4f*phalLrgHeight, 1.5f*phalLrgDepth));
+        TransformNode ringBandTransform = new TransformNode("ringBand transform", m);
+
+        TransformNode ringGemTranslate = new TransformNode("ringGem translate", Mat4Transform.translate(0, 0, -0.8f*phalLrgDepth));
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.scale(0.4f, 0.4f, 0.4f));
+        TransformNode ringGemTransform = new TransformNode("ringGem transform", m);
+
+        // ------------ Lamp Node Gen ------------ \\
+
+
+
 
         // ------------ Scene Graph ------------ \\
 
@@ -493,6 +518,15 @@ public class Arty_GLEventListener implements GLEventListener {
                                                                                 phalRotX[d][2].addChild(phalTForm[d][2]);
                                                                                     phalTForm[d][2].addChild(phalangeShape[d][2]);
                                     }
+
+                                                        phalRotX[3][0].addChild(ringBandTranslate);
+                                                            ringBandTranslate.addChild(ringBand);
+                                                                ringBand.addChild(ringBandTransform);
+                                                                    ringBandTransform.addChild(ringBandShape);
+                                                                ringBand.addChild(ringGemTranslate);
+                                                                    ringGemTranslate.addChild(ringGem);
+                                                                        ringGem.addChild(ringGemTransform);
+                                                                            ringGemTransform.addChild(ringGemShape);
         robotHand.update();
     }
 
@@ -528,6 +562,8 @@ public class Arty_GLEventListener implements GLEventListener {
         updatePerspectiveMatrices();
         light.setPosition(getLightPosition());
         light.render(gl);
+//        //ringLight.setPosition(new Vec3(5f,3.4f,5f));
+//        //ringLight.render(gl);
         floor.render(gl);
         updateAngles();
         robotHand.draw(gl);
@@ -537,10 +573,12 @@ public class Arty_GLEventListener implements GLEventListener {
         // needs to be changed if user resizes the window
         perspective = Mat4Transform.perspective(45, aspect);
         light.setPerspective(perspective);
+        //ringLight.setPerspective(perspective);
         floor.setPerspective(perspective);
         sphere.setPerspective(perspective);
         cube.setPerspective(perspective);
         cube2.setPerspective(perspective);
+        cube3.setPerspective(perspective);
     }
   
     private void disposeMeshes(GL3 gl) {
@@ -549,6 +587,7 @@ public class Arty_GLEventListener implements GLEventListener {
         sphere.dispose(gl);
         cube.dispose(gl);
         cube2.dispose(gl);
+        cube3.dispose(gl);
     }
   
     // The light's postion is continually being changed, so needs to be calculated for each frame.
@@ -557,8 +596,8 @@ public class Arty_GLEventListener implements GLEventListener {
         float x = 5.0f*(float)(Math.sin(Math.toRadians(elapsedTime*50)));
         float y = 2.7f;
         float z = 5.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
-        return new Vec3(x,y,z);
-        //return new Vec3(5f,3.4f,5f);
+//        return new Vec3(x,y,z);
+        return new Vec3(5f,3.4f,5f);
     }
   
 }
