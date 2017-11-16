@@ -131,17 +131,21 @@ public class Arty_GLEventListener implements GLEventListener {
         armRotateY.update();
     }
 
-    public void curlDigit(int digit){
-        digitAnim[digit] = true;
-        System.out.println("RUN");
-    }
-
     public void asl(char letter){
-        for (int d = 0; d < DIGIT_COUNT; d++){
-            digitAnim[d] = true;
+        switch(letter) {
+            case 'W':
+                desiredPrmAngle = digitPrmAngleW;
+                desiredSecAngle = digitSecAngleW;
+                break;
+            case 'I':
+                desiredPrmAngle = digitPrmAngleI;
+                desiredSecAngle = digitSecAngleI;
+                break;
+            default:
+                System.out.println("Invalid ASL Position");
+                System.exit(0);
         }
-        currentASLPos = 'W';
-        System.out.println(letter);
+
     }
 
     public void updateAngles(){
@@ -182,13 +186,16 @@ public class Arty_GLEventListener implements GLEventListener {
     private int[] maxSecAngle = new int[DIGIT_COUNT];                                       // Maximum angle prox can be (most acute)
     private int[] minSecAngle = new int[DIGIT_COUNT];                                       // Minimum angle prox can be (most obtuse)
     private int[][] angleX = new int[DIGIT_COUNT][PHALANGE_COUNT];                          // Current angle of phalange
-    private boolean[] digitAnim = new boolean[DIGIT_COUNT];                                 // Boolean to check if digit is animating
+//    private boolean[] digitAnim = new boolean[DIGIT_COUNT];                                 // Boolean to check if digit is animating
     private TransformNode[][] phalRotX = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating phalanges about X-axis
     private TransformNode[][] phalRotZ = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating proximal phalanges about Z-axis
 //    private int fing0ProxAngleZ;                                                            // Z-angle of fing0 (thumb) proximal phalange
     private TransformNode armRotateY, palmRotateX, palmRotateZ;
     private int[][] currentPrmAngles = new int[DIGIT_COUNT][PHALANGE_COUNT];
     private int[] currentSecAngles = new int[DIGIT_COUNT];
+
+    private int[][] desiredPrmAngle = new int[DIGIT_COUNT][PHALANGE_COUNT];
+    private int[] desiredSecAngle = new int[DIGIT_COUNT];
 
     private int[][] digitPrmAngleW = {
             {90, 85, 25},
@@ -199,6 +206,16 @@ public class Arty_GLEventListener implements GLEventListener {
     };
 
     private int[] digitSecAngleW = {35, -10, 0, 10, 30};
+
+    private int[][] digitPrmAngleI = {
+            {90, 90, 0},
+            {90, 90, 0},
+            {90, 90, 0},
+            {90, 90, 0},
+            {0, 0, 0}
+    };
+
+    private int[] digitSecAngleI = {60, 0, 0, 0, 10};
 
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -295,7 +312,6 @@ public class Arty_GLEventListener implements GLEventListener {
                 phalangeShape[d][p] = new MeshNode("Cube(digit" + Integer.toString(d) + "-phal" + Integer.toString(p) + ")", cube);
                 digit[d][p] = new NameNode("[" + Integer.toString(d) + "][" + Integer.toString(p) + "]");
             }
-            digitAnim[d] = false;
         }
         System.out.println("Variables initialised");
 
@@ -435,30 +451,28 @@ public class Arty_GLEventListener implements GLEventListener {
         floor.render(gl);
 
         for (int d = 0; d < DIGIT_COUNT; d++) {
-            if (digitAnim[d]){
-                //Primary Angles
-                for (int p = 0; p < PHALANGE_COUNT; p++){
-                    if (currentPrmAngles[d][p] - digitPrmAngleW[d][p] < 0) {
-                        if (currentPrmAngles[d][p] < maxPrmAngle[d][p]){
-                            currentPrmAngles[d][p]++;
-                        }
-                    } else if (currentPrmAngles[d][p] - digitPrmAngleW[d][p] > 0) {
-                        if (currentPrmAngles[d][p] > minPrmAngle[d][p]){
-                            currentPrmAngles[d][p]--;
+            //Primary Angles
+            for (int p = 0; p < PHALANGE_COUNT; p++){
+                if (currentPrmAngles[d][p] - desiredPrmAngle[d][p] < 0) {
+                    if (currentPrmAngles[d][p] < maxPrmAngle[d][p]){
+                        currentPrmAngles[d][p]++;
+                    }
+                } else if (currentPrmAngles[d][p] - desiredPrmAngle[d][p] > 0) {
+                    if (currentPrmAngles[d][p] > minPrmAngle[d][p]){
+                        currentPrmAngles[d][p]--;
 
-                        }
                     }
                 }
+            }
 
-                //Secondary Angles
-                if (currentSecAngles[d] - digitSecAngleW[d] < 0) {
-                    if (currentSecAngles[d] < maxSecAngle[d]) {
-                        currentSecAngles[d]++;
-                    }
-                } else if (currentSecAngles[d] - digitSecAngleW[d] > 0) {
-                    if (currentSecAngles[d] > minSecAngle[d]) {
-                        currentSecAngles[d]--;
-                    }
+            //Secondary Angles
+            if (currentSecAngles[d] - desiredSecAngle[d] < 0) {
+                if (currentSecAngles[d] < maxSecAngle[d]) {
+                    currentSecAngles[d]++;
+                }
+            } else if (currentSecAngles[d] - desiredSecAngle[d] > 0) {
+                if (currentSecAngles[d] > minSecAngle[d]) {
+                    currentSecAngles[d]--;
                 }
             }
         }
