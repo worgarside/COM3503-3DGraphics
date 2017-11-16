@@ -9,8 +9,8 @@ import com.jogamp.opengl.util.FPSAnimator;
 
 public class Arty extends JFrame implements ActionListener {
   
-    private static final int WIDTH = 1024;
-    private static final int HEIGHT = 768;
+    private static final int WIDTH = 1080;
+    private static final int HEIGHT = 920;
     private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
     private GLCanvas canvas;
     private Arty_GLEventListener glEventListener;
@@ -44,18 +44,6 @@ public class Arty extends JFrame implements ActionListener {
         menuBar.add(fileMenu);
 
         JPanel panel = new JPanel();
-        JButton btn = new JButton("camera X");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("camera Z");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("start");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("stop");
-        btn.addActionListener(this);
-        panel.add(btn);
         btn = new JButton("X++");
         btn.addActionListener(this);
         panel.add(btn);
@@ -71,21 +59,6 @@ public class Arty extends JFrame implements ActionListener {
         btn = new JButton("Neutral");
         btn.addActionListener(this);
         panel.add(btn);
-//        btn = new JButton("curlDigit0");
-//        btn.addActionListener(this);
-//        panel.add(btn);
-//        btn = new JButton("curlDigit1");
-//        btn.addActionListener(this);
-//        panel.add(btn);
-//        btn = new JButton("curlDigit2");
-//        btn.addActionListener(this);
-//        panel.add(btn);
-//        btn = new JButton("curlDigit3");
-//        btn.addActionListener(this);
-//        panel.add(btn);
-//        btn = new JButton("curlDigit4");
-//        btn.addActionListener(this);
-//        panel.add(btn);
         btn = new JButton("aslW");
         btn.addActionListener(this);
         panel.add(btn);
@@ -129,12 +102,6 @@ public class Arty extends JFrame implements ActionListener {
             camera.setCamera(Camera.CameraType.Z);
             canvas.requestFocusInWindow();
         }
-//        else if (e.getActionCommand().equalsIgnoreCase("start")) {
-//            glEventListener.startAnimation();
-//        }
-//        else if (e.getActionCommand().equalsIgnoreCase("stop")) {
-//            glEventListener.stopAnimation();
-//        }
         else if (e.getActionCommand().equalsIgnoreCase("X++")) {
             glEventListener.rotPalmXPos();
         }
@@ -147,21 +114,6 @@ public class Arty extends JFrame implements ActionListener {
         else if (e.getActionCommand().equalsIgnoreCase("Z--")) {
             glEventListener.rotPalmZNeg();
         }
-//        else if (e.getActionCommand().equalsIgnoreCase("curlDigit0")) {
-//            glEventListener.curlDigit(0);
-//        }
-//        else if (e.getActionCommand().equalsIgnoreCase("curlDigit1")) {
-//            glEventListener.curlDigit(1);
-//        }
-//        else if (e.getActionCommand().equalsIgnoreCase("curlDigit2")) {
-//            glEventListener.curlDigit(2);
-//        }
-//        else if (e.getActionCommand().equalsIgnoreCase("curlDigit3")) {
-//            glEventListener.curlDigit(3);
-//        }
-//        else if (e.getActionCommand().equalsIgnoreCase("curlDigit4")) {
-//            glEventListener.curlDigit(4);
-//        }
         else if (e.getActionCommand().equalsIgnoreCase("Neutral")) {
             glEventListener.asl('N');
         }

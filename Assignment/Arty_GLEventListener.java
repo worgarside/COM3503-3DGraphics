@@ -15,11 +15,11 @@ public class Arty_GLEventListener implements GLEventListener {
     private float aspect;
 
     private static final int[][] DIGIT_PRM_ANGLE_NEUTRAL = {
-            {60, 20, 10},
-            {-2, 5, 5},
-            {-2, 5, 5},
-            {-2, 5, 5},
-            {-2, 5, 5}
+        {60, 20, 10},
+        {-2, 5, 5},
+        {-2, 5, 5},
+        {-2, 5, 5},
+        {-2, 5, 5}
     };
     private static final int[] DIGIT_SEC_ANGLE_NEUTRAL = {10, -2, -1, 1, 2};
 
@@ -51,7 +51,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private static final int[] DIGIT_SEC_ANGLE_L = {0, 0, 0, 0, 0};
 
     public Arty_GLEventListener(Camera camera) {
-    this.camera = camera;
+        this.camera = camera;
     }
 
     // ***************************************************
@@ -171,33 +171,33 @@ public class Arty_GLEventListener implements GLEventListener {
             case 'W':
                 for (int d = 0; d < DIGIT_COUNT; d++) {
                     for (int p = 0; p < PHALANGE_COUNT; p++) {
-                        desiredPrmAngle[d][p] = DIGIT_PRM_ANGLE_W[d][p];
+                        desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_W[d][p];
                     }
-                    desiredSecAngle[d] = DIGIT_SEC_ANGLE_W[d];
+                    desiredSecAngles[d] = DIGIT_SEC_ANGLE_W[d];
                 }
                 break;
             case 'I':
                 for (int d = 0; d < DIGIT_COUNT; d++) {
                     for (int p = 0; p < PHALANGE_COUNT; p++) {
-                        desiredPrmAngle[d][p] = DIGIT_PRM_ANGLE_I[d][p];
+                        desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_I[d][p];
                     }
-                    desiredSecAngle[d] = DIGIT_SEC_ANGLE_I[d];
+                    desiredSecAngles[d] = DIGIT_SEC_ANGLE_I[d];
                 }
                 break;
             case 'L':
                 for (int d = 0; d < DIGIT_COUNT; d++) {
                     for (int p = 0; p < PHALANGE_COUNT; p++) {
-                        desiredPrmAngle[d][p] = DIGIT_PRM_ANGLE_L[d][p];
+                        desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_L[d][p];
                     }
-                    desiredSecAngle[d] = DIGIT_SEC_ANGLE_L[d];
+                    desiredSecAngles[d] = DIGIT_SEC_ANGLE_L[d];
                 }
                 break;
             case 'N':
                 for (int d = 0; d < DIGIT_COUNT; d++) {
                     for (int p = 0; p < PHALANGE_COUNT; p++) {
-                        desiredPrmAngle[d][p] = DIGIT_PRM_ANGLE_NEUTRAL[d][p];
+                        desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_NEUTRAL[d][p];
                     }
-                    desiredSecAngle[d] = DIGIT_SEC_ANGLE_NEUTRAL[d];
+                    desiredSecAngles[d] = DIGIT_SEC_ANGLE_NEUTRAL[d];
                 }
                 break;
             default:
@@ -245,18 +245,13 @@ public class Arty_GLEventListener implements GLEventListener {
     private int[] maxSecAngle = new int[DIGIT_COUNT];                                       // Maximum angle prox can be (most acute)
     private int[] minSecAngle = new int[DIGIT_COUNT];                                       // Minimum angle prox can be (most obtuse)
     private int[][] angleX = new int[DIGIT_COUNT][PHALANGE_COUNT];                          // Current angle of phalange
-//    private boolean[] digitAnim = new boolean[DIGIT_COUNT];                                 // Boolean to check if digit is animating
     private TransformNode[][] phalRotX = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating phalanges about X-axis
     private TransformNode[][] phalRotZ = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating proximal phalanges about Z-axis
-//    private int fing0ProxAngleZ;                                                            // Z-angle of fing0 (thumb) proximal phalange
-    private TransformNode armRotateY, palmRotateX, palmRotateZ;
-    private int[][] currentPrmAngles = new int[DIGIT_COUNT][PHALANGE_COUNT];
-    private int[] currentSecAngles = new int[DIGIT_COUNT];
-
-    private int[][] desiredPrmAngle = new int[DIGIT_COUNT][PHALANGE_COUNT];
-    private int[] desiredSecAngle = new int[DIGIT_COUNT];
-
-
+    private TransformNode armRotateY, palmRotateX, palmRotateZ;                             // TransformNodes for arm & palm
+    private int[][] currentPrmAngles = new int[DIGIT_COUNT][PHALANGE_COUNT];                // current primary angles of digits
+    private int[] currentSecAngles = new int[DIGIT_COUNT];                                  // current secondary angles of digits
+    private int[][] desiredPrmAngles = new int[DIGIT_COUNT][PHALANGE_COUNT];                // target primary angles for animation
+    private int[] desiredSecAngles = new int[DIGIT_COUNT];                                  // target secondary angles for animation
 
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -305,7 +300,7 @@ public class Arty_GLEventListener implements GLEventListener {
 
         float armWidth = 2f;
         float armHeight = 5f;
-        float armDepth = 1.25f;
+        float armDepth = 1.2f;
         float palmWidth = 4f;
         float palmHeight = 4f;
         float palmDepth = 1.25f;
@@ -345,7 +340,8 @@ public class Arty_GLEventListener implements GLEventListener {
             maxSecAngle[d] = 20;
             minSecAngle[d] = -20;
             for (int p = 0; p < PHALANGE_COUNT; p++) {
-                currentPrmAngles[d][p] = 1;
+                desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_NEUTRAL[d][p];
+                currentPrmAngles[d][p] = DIGIT_PRM_ANGLE_NEUTRAL[d][p];
                 if (d != 0){
                     maxPrmAngle[d][p] = 90;
                 }
@@ -353,6 +349,8 @@ public class Arty_GLEventListener implements GLEventListener {
                 phalangeShape[d][p] = new MeshNode("Cube(digit" + Integer.toString(d) + "-phal" + Integer.toString(p) + ")", cube);
                 digit[d][p] = new NameNode("[" + Integer.toString(d) + "][" + Integer.toString(p) + "]");
             }
+            desiredSecAngles[d] = DIGIT_SEC_ANGLE_NEUTRAL[d];
+            currentSecAngles[d] = DIGIT_SEC_ANGLE_NEUTRAL[d];
         }
         System.out.println("Variables initialised");
 
@@ -485,20 +483,15 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private void render(GL3 gl) {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-        updatePerspectiveMatrices();
-
-        light.setPosition(getLightPosition());  // changing light position each frame
-        light.render(gl);
-        floor.render(gl);
 
         for (int d = 0; d < DIGIT_COUNT; d++) {
             //Primary Angles
             for (int p = 0; p < PHALANGE_COUNT; p++){
-                if (currentPrmAngles[d][p] - desiredPrmAngle[d][p] < 0) {
+                if (currentPrmAngles[d][p] - desiredPrmAngles[d][p] < 0) {
                     if (currentPrmAngles[d][p] < maxPrmAngle[d][p]){
                         currentPrmAngles[d][p]++;
                     }
-                } else if (currentPrmAngles[d][p] - desiredPrmAngle[d][p] > 0) {
+                } else if (currentPrmAngles[d][p] - desiredPrmAngles[d][p] > 0) {
                     if (currentPrmAngles[d][p] > minPrmAngle[d][p]){
                         currentPrmAngles[d][p]--;
 
@@ -507,22 +500,24 @@ public class Arty_GLEventListener implements GLEventListener {
             }
 
             //Secondary Angles
-            if (currentSecAngles[d] - desiredSecAngle[d] < 0) {
+            if (currentSecAngles[d] - desiredSecAngles[d] < 0) {
                 if (currentSecAngles[d] < maxSecAngle[d]) {
                     currentSecAngles[d]++;
                 }
-            } else if (currentSecAngles[d] - desiredSecAngle[d] > 0) {
+            } else if (currentSecAngles[d] - desiredSecAngles[d] > 0) {
                 if (currentSecAngles[d] > minSecAngle[d]) {
                     currentSecAngles[d]--;
                 }
             }
         }
 
+        updatePerspectiveMatrices();
+        light.setPosition(getLightPosition());
+        light.render(gl);
+        floor.render(gl);
         updateAngles();
         robotHand.draw(gl);
     }
-
-
 
     private void updatePerspectiveMatrices() {
         // needs to be changed if user resizes the window
