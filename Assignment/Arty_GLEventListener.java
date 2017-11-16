@@ -25,30 +25,39 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private static final int[][] DIGIT_PRM_ANGLE_W = {
             {90, 85, 25},
-            {0, 0, 0},
-            {0, 0, 0},
-            {0, 0, 0},
-            {90, 90, 0}
+            {2, 2, 2},
+            {2, 2, 2},
+            {2, 2, 2},
+            {90, 90, 2}
     };
     private static final int[] DIGIT_SEC_ANGLE_W = {35, -10, 0, 10, 30};
 
     private static final int[][] DIGIT_PRM_ANGLE_I = {
             {90, 90, 30},
-            {90, 90, 0},
-            {90, 90, 0},
-            {90, 90, 0},
-            {0, 0, 0}
+            {90, 90, 2},
+            {90, 90, 2},
+            {90, 90, 2},
+            {2, 2, 2}
     };
     private static final int[] DIGIT_SEC_ANGLE_I = {60, 0, 0, 0, 10};
 
     private static final int[][] DIGIT_PRM_ANGLE_L = {
-            {0, 0, 0},
-            {0, 0, 0},
-            {90, 90, 0},
-            {90, 90, 0},
-            {90, 90, 0}
+            {2, 2, 2},
+            {2, 2, 2},
+            {90, 90, 2},
+            {90, 90, 2},
+            {90, 90, 2}
     };
     private static final int[] DIGIT_SEC_ANGLE_L = {0, 0, 0, 0, 0};
+
+    private static final int[][] DIGIT_PRM_ANGLE_POS = {
+            {90, 85, 25},
+            {-2, 5, 5},
+            {-2, 5, 5},
+            {90, 90, 2},
+            {90, 90, 2}
+    };
+    private static final int[] DIGIT_SEC_ANGLE_POS = {40, -10, 10, 8, 7};
 
     public Arty_GLEventListener(Camera camera) {
         this.camera = camera;
@@ -198,6 +207,14 @@ public class Arty_GLEventListener implements GLEventListener {
                         desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_NEUTRAL[d][p];
                     }
                     desiredSecAngles[d] = DIGIT_SEC_ANGLE_NEUTRAL[d];
+                }
+                break;
+            case 'P':
+                for (int d = 0; d < DIGIT_COUNT; d++) {
+                    for (int p = 0; p < PHALANGE_COUNT; p++) {
+                        desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_POS[d][p];
+                    }
+                    desiredSecAngles[d] = DIGIT_SEC_ANGLE_POS[d];
                 }
                 break;
             default:
@@ -420,7 +437,6 @@ public class Arty_GLEventListener implements GLEventListener {
                     phalRotX[d][p] = new TransformNode("phalRotX[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundX(currentPrmAngles[d][p]));
                     phalRotZ[d][p] = new TransformNode("phalRotZ[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundZ(currentSecAngles[d]));
                 }
-
             }
         }
 
@@ -477,7 +493,6 @@ public class Arty_GLEventListener implements GLEventListener {
                                                                                 phalRotX[d][2].addChild(phalTForm[d][2]);
                                                                                     phalTForm[d][2].addChild(phalangeShape[d][2]);
                                     }
-
         robotHand.update();
     }
 
@@ -494,7 +509,6 @@ public class Arty_GLEventListener implements GLEventListener {
                 } else if (currentPrmAngles[d][p] - desiredPrmAngles[d][p] > 0) {
                     if (currentPrmAngles[d][p] > minPrmAngle[d][p]){
                         currentPrmAngles[d][p]--;
-
                     }
                 }
             }

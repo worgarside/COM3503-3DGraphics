@@ -44,7 +44,7 @@ public class Arty extends JFrame implements ActionListener {
         menuBar.add(fileMenu);
 
         JPanel panel = new JPanel();
-        btn = new JButton("X++");
+        JButton btn = new JButton("X++");
         btn.addActionListener(this);
         panel.add(btn);
         btn = new JButton("X--");
@@ -66,6 +66,9 @@ public class Arty extends JFrame implements ActionListener {
         btn.addActionListener(this);
         panel.add(btn);
         btn = new JButton("aslL");
+        btn.addActionListener(this);
+        panel.add(btn);
+        btn = new JButton("Pos");
         btn.addActionListener(this);
         panel.add(btn);
         JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
@@ -125,6 +128,9 @@ public class Arty extends JFrame implements ActionListener {
         }
         else if (e.getActionCommand().equalsIgnoreCase("aslL")) {
             glEventListener.asl('L');
+        }
+        else if (e.getActionCommand().equalsIgnoreCase("Pos")) {
+            glEventListener.asl('P');
         }
         else if(e.getActionCommand().equalsIgnoreCase("quit")){
             System.exit(0);
