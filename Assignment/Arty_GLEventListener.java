@@ -251,7 +251,8 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private Camera camera;
     private Mat4 perspective;
-    private Mesh floor, sphere, cube, cube2, cube3;
+    private Mesh sphere, cube, cube2, cube3;
+    private Mesh floor, wall1, wall2, wall3, wall4, ceiling;
     private Light light, ringLight;
     private SGNode robotHand;
 
@@ -281,19 +282,29 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureId6 = TextureLibrary.loadTexture(gl, "textures/wattBook_specular.jpg");
 
         // make meshes
-        floor = new TwoTriangles(gl, textureId0);
-        floor.setModelMatrix(Mat4Transform.scale(16,1,16));
         sphere = new Sphere(gl, textureId1, textureId2);
         cube = new Cube(gl, textureId3, textureId4);
         cube2 = new Cube(gl, textureId5, textureId6);
         cube3 = new Cube(gl, textureId1, textureId1);
 
+
+        floor = new TwoTriangles(gl, textureId0);
+        floor.setModelMatrix(Mat4Transform.scale(16,1,16));
+        wall1 = new TwoTriangles(gl, textureId2);
+        wall1.setModelMatrix(getMforTT2());
+        wall2 = new TwoTriangles(gl, textureId2);
+        wall2.setModelMatrix(getMforTT3());
+        wall3 = new TwoTriangles(gl, textureId2);
+        wall3.setModelMatrix(getMforTT4());
+        wall4 = new TwoTriangles(gl, textureId2);
+        wall4.setModelMatrix(getMforTT5());
+        ceiling = new TwoTriangles(gl, textureId2);
+        ceiling.setModelMatrix(getMforTT6());
+
         light = new Light(gl);
         //ringLight = new Light(gl);
         light.setCamera(camera);
 
-        floor.setLight(light);
-        floor.setCamera(camera);
         sphere.setLight(light);
         sphere.setCamera(camera);
         cube.setLight(light);
@@ -302,6 +313,19 @@ public class Arty_GLEventListener implements GLEventListener {
         cube2.setCamera(camera);
         cube3.setLight(light);
         cube3.setCamera(camera);
+
+        floor.setLight(light);
+        floor.setCamera(camera);
+        wall1.setLight(light);
+        wall1.setCamera(camera);
+        wall2.setLight(light);
+        wall2.setCamera(camera);
+        wall3.setLight(light);
+        wall3.setCamera(camera);
+        wall4.setLight(light);
+        wall4.setCamera(camera);
+        ceiling.setLight(light);
+        ceiling.setCamera(camera);
 
         // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
 
@@ -564,9 +588,15 @@ public class Arty_GLEventListener implements GLEventListener {
         light.render(gl);
 //        //ringLight.setPosition(new Vec3(5f,3.4f,5f));
 //        //ringLight.render(gl);
-        floor.render(gl);
         updateAngles();
         robotHand.draw(gl);
+
+        floor.render(gl);
+        wall1.render(gl);
+        wall2.render(gl);
+        wall3.render(gl);
+        wall4.render(gl);
+        ceiling.render(gl);
     }
 
     private void updatePerspectiveMatrices() {
@@ -574,20 +604,34 @@ public class Arty_GLEventListener implements GLEventListener {
         perspective = Mat4Transform.perspective(45, aspect);
         light.setPerspective(perspective);
         //ringLight.setPerspective(perspective);
-        floor.setPerspective(perspective);
         sphere.setPerspective(perspective);
         cube.setPerspective(perspective);
         cube2.setPerspective(perspective);
         cube3.setPerspective(perspective);
+
+        floor.setPerspective(perspective);
+        wall1.setPerspective(perspective);
+        wall2.setPerspective(perspective);
+        wall3.setPerspective(perspective);
+        wall4.setPerspective(perspective);
+        ceiling.setPerspective(perspective);
+
+
     }
   
     private void disposeMeshes(GL3 gl) {
         light.dispose(gl);
-        floor.dispose(gl);
         sphere.dispose(gl);
         cube.dispose(gl);
         cube2.dispose(gl);
         cube3.dispose(gl);
+
+        floor.dispose(gl);
+        wall1.dispose(gl);
+        wall2.dispose(gl);
+        wall3.dispose(gl);
+        wall4.dispose(gl);
+        ceiling.dispose(gl);
     }
   
     // The light's postion is continually being changed, so needs to be calculated for each frame.
@@ -598,6 +642,54 @@ public class Arty_GLEventListener implements GLEventListener {
         float z = 5.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
 //        return new Vec3(x,y,z);
         return new Vec3(5f,3.4f,5f);
+    }
+
+    private Mat4 getMforTT2() {
+        float size = 16f;
+        Mat4 model = new Mat4(1);
+        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
+        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
+        model = Mat4.multiply(Mat4Transform.translate(0,size*0.5f,-size*0.5f), model);
+        return model;
+    }
+
+    private Mat4 getMforTT3() {
+        float size = 16f;
+        Mat4 model = new Mat4(1);
+        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
+        model = Mat4.multiply(Mat4Transform.rotateAroundY(90), model);
+        model = Mat4.multiply(Mat4Transform.rotateAroundZ(-90), model);
+        model = Mat4.multiply(Mat4Transform.translate(-size*0.5f, size*0.5f, 0), model);
+        return model;
+    }
+
+    private Mat4 getMforTT4() {
+        float size = 16f;
+        Mat4 model = new Mat4(1);
+        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
+        model = Mat4.multiply(Mat4Transform.rotateAroundZ(90), model);
+        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
+        model = Mat4.multiply(Mat4Transform.translate(size*0.5f,size*0.5f,0), model);
+        return model;
+    }
+
+    private Mat4 getMforTT5() {
+        float size = 16f;
+        Mat4 model = new Mat4(1);
+        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
+        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
+        model = Mat4.multiply(Mat4Transform.rotateAroundY(180), model);
+        model = Mat4.multiply(Mat4Transform.translate(0,size*0.5f,size*0.5f), model);
+        return model;
+    }
+
+    private Mat4 getMforTT6() {
+        float size = 16f;
+        Mat4 model = new Mat4(1);
+        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
+        model = Mat4.multiply(Mat4Transform.rotateAroundZ(180), model);
+        model = Mat4.multiply(Mat4Transform.translate(0,size,0), model);
+        return model;
     }
   
 }
