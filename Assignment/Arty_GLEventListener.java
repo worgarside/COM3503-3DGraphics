@@ -273,32 +273,33 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private void initialise(GL3 gl) {
         createRandomNumbers();
-        int[] textureId0 = TextureLibrary.loadTexture(gl, "textures/chequerboard.jpg");
-        int[] textureId1 = TextureLibrary.loadTexture(gl, "textures/jade.jpg");
-        int[] textureId2 = TextureLibrary.loadTexture(gl, "textures/jade_specular.jpg");
-        int[] textureId3 = TextureLibrary.loadTexture(gl, "textures/container2.jpg");
-        int[] textureId4 = TextureLibrary.loadTexture(gl, "textures/container2_specular.jpg");
-        int[] textureId5 = TextureLibrary.loadTexture(gl, "textures/wattBook.jpg");
-        int[] textureId6 = TextureLibrary.loadTexture(gl, "textures/wattBook_specular.jpg");
+        int[] textureFloor = TextureLibrary.loadTexture(gl, "textures/textureFloor.jpg");
+        int[] texturePhalange = TextureLibrary.loadTexture(gl, "textures/container2.jpg");
+        int[] texturePhalSpec = TextureLibrary.loadTexture(gl, "textures/container2_specular.jpg");
+        int[] textureWallWindow = TextureLibrary.loadTexture(gl, "textures/textureWallWindow.jpg");
+        int[] textureWallDoor = TextureLibrary.loadTexture(gl, "textures/textureWallDoor.jpg");
+        int[] textureWall1 = TextureLibrary.loadTexture(gl, "textures/textureWall1.jpg");
+        int[] textureWall2 = TextureLibrary.loadTexture(gl, "textures/textureWall2.jpg");
+        int[] textureCeiling = TextureLibrary.loadTexture(gl, "textures/textureCeiling.jpg");
 
         // make meshes
-        sphere = new Sphere(gl, textureId1, textureId2);
-        cube = new Cube(gl, textureId3, textureId4);
-        cube2 = new Cube(gl, textureId5, textureId6);
-        cube3 = new Cube(gl, textureId1, textureId1);
+        sphere = new Sphere(gl, texturePhalange, texturePhalSpec);
+        cube = new Cube(gl, texturePhalange, texturePhalSpec);
+        cube2 = new Cube(gl, texturePhalange, texturePhalSpec);
+        cube3 = new Cube(gl, texturePhalange, texturePhalSpec);
 
 
-        floor = new TwoTriangles(gl, textureId0);
+        floor = new TwoTriangles(gl, textureFloor);
         floor.setModelMatrix(Mat4Transform.scale(16,1,16));
-        wall1 = new TwoTriangles(gl, textureId2);
+        wall1 = new TwoTriangles(gl, textureWallWindow);
         wall1.setModelMatrix(getMforTT2());
-        wall2 = new TwoTriangles(gl, textureId2);
+        wall2 = new TwoTriangles(gl, textureWall1);
         wall2.setModelMatrix(getMforTT3());
-        wall3 = new TwoTriangles(gl, textureId2);
+        wall3 = new TwoTriangles(gl, textureWall2);
         wall3.setModelMatrix(getMforTT4());
-        wall4 = new TwoTriangles(gl, textureId2);
+        wall4 = new TwoTriangles(gl, textureWallDoor);
         wall4.setModelMatrix(getMforTT5());
-        ceiling = new TwoTriangles(gl, textureId2);
+        ceiling = new TwoTriangles(gl, textureCeiling);
         ceiling.setModelMatrix(getMforTT6());
 
         light = new Light(gl);
@@ -691,5 +692,5 @@ public class Arty_GLEventListener implements GLEventListener {
         model = Mat4.multiply(Mat4Transform.translate(0,size,0), model);
         return model;
     }
-  
+
 }
