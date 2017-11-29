@@ -116,8 +116,8 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private Camera camera;
     private Mat4 perspective;
-    private Mesh sphere, cubeRobot, cubeRing, cubeRingGem;
-    private Mesh floor, wallBack, wallLeft, wallRight, wallFront, ceiling;
+    private Mesh sphere, cubeRobot, sphereRing, sphereRingGem;
+    private Mesh floor, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, wallLeft, wallRight, wallFront, ceiling;
     private Light light, ringLight;
     private RobotHand robotHand;
 
@@ -129,7 +129,10 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular.jpg");
         int[] textureRing = TextureLibrary.loadTexture(gl, "textures/textureRing.jpg");
         int[] textureRingSpecular = TextureLibrary.loadTexture(gl, "textures/textureRingSpecular.jpg");
-        int[] textureWallWindow = TextureLibrary.loadTexture(gl, "textures/textureWallWindow.jpg");
+        int[] textureWallBackTop = TextureLibrary.loadTexture(gl, "textures/textureWallBackTop.jpg");
+        int[] textureWallBackLeft = TextureLibrary.loadTexture(gl, "textures/textureWallBackLeft.jpg");
+        int[] textureWallBackRight = TextureLibrary.loadTexture(gl, "textures/textureWallBackRight.jpg");
+        int[] textureWallBackBottom = TextureLibrary.loadTexture(gl, "textures/textureWallBackBottom.jpg");
         int[] textureWallDoor = TextureLibrary.loadTexture(gl, "textures/textureWallDoor.jpg");
         int[] textureWall1 = TextureLibrary.loadTexture(gl, "textures/textureWall1.jpg");
         int[] textureWall2 = TextureLibrary.loadTexture(gl, "textures/textureWall2.jpg");
@@ -138,21 +141,8 @@ public class Arty_GLEventListener implements GLEventListener {
         // make meshes
         sphere = new Sphere(gl, textureRobot, textureRobotSpecular);
         cubeRobot = new Cube(gl, textureRobot, textureRobotSpecular);
-        cubeRing = new Cube(gl, textureRing, textureRingSpecular);
-        cubeRingGem = new Cube(gl, textureRobot, textureRobotSpecular);
-
-        floor = new TwoTriangles(gl, textureFloor);
-        floor.setModelMatrix(Mat4Transform.scale(16,1,16));
-        wallBack = new TwoTriangles(gl, textureWallWindow);
-        wallBack.setModelMatrix(getWallBackMatrix());
-        wallLeft = new TwoTriangles(gl, textureWall1);
-        wallLeft.setModelMatrix(getWallLeftMatrix());
-        wallRight = new TwoTriangles(gl, textureWall2);
-        wallRight.setModelMatrix(getWallRightMatrix());
-        wallFront = new TwoTriangles(gl, textureWallDoor);
-        wallFront.setModelMatrix(getWallFrontMatrix());
-        ceiling = new TwoTriangles(gl, textureCeiling);
-        ceiling.setModelMatrix(getCeilingMatrix());
+        sphereRing = new Sphere(gl, textureRing, textureRingSpecular);
+        sphereRingGem = new Sphere(gl, textureRobot, textureRobotSpecular);
 
         light = new Light(gl);
         light.setCamera(camera);
@@ -161,15 +151,21 @@ public class Arty_GLEventListener implements GLEventListener {
         sphere.setCamera(camera);
         cubeRobot.setLight(light);
         cubeRobot.setCamera(camera);
-        cubeRing.setLight(light);//ringLight);
-        cubeRing.setCamera(camera);
-        cubeRingGem.setLight(light);
-        cubeRingGem.setCamera(camera);
+        sphereRing.setLight(light);//ringLight);
+        sphereRing.setCamera(camera);
+        sphereRingGem.setLight(light);
+        sphereRingGem.setCamera(camera);
 
         floor.setLight(light);
         floor.setCamera(camera);
-        wallBack.setLight(light);
-        wallBack.setCamera(camera);
+        wallBackTop.setLight(light);
+        wallBackTop.setCamera(camera);
+        wallBackLeft.setLight(light);
+        wallBackLeft.setCamera(camera);
+        wallBackRight.setLight(light);
+        wallBackRight.setCamera(camera);
+        wallBackBottom.setLight(light);
+        wallBackBottom.setCamera(camera);
         wallLeft.setLight(light);
         wallLeft.setCamera(camera);
         wallRight.setLight(light);
@@ -181,7 +177,7 @@ public class Arty_GLEventListener implements GLEventListener {
 
         // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
 
-        robotHand = new RobotHand(cubeRobot, cubeRing, cubeRingGem);
+        robotHand = new RobotHand(cubeRobot, sphereRing, sphereRingGem);
         robotHand.initialise(gl);
     }
 
@@ -190,11 +186,15 @@ public class Arty_GLEventListener implements GLEventListener {
 
 
         updatePerspectiveMatrices();
-        light.setPosition(getLightPosition());
+//        light.setPosition(getLightPosition());
+        light.setPosition(robotHand.getRingPos());
         light.render(gl);
 
         floor.render(gl);
-        wallBack.render(gl);
+        wallBackTop.render(gl);
+        wallBackLeft.render(gl);
+        wallBackRight.render(gl);
+        wallBackBottom.render(gl);
         wallLeft.render(gl);
         wallRight.render(gl);
         wallFront.render(gl);
@@ -208,90 +208,41 @@ public class Arty_GLEventListener implements GLEventListener {
         light.setPerspective(perspective);
         sphere.setPerspective(perspective);
         cubeRobot.setPerspective(perspective);
-        cubeRing.setPerspective(perspective);
-        cubeRingGem.setPerspective(perspective);
+        sphereRing.setPerspective(perspective);
+        sphereRingGem.setPerspective(perspective);
 
         floor.setPerspective(perspective);
-        wallBack.setPerspective(perspective);
+        wallBackTop.setPerspective(perspective);
+        wallBackLeft.setPerspective(perspective);
+        wallBackRight.setPerspective(perspective);
+        wallBackBottom.setPerspective(perspective);
         wallLeft.setPerspective(perspective);
         wallRight.setPerspective(perspective);
         wallFront.setPerspective(perspective);
         ceiling.setPerspective(perspective);
-
-
     }
-  
+
     private void disposeMeshes(GL3 gl) {
         light.dispose(gl);
         sphere.dispose(gl);
         cubeRobot.dispose(gl);
-        cubeRing.dispose(gl);
-        cubeRingGem.dispose(gl);
+        sphereRing.dispose(gl);
+        sphereRingGem.dispose(gl);
 
         floor.dispose(gl);
-        wallBack.dispose(gl);
+        wallBackTop.dispose(gl);
+        wallBackLeft.dispose(gl);
+        wallBackRight.dispose(gl);
+        wallBackTop.dispose(gl);
         wallLeft.dispose(gl);
         wallRight.dispose(gl);
         wallFront.dispose(gl);
         ceiling.dispose(gl);
     }
-  
-    // The light's postion is continually being changed, so needs to be calculated for each frame.
-    private Vec3 getLightPosition() {
-        double elapsedTime = getSeconds()-startTime;
-        float x = 5.0f*(float)(Math.sin(Math.toRadians(elapsedTime*50)));
-        float y = 2.7f;
-        float z = 5.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
-        return new Vec3(x,y,z);
-//        return new Vec3(5f,3.4f,5f);
-    }
 
-    private Mat4 getWallBackMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
-        model = Mat4.multiply(Mat4Transform.translate(0,size*0.5f,-size*0.5f), model);
-        return model;
-    }
-
-    private Mat4 getWallLeftMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundY(90), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundZ(-90), model);
-        model = Mat4.multiply(Mat4Transform.translate(-size*0.5f, size*0.5f, 0), model);
-        return model;
-    }
-
-    private Mat4 getWallRightMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundZ(90), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
-        model = Mat4.multiply(Mat4Transform.translate(size*0.5f,size*0.5f,0), model);
-        return model;
-    }
-
-    private Mat4 getWallFrontMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundY(180), model);
-        model = Mat4.multiply(Mat4Transform.translate(0,size*0.5f,size*0.5f), model);
-        return model;
-    }
-
-    private Mat4 getCeilingMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundZ(180), model);
-        model = Mat4.multiply(Mat4Transform.translate(0,size,0), model);
-        return model;
+    private void updateRingLight(){
+//        light.setRingLightPos(robotHand.getRingPos());
+//        light.setRingLightDir(robotHand.getRingDir());
     }
 
 }
