@@ -9,10 +9,10 @@ import com.jogamp.opengl.util.glsl.*;
   
 public class RobotHand {
 
-    public RobotHand(Mesh cube, Mesh ring, Mesh ringGem) {
-        this.cube = cube;
-        this.ring = ring;
-        this.ringGem = ringGem;
+    public RobotHand(Mesh cubeRobot, Mesh cubeRing, Mesh cubeRingGem) {
+        this.cubeRobot = cubeRobot;
+        this.cubeRing = cubeRing;
+        this.cubeRingGem = cubeRingGem;
     }
   
     private static final int DIGIT_COUNT = 5;
@@ -184,7 +184,7 @@ public class RobotHand {
     * This will be added to in later examples.
     */
 
-    private Mesh cube, ring, ringGem;
+    private Mesh cubeRobot, cubeRing, cubeRingGem;
     private SGNode robotHand;
 
     private int palmXAngle, palmZAngle;
@@ -206,10 +206,10 @@ public class RobotHand {
         // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
 
         MeshNode phalangeShape[][] = new MeshNode[DIGIT_COUNT][PHALANGE_COUNT];
-        MeshNode armShape = new MeshNode("Cube(arm)", cube);
-        MeshNode palmShape = new MeshNode("Cube(palm)", cube);
-        MeshNode ringBandShape = new MeshNode("Cube(ringBand)", cube);
-        MeshNode ringGemShape = new MeshNode("Cube(ringGem)", cube);
+        MeshNode armShape = new MeshNode("Cube(arm)", cubeRobot);
+        MeshNode palmShape = new MeshNode("Cube(palm)", cubeRobot);
+        MeshNode ringBandShape = new MeshNode("Cube(ringBand)", cubeRing);
+        MeshNode ringGemShape = new MeshNode("Cube(ringGem)", cubeRingGem);
 
         NameNode digit[][] = new NameNode[DIGIT_COUNT][PHALANGE_COUNT];
         robotHand = new NameNode("root");
@@ -258,7 +258,6 @@ public class RobotHand {
                 {{phalSmlWidth, phalXSmHeight, phalSmlDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}}
         };
 
-
         // ------------ Initialise all Arrays ------------ \\
 
         for (int d = 0; d < DIGIT_COUNT; d++) {
@@ -271,7 +270,7 @@ public class RobotHand {
                     maxPrmAngle[d][p] = 90;
                 }
                 minPrmAngle[d][p] = -5;
-                phalangeShape[d][p] = new MeshNode("Cube(digit" + Integer.toString(d) + "-phal" + Integer.toString(p) + ")", cube);
+                phalangeShape[d][p] = new MeshNode("Cube(digit" + Integer.toString(d) + "-phal" + Integer.toString(p) + ")", cubeRobot);
                 digit[d][p] = new NameNode("[" + Integer.toString(d) + "][" + Integer.toString(p) + "]");
             }
             desiredSecAngles[d] = DIGIT_SEC_ANGLE_NEUTRAL[d];
@@ -285,7 +284,6 @@ public class RobotHand {
         maxPrmAngle[0][2] = 90;
         maxSecAngle[0] = 90;
         minSecAngle[0] = 0;
-
 
         // ------------ Initialising TranslationNodes ------------ \\ -- could go in loop
 
@@ -359,11 +357,6 @@ public class RobotHand {
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.scale(0.4f, 0.4f, 0.4f));
         TransformNode ringGemTransform = new TransformNode("ringGem transform", m);
-
-        // ------------ Lamp Node Gen ------------ \\
-
-
-
 
         // ------------ Scene Graph ------------ \\
 

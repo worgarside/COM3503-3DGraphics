@@ -132,7 +132,7 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private Camera camera;
     private Mat4 perspective;
-    private Mesh sphere, cube, gem, ring, cube2, cube3;
+    private Mesh sphere, cubeRobot, cubeRing, cubeRingGem;
     private Mesh floor, wallBack, wallLeft, wallRight, wallFront, ceiling;
     private Light light, ringLight;
     private RobotHand robotHand;
@@ -142,8 +142,9 @@ public class Arty_GLEventListener implements GLEventListener {
         createRandomNumbers();
         int[] textureFloor = TextureLibrary.loadTexture(gl, "textures/textureFloor.jpg");
         int[] textureRobot = TextureLibrary.loadTexture(gl, "textures/textureRobot.jpg");
-        int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular2.jpg");
-        int[] texturePhalSpec = TextureLibrary.loadTexture(gl, "textures/container2_specular.jpg");
+        int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular.jpg");
+        int[] textureRing = TextureLibrary.loadTexture(gl, "textures/textureRing.jpg");
+        int[] textureRingSpecular = TextureLibrary.loadTexture(gl, "textures/textureRingSpecular.jpg");
         int[] textureWallWindow = TextureLibrary.loadTexture(gl, "textures/textureWallWindow.jpg");
         int[] textureWallDoor = TextureLibrary.loadTexture(gl, "textures/textureWallDoor.jpg");
         int[] textureWall1 = TextureLibrary.loadTexture(gl, "textures/textureWall1.jpg");
@@ -151,10 +152,10 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureCeiling = TextureLibrary.loadTexture(gl, "textures/textureCeiling.jpg");
 
         // make meshes
-        sphere = new Sphere(gl, textureRobot, texturePhalSpec);
-        cube = new Cube(gl, textureRobot, textureRobotSpecular);
-        cube2 = new Cube(gl, textureRobot, textureRobotSpecular);
-        cube3 = new Cube(gl, textureRobot, textureRobotSpecular);
+        sphere = new Sphere(gl, textureRobot, textureRobotSpecular);
+        cubeRobot = new Cube(gl, textureRobot, textureRobotSpecular);
+        cubeRing = new Cube(gl, textureRing, textureRingSpecular);
+        cubeRingGem = new Cube(gl, textureRobot, textureRobotSpecular);
 
         floor = new TwoTriangles(gl, textureFloor);
         floor.setModelMatrix(Mat4Transform.scale(16,1,16));
@@ -170,17 +171,16 @@ public class Arty_GLEventListener implements GLEventListener {
         ceiling.setModelMatrix(getCeilingMatrix());
 
         light = new Light(gl);
-        //ringLight = new Light(gl);
         light.setCamera(camera);
 
         sphere.setLight(light);
         sphere.setCamera(camera);
-        cube.setLight(light);
-        cube.setCamera(camera);
-        cube2.setLight(light);//ringLight);
-        cube2.setCamera(camera);
-        cube3.setLight(light);
-        cube3.setCamera(camera);
+        cubeRobot.setLight(light);
+        cubeRobot.setCamera(camera);
+        cubeRing.setLight(light);//ringLight);
+        cubeRing.setCamera(camera);
+        cubeRingGem.setLight(light);
+        cubeRingGem.setCamera(camera);
 
         floor.setLight(light);
         floor.setCamera(camera);
@@ -197,7 +197,7 @@ public class Arty_GLEventListener implements GLEventListener {
 
         // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
 
-        robotHand = new RobotHand(cube, ring, gem);
+        robotHand = new RobotHand(cubeRobot, cubeRing, cubeRingGem);
         robotHand.initialise(gl);
     }
 
@@ -223,9 +223,9 @@ public class Arty_GLEventListener implements GLEventListener {
         perspective = Mat4Transform.perspective(45, aspect);
         light.setPerspective(perspective);
         sphere.setPerspective(perspective);
-        cube.setPerspective(perspective);
-        cube2.setPerspective(perspective);
-        cube3.setPerspective(perspective);
+        cubeRobot.setPerspective(perspective);
+        cubeRing.setPerspective(perspective);
+        cubeRingGem.setPerspective(perspective);
 
         floor.setPerspective(perspective);
         wallBack.setPerspective(perspective);
@@ -240,9 +240,9 @@ public class Arty_GLEventListener implements GLEventListener {
     private void disposeMeshes(GL3 gl) {
         light.dispose(gl);
         sphere.dispose(gl);
-        cube.dispose(gl);
-        cube2.dispose(gl);
-        cube3.dispose(gl);
+        cubeRobot.dispose(gl);
+        cubeRing.dispose(gl);
+        cubeRingGem.dispose(gl);
 
         floor.dispose(gl);
         wallBack.dispose(gl);
