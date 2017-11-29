@@ -28,7 +28,7 @@ public class Arty extends JFrame implements ActionListener {
         super(textForTitleBar);
         GLCapabilities glcapabilities = new GLCapabilities(GLProfile.get(GLProfile.GL3));
         canvas = new GLCanvas(glcapabilities);
-        camera = new Camera(new Vec3(4f,12f,18f), Camera.DEFAULT_TARGET, Camera.DEFAULT_UP);
+        camera = new Camera(new Vec3(-4f,12f,24f), new Vec3(0f,8f,0f), Camera.DEFAULT_UP);
         glEventListener = new Arty_GLEventListener(camera);
         canvas.addGLEventListener(glEventListener);
         canvas.addMouseMotionListener(new MyMouseInput(camera));
