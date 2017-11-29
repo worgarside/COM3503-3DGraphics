@@ -80,30 +80,6 @@ public class RobotHand {
         savedTime = elapsedTime;
     }
 
-    public void rotRHPalmXPos() {
-        palmXAngle++;
-        palmRotateX.setTransform(Mat4Transform.rotateAroundX(palmXAngle));
-        palmRotateX.update();
-    }
-
-    public void rotRHPalmXNeg() {
-        palmXAngle--;
-        palmRotateX.setTransform(Mat4Transform.rotateAroundX(palmXAngle));
-        palmRotateX.update();
-    }
-
-    public void rotRHPalmZPos() {
-        palmZAngle++;
-        palmRotateZ.setTransform(Mat4Transform.rotateAroundZ(palmZAngle));
-        palmRotateZ.update();
-    }
-
-    public void rotRHPalmZNeg() {
-        palmZAngle--;
-        palmRotateZ.setTransform(Mat4Transform.rotateAroundZ(palmZAngle));
-        palmRotateZ.update();
-    }
-
     public void rotRHToAngle(int angle) {
         armRotateY.setTransform(Mat4Transform.rotateAroundY(angle));
         armRotateY.update();
@@ -178,6 +154,10 @@ public class RobotHand {
         }
     }
 
+    public Vec3 getRingPos() {
+        return new Vec3(5f,3.4f,5f);
+    }
+
     // ***************************************************
     /* THE SCENE
     * Now define all the methods to handle the scene.
@@ -187,7 +167,6 @@ public class RobotHand {
     private Mesh cubeRobot, cubeRing, cubeRingGem;
     private SGNode robotHand;
 
-    private int palmXAngle, palmZAngle;
     private int[][] maxPrmAngle = new int[DIGIT_COUNT][PHALANGE_COUNT];                     // Maximum angle phalange can be (most acute)
     private int[][] minPrmAngle = new int[DIGIT_COUNT][PHALANGE_COUNT];                     // Minimum angle phalange can be (most obtuse)
     private int[] maxSecAngle = new int[DIGIT_COUNT];                                       // Maximum angle prox can be (most acute)
@@ -251,11 +230,11 @@ public class RobotHand {
         float[] digitHrzPos = {palmWidth/2, 1.5f, 0.5f, -0.5f, -1.5f};
 
         float[][][] phalDims = {
-                {{phalXLgHeight, phalLrgWidth, phalLrgDepth}, {phalLrgHeight, phalMedWidth, phalMedDepth}, {phalMedHeight, phalSmlWidth, phalSmlDepth}},
-                {{phalLrgWidth, phalLrgHeight, phalLrgDepth}, {phalMedWidth, phalMedHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
-                {{phalLrgWidth, phalXLgHeight, phalLrgDepth}, {phalMedWidth, phalLrgHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
-                {{phalLrgWidth, phalLrgHeight, phalLrgDepth}, {phalMedWidth, phalMedHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
-                {{phalSmlWidth, phalXSmHeight, phalSmlDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}}
+            {{phalXLgHeight, phalLrgWidth, phalLrgDepth}, {phalLrgHeight, phalMedWidth, phalMedDepth}, {phalMedHeight, phalSmlWidth, phalSmlDepth}},
+            {{phalLrgWidth, phalLrgHeight, phalLrgDepth}, {phalMedWidth, phalMedHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
+            {{phalLrgWidth, phalXLgHeight, phalLrgDepth}, {phalMedWidth, phalLrgHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
+            {{phalLrgWidth, phalLrgHeight, phalLrgDepth}, {phalMedWidth, phalMedHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
+            {{phalSmlWidth, phalXSmHeight, phalSmlDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}}
         };
 
         // ------------ Initialise all Arrays ------------ \\
@@ -307,7 +286,6 @@ public class RobotHand {
         phalTLate[4][1] = new TransformNode("phalTLate[4][1]", Mat4Transform.translate(0, phalXSmHeight, 0));
         phalTLate[4][2] = new TransformNode("phalTLate[4][2]", Mat4Transform.translate(0, phalXSmHeight, 0));
 
-
         // ------------ Arm + Palm ------------ \\
 
         Mat4 m = Mat4Transform.scale(armWidth, armHeight, armDepth); // Sets dimensions of arm
@@ -322,7 +300,6 @@ public class RobotHand {
         TransformNode palmTransform = new TransformNode("palm transform", m);
         palmRotateX = new TransformNode("palmX rotate",Mat4Transform.rotateAroundX(0));
         palmRotateZ = new TransformNode("palmZ rotate",Mat4Transform.rotateAroundZ(0));
-
 
         // ------------ Digit Node Generation ------------ \\
 
@@ -429,7 +406,6 @@ public class RobotHand {
             for (int p = 0; p < PHALANGE_COUNT; p++){
                 if (currentPrmAngles[d][p] - desiredPrmAngles[d][p] < 0) {
                     if (currentPrmAngles[d][p] < maxPrmAngle[d][p]){
-                        System.out.println("yafa");
                         currentPrmAngles[d][p]++;
                     }
                 } else if (currentPrmAngles[d][p] - desiredPrmAngles[d][p] > 0) {

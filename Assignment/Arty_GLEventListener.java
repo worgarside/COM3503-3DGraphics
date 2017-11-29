@@ -100,22 +100,6 @@ public class Arty_GLEventListener implements GLEventListener {
         savedTime = elapsedTime;
     }
 
-    public void rotPalmXPos() {
-        robotHand.rotRHPalmXPos();
-    }
-
-    public void rotPalmXNeg() {
-        robotHand.rotRHPalmXNeg();
-    }
-
-    public void rotPalmZPos() {
-        robotHand.rotRHPalmZPos();
-    }
-
-    public void rotPalmZNeg() {
-        robotHand.rotRHPalmZNeg();
-    }
-
     public void rotToAngle(int angle) {
         robotHand.rotRHToAngle(angle);
     }

@@ -105,18 +105,6 @@ public class Arty extends JFrame implements ActionListener {
             camera.setCamera(Camera.CameraType.Z);
             canvas.requestFocusInWindow();
         }
-        else if (e.getActionCommand().equalsIgnoreCase("X++")) {
-            glEventListener.rotPalmXPos();
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("X--")) {
-            glEventListener.rotPalmXNeg();
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("Z++")) {
-            glEventListener.rotPalmZPos();
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("Z--")) {
-            glEventListener.rotPalmZNeg();
-        }
         else if (e.getActionCommand().equalsIgnoreCase("Neutral")) {
             glEventListener.changeHandPos('N');
         }
