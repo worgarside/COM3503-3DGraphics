@@ -274,7 +274,8 @@ public class Arty_GLEventListener implements GLEventListener {
     private void initialise(GL3 gl) {
         createRandomNumbers();
         int[] textureFloor = TextureLibrary.loadTexture(gl, "textures/textureFloor.jpg");
-        int[] texturePhalange = TextureLibrary.loadTexture(gl, "textures/container2.jpg");
+        int[] textureRobot = TextureLibrary.loadTexture(gl, "textures/textureRobot.jpg");
+        int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular2.jpg");
         int[] texturePhalSpec = TextureLibrary.loadTexture(gl, "textures/container2_specular.jpg");
         int[] textureWallWindow = TextureLibrary.loadTexture(gl, "textures/textureWallWindow.jpg");
         int[] textureWallDoor = TextureLibrary.loadTexture(gl, "textures/textureWallDoor.jpg");
@@ -283,11 +284,10 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureCeiling = TextureLibrary.loadTexture(gl, "textures/textureCeiling.jpg");
 
         // make meshes
-        sphere = new Sphere(gl, texturePhalange, texturePhalSpec);
-        cube = new Cube(gl, texturePhalange, texturePhalSpec);
-        cube2 = new Cube(gl, texturePhalange, texturePhalSpec);
-        cube3 = new Cube(gl, texturePhalange, texturePhalSpec);
-
+        sphere = new Sphere(gl, textureRobot, texturePhalSpec);
+        cube = new Cube(gl, textureRobot, textureRobotSpecular);
+        cube2 = new Cube(gl, textureRobot, textureRobotSpecular);
+        cube3 = new Cube(gl, textureRobot, textureRobotSpecular);
 
         floor = new TwoTriangles(gl, textureFloor);
         floor.setModelMatrix(Mat4Transform.scale(16,1,16));
@@ -641,8 +641,8 @@ public class Arty_GLEventListener implements GLEventListener {
         float x = 5.0f*(float)(Math.sin(Math.toRadians(elapsedTime*50)));
         float y = 2.7f;
         float z = 5.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
-//        return new Vec3(x,y,z);
-        return new Vec3(5f,3.4f,5f);
+        return new Vec3(x,y,z);
+//        return new Vec3(5f,3.4f,5f);
     }
 
     private Mat4 getMforTT2() {
