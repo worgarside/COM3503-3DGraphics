@@ -9,8 +9,8 @@ import com.jogamp.opengl.util.glsl.*;
   
 public class Gallery {
   
-    private Mesh floor, wallBack, wallLeft, wallRight, wallFront, ceiling;
-    private int gallerySize = 25;
+    private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling;
+    private float gallerySize = 16f;
 
     public Gallery(Mesh floor, Mesh wallLeft, Mesh wallRight, Mesh wallFront, Mesh wallBackTop, Mesh wallBackLeft, Mesh wallBackRight, Mesh wallBackBottom, Mesh ceiling) {
         this.floor = floor;
@@ -25,27 +25,19 @@ public class Gallery {
     }
 
     private void initMatrices() {
-        floor = new TwoTriangles(gl, textureFloor);
         floor.setModelMatrix(getFloorMatrix());
-        wallBackTop = new TwoTriangles(gl, textureWallWindow);
         wallBackTop.setModelMatrix(getWallBackTopMatrix());
-        wallBackLeft = new TwoTriangles(gl, textureWallWindow);
         wallBackLeft.setModelMatrix(getWallBackLeftMatrix());
-        wallBackRight = new TwoTriangles(gl, textureWallWindow);
         wallBackRight.setModelMatrix(getWallBackRightMatrix());
-        wallBackBottom = new TwoTriangles(gl, textureWallWindow);
         wallBackBottom.setModelMatrix(getWallBackBottomMatrix());
-        wallLeft = new TwoTriangles(gl, textureWall1);
         wallLeft.setModelMatrix(getWallLeftMatrix());
-        wallRight = new TwoTriangles(gl, textureWall2);
         wallRight.setModelMatrix(getWallRightMatrix());
-        wallFront = new TwoTriangles(gl, textureWallDoor);
         wallFront.setModelMatrix(getWallFrontMatrix());
-        ceiling = new TwoTriangles(gl, textureCeiling);
         ceiling.setModelMatrix(getCeilingMatrix());
     }
 
-    private void render(GL3 gl) {
+    public void render(GL3 gl) {
+        initMatrices();
         floor.render(gl);
         wallBackTop.render(gl);
         wallBackLeft.render(gl);

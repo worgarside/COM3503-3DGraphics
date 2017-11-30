@@ -120,7 +120,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private Mesh floor, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, wallLeft, wallRight, wallFront, ceiling;
     private Light light, ringLight;
     private RobotHand robotHand;
-
+    private Gallery gallery;
 
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -179,6 +179,8 @@ public class Arty_GLEventListener implements GLEventListener {
 
         robotHand = new RobotHand(cubeRobot, sphereRing, sphereRingGem);
         robotHand.initialise(gl);
+
+        gallery = new Gallery(floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling);
     }
 
     private void render(GL3 gl) {
@@ -190,16 +192,9 @@ public class Arty_GLEventListener implements GLEventListener {
         light.setPosition(robotHand.getRingPos());
         light.render(gl);
 
-        floor.render(gl);
-        wallBackTop.render(gl);
-        wallBackLeft.render(gl);
-        wallBackRight.render(gl);
-        wallBackBottom.render(gl);
-        wallLeft.render(gl);
-        wallRight.render(gl);
-        wallFront.render(gl);
-        ceiling.render(gl);
         robotHand.render(gl);
+
+        gallery.render(gl);
     }
 
     private void updatePerspectiveMatrices() {
