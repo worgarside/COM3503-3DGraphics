@@ -203,14 +203,14 @@ public class RobotHand {
         MeshNode phalangeShape[][] = new MeshNode[DIGIT_COUNT][PHALANGE_COUNT];
         MeshNode armShape = new MeshNode("Cube(arm)", cubeRobot);
         MeshNode palmShape = new MeshNode("Cube(palm)", cubeRobot);
-        MeshNode ringBandShape = new MeshNode("Cube(ringBand)", sphereRing);
+        MeshNode ringShape = new MeshNode("Cube(ring)", sphereRing);
         MeshNode ringGemShape = new MeshNode("Cube(ringGem)", sphereRingGem);
 
         NameNode digit[][] = new NameNode[DIGIT_COUNT][PHALANGE_COUNT];
         robotHand = new NameNode("root");
         NameNode arm = new NameNode("arm");
         NameNode palm = new NameNode("palm");
-        NameNode ringBand = new NameNode("ringBand");
+        NameNode ring = new NameNode("ring");
         NameNode ringGem = new NameNode("ringGem");
 
         TransformNode phalTLate[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];
@@ -246,11 +246,11 @@ public class RobotHand {
         float[] digitHrzPos = {palmWidth/2, 1.5f, 0.5f, -0.5f, -1.5f};
 
         float[][][] phalDims = {
-            {{phalXLgHeight, phalLrgWidth, phalLrgDepth}, {phalLrgHeight, phalMedWidth, phalMedDepth}, {phalMedHeight, phalSmlWidth, phalSmlDepth}},
-            {{phalLrgWidth, phalLrgHeight, phalLrgDepth}, {phalMedWidth, phalMedHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
-            {{phalLrgWidth, phalXLgHeight, phalLrgDepth}, {phalMedWidth, phalLrgHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
-            {{phalLrgWidth, phalLrgHeight, phalLrgDepth}, {phalMedWidth, phalMedHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},
-            {{phalSmlWidth, phalXSmHeight, phalSmlDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}}
+            {{phalXLgHeight, phalLrgWidth, phalLrgDepth}, {phalLrgHeight, phalMedWidth, phalMedDepth}, {phalMedHeight, phalSmlWidth, phalSmlDepth}},    // Thumb, P-M-D
+            {{phalLrgWidth, phalLrgHeight, phalLrgDepth}, {phalMedWidth, phalMedHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},    // Finger 1, P-M-D
+            {{phalLrgWidth, phalXLgHeight, phalLrgDepth}, {phalMedWidth, phalLrgHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},    // Finger 2, P-M-D
+            {{phalLrgWidth, phalLrgHeight, phalLrgDepth}, {phalMedWidth, phalMedHeight, phalMedDepth}, {phalSmlWidth, phalSmlHeight, phalSmlDepth}},    // Finger 3, P-M-D
+            {{phalSmlWidth, phalXSmHeight, phalSmlDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}, {phalXSmWidth, phalXSmHeight, phalXSmDepth}}     // Finger 4, P-M-D
         };
 
         // ------------ Initialise all Arrays ------------ \\
@@ -309,7 +309,7 @@ public class RobotHand {
         TransformNode armTransform = new TransformNode("arm transform", m);
         armRotateY = new TransformNode("arm rotate",Mat4Transform.rotateAroundY(0));
 
-        TransformNode palmTranslate = new TransformNode("palm translate", Mat4Transform.translate(0,armHeight,0));
+        TransformNode palmTranslate = new TransformNode("palm translate", Mat4Transform.translate(0, armHeight, 0));
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.scale(palmWidth, palmHeight, palmDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
@@ -341,11 +341,10 @@ public class RobotHand {
 
         // ------------ Ring Node Gen ------------ \\
 
-        TransformNode ringBandTranslate = new TransformNode("ringBand translate", Mat4Transform.translate(0, 0.5f*phalLrgHeight, 0));
+        TransformNode ringTranslate = new TransformNode("ring translate", Mat4Transform.translate(0, 0.5f*phalLrgHeight, 0));
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.scale(1.8f*phalLrgWidth, 0.4f*phalLrgHeight, 1.8f*phalLrgDepth));
-        TransformNode ringBandTransform = new TransformNode("ringBand transform", m);
-
+        TransformNode ringTransform = new TransformNode("ring transform", m);
         TransformNode ringGemTranslate = new TransformNode("ringGem translate", Mat4Transform.translate(0, 0, -0.8f*phalLrgDepth));
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.scale(0.4f, 0.4f, 0.4f));
@@ -405,11 +404,11 @@ public class RobotHand {
                                                                                     phalTForm[d][2].addChild(phalangeShape[d][2]);
                                     }
 
-                                                        phalRotX[3][0].addChild(ringBandTranslate);
-                                                            ringBandTranslate.addChild(ringBand);
-                                                                ringBand.addChild(ringBandTransform);
-                                                                    ringBandTransform.addChild(ringBandShape);
-                                                                ringBand.addChild(ringGemTranslate);
+                                                        phalRotX[3][0].addChild(ringTranslate);
+                                                            ringTranslate.addChild(ring);
+                                                                ring.addChild(ringTransform);
+                                                                    ringTransform.addChild(ringShape);
+                                                                ring.addChild(ringGemTranslate);
                                                                     ringGemTranslate.addChild(ringGem);
                                                                         ringGem.addChild(ringGemTransform);
                                                                             ringGemTransform.addChild(ringGemShape);

@@ -121,7 +121,6 @@ public class Arty_GLEventListener implements GLEventListener {
     private Light light, ringLight;
     private RobotHand robotHand;
 
-
     private void initialise(GL3 gl) {
         createRandomNumbers();
         int[] textureFloor = TextureLibrary.loadTexture(gl, "textures/textureFloor.jpg");
@@ -129,7 +128,7 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular.jpg");
         int[] textureRing = TextureLibrary.loadTexture(gl, "textures/textureRing.jpg");
         int[] textureRingSpecular = TextureLibrary.loadTexture(gl, "textures/textureRingSpecular.jpg");
-        int[] textureWallWindow = TextureLibrary.loadTexture(gl, "textures/textureWallWindow.jpg");
+        int[] textureWallBack = TextureLibrary.loadTexture(gl, "textures/textureWallBackTop.jpg");
         int[] textureWallDoor = TextureLibrary.loadTexture(gl, "textures/textureWallDoor.jpg");
         int[] textureWall1 = TextureLibrary.loadTexture(gl, "textures/textureWall1.jpg");
         int[] textureWall2 = TextureLibrary.loadTexture(gl, "textures/textureWall2.jpg");
@@ -143,7 +142,7 @@ public class Arty_GLEventListener implements GLEventListener {
 
         floor = new TwoTriangles(gl, textureFloor);
         floor.setModelMatrix(Mat4Transform.scale(16,1,16));
-        wallBack = new TwoTriangles(gl, textureWallWindow);
+        wallBack = new TwoTriangles(gl, textureWallBack);
         wallBack.setModelMatrix(getWallBackMatrix());
         wallLeft = new TwoTriangles(gl, textureWall1);
         wallLeft.setModelMatrix(getWallLeftMatrix());
@@ -192,13 +191,13 @@ public class Arty_GLEventListener implements GLEventListener {
         updatePerspectiveMatrices();
         light.setPosition(robotHand.getRingPos());
         light.render(gl);
-
-        floor.render(gl);
         wallBack.render(gl);
+        wallFront.render(gl);
         wallLeft.render(gl);
         wallRight.render(gl);
-        wallFront.render(gl);
         ceiling.render(gl);
+        floor.render(gl);
+
         robotHand.render(gl);
     }
 
@@ -217,10 +216,8 @@ public class Arty_GLEventListener implements GLEventListener {
         wallRight.setPerspective(perspective);
         wallFront.setPerspective(perspective);
         ceiling.setPerspective(perspective);
-
-
     }
-  
+
     private void disposeMeshes(GL3 gl) {
         light.dispose(gl);
         sphere.dispose(gl);
@@ -235,15 +232,10 @@ public class Arty_GLEventListener implements GLEventListener {
         wallFront.dispose(gl);
         ceiling.dispose(gl);
     }
-  
-    // The light's postion is continually being changed, so needs to be calculated for each frame.
-    private Vec3 getLightPosition() {
-        double elapsedTime = getSeconds()-startTime;
-        float x = 5.0f*(float)(Math.sin(Math.toRadians(elapsedTime*50)));
-        float y = 2.7f;
-        float z = 5.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
-        return new Vec3(x,y,z);
-//        return new Vec3(5f,3.4f,5f);
+
+    private void updateRingLight(){
+//        light.setRingLightPos(robotHand.getRingPos());
+//        light.setRingLightDir(robotHand.getRingDir());
     }
 
     private Mat4 getWallBackMatrix() {
@@ -293,5 +285,4 @@ public class Arty_GLEventListener implements GLEventListener {
         model = Mat4.multiply(Mat4Transform.translate(0,size,0), model);
         return model;
     }
-
 }
