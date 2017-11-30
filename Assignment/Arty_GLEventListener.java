@@ -116,7 +116,7 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private Camera camera;
     private Mat4 perspective;
-    private Mesh sphere, cubeRobot, cubeRing, cubeRingGem;
+    private Mesh sphere, cubeRobot, sphereRing, sphereRingGem;
     private Mesh floor, wallBack, wallLeft, wallRight, wallFront, ceiling;
     private Light light, ringLight;
     private RobotHand robotHand;
@@ -138,8 +138,8 @@ public class Arty_GLEventListener implements GLEventListener {
         // make meshes
         sphere = new Sphere(gl, textureRobot, textureRobotSpecular);
         cubeRobot = new Cube(gl, textureRobot, textureRobotSpecular);
-        cubeRing = new Cube(gl, textureRing, textureRingSpecular);
-        cubeRingGem = new Cube(gl, textureRobot, textureRobotSpecular);
+        sphereRing = new Sphere(gl, textureRing, textureRingSpecular);
+        sphereRingGem = new Sphere(gl, textureRobot, textureRobotSpecular);
 
         floor = new TwoTriangles(gl, textureFloor);
         floor.setModelMatrix(Mat4Transform.scale(16,1,16));
@@ -161,10 +161,10 @@ public class Arty_GLEventListener implements GLEventListener {
         sphere.setCamera(camera);
         cubeRobot.setLight(light);
         cubeRobot.setCamera(camera);
-        cubeRing.setLight(light);//ringLight);
-        cubeRing.setCamera(camera);
-        cubeRingGem.setLight(light);
-        cubeRingGem.setCamera(camera);
+        sphereRing.setLight(light);//ringLight);
+        sphereRing.setCamera(camera);
+        sphereRingGem.setLight(light);
+        sphereRingGem.setCamera(camera);
 
         floor.setLight(light);
         floor.setCamera(camera);
@@ -181,7 +181,7 @@ public class Arty_GLEventListener implements GLEventListener {
 
         // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
 
-        robotHand = new RobotHand(cubeRobot, cubeRing, cubeRingGem);
+        robotHand = new RobotHand(cubeRobot, sphereRing, sphereRingGem);
         robotHand.initialise(gl);
     }
 
@@ -190,7 +190,7 @@ public class Arty_GLEventListener implements GLEventListener {
 
 
         updatePerspectiveMatrices();
-        light.setPosition(getLightPosition());
+        light.setPosition(robotHand.getRingPos());
         light.render(gl);
 
         floor.render(gl);
@@ -208,8 +208,8 @@ public class Arty_GLEventListener implements GLEventListener {
         light.setPerspective(perspective);
         sphere.setPerspective(perspective);
         cubeRobot.setPerspective(perspective);
-        cubeRing.setPerspective(perspective);
-        cubeRingGem.setPerspective(perspective);
+        sphereRing.setPerspective(perspective);
+        sphereRingGem.setPerspective(perspective);
 
         floor.setPerspective(perspective);
         wallBack.setPerspective(perspective);
@@ -225,8 +225,8 @@ public class Arty_GLEventListener implements GLEventListener {
         light.dispose(gl);
         sphere.dispose(gl);
         cubeRobot.dispose(gl);
-        cubeRing.dispose(gl);
-        cubeRingGem.dispose(gl);
+        sphereRing.dispose(gl);
+        sphereRingGem.dispose(gl);
 
         floor.dispose(gl);
         wallBack.dispose(gl);

@@ -9,10 +9,10 @@ import com.jogamp.opengl.util.glsl.*;
   
 public class RobotHand {
 
-    public RobotHand(Mesh cubeRobot, Mesh cubeRing, Mesh cubeRingGem) {
+    public RobotHand(Mesh cubeRobot, Mesh sphereRing, Mesh sphereRingGem) {
         this.cubeRobot = cubeRobot;
-        this.cubeRing = cubeRing;
-        this.cubeRingGem = cubeRingGem;
+        this.sphereRing = sphereRing;
+        this.sphereRingGem = sphereRingGem;
     }
   
     private static final int DIGIT_COUNT = 5;
@@ -155,7 +155,23 @@ public class RobotHand {
     }
 
     public Vec3 getRingPos() {
-        return new Vec3(5f,3.4f,5f);
+        float x, y, z;
+        // Default Values
+        x = -0.5f;
+        y = 9.75f;
+        z = -0.64f;
+
+        return new Vec3(x, y, z);
+    }
+
+    public Vec3 getRingDir() {
+        float x, y, z;
+        // Default Values
+        x = -0.5f*2;
+        y = 9.75f*2;
+        z = -0.64f*2;
+
+        return new Vec3(x, y, z);
     }
 
     // ***************************************************
@@ -164,7 +180,7 @@ public class RobotHand {
     * This will be added to in later examples.
     */
 
-    private Mesh cubeRobot, cubeRing, cubeRingGem;
+    private Mesh cubeRobot, sphereRing, sphereRingGem;
     private SGNode robotHand;
 
     private int[][] maxPrmAngle = new int[DIGIT_COUNT][PHALANGE_COUNT];                     // Maximum angle phalange can be (most acute)
@@ -187,8 +203,8 @@ public class RobotHand {
         MeshNode phalangeShape[][] = new MeshNode[DIGIT_COUNT][PHALANGE_COUNT];
         MeshNode armShape = new MeshNode("Cube(arm)", cubeRobot);
         MeshNode palmShape = new MeshNode("Cube(palm)", cubeRobot);
-        MeshNode ringBandShape = new MeshNode("Cube(ringBand)", cubeRing);
-        MeshNode ringGemShape = new MeshNode("Cube(ringGem)", cubeRingGem);
+        MeshNode ringBandShape = new MeshNode("Cube(ringBand)", sphereRing);
+        MeshNode ringGemShape = new MeshNode("Cube(ringGem)", sphereRingGem);
 
         NameNode digit[][] = new NameNode[DIGIT_COUNT][PHALANGE_COUNT];
         robotHand = new NameNode("root");
@@ -327,7 +343,7 @@ public class RobotHand {
 
         TransformNode ringBandTranslate = new TransformNode("ringBand translate", Mat4Transform.translate(0, 0.5f*phalLrgHeight, 0));
         m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(1.5f*phalLrgWidth, 0.4f*phalLrgHeight, 1.5f*phalLrgDepth));
+        m = Mat4.multiply(m, Mat4Transform.scale(1.8f*phalLrgWidth, 0.4f*phalLrgHeight, 1.8f*phalLrgDepth));
         TransformNode ringBandTransform = new TransformNode("ringBand transform", m);
 
         TransformNode ringGemTranslate = new TransformNode("ringGem translate", Mat4Transform.translate(0, 0, -0.8f*phalLrgDepth));
