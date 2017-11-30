@@ -121,6 +121,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outside;
     private Light light;
     private RobotHand robotHand;
+    private Gallery gallery;
     private ArrayList<Mesh> meshList = new ArrayList<Mesh>();
 
     private void initialise(GL3 gl) {
@@ -154,33 +155,24 @@ public class Arty_GLEventListener implements GLEventListener {
         wallLeft = new TwoTriangles(gl, textureWallLeft);
         wallRight = new TwoTriangles(gl, textureWallRight);
         wallFront = new TwoTriangles(gl, textureWallFront);
-        ceiling = new TwoTriangles(gl, textureCeiling);
-        outside = new TwoTriangles(gl, textureOutside);
-        floor.setModelMatrix(Mat4Transform.scale(16,1,16));
-        wallLeft.setModelMatrix(getWallLeftMatrix());
-        wallRight.setModelMatrix(getWallRightMatrix());
-        wallFront.setModelMatrix(getWallFrontMatrix());
-        ceiling.setModelMatrix(getCeilingMatrix());
-        outside.setModelMatrix(getOutsideMatrix());
-        meshList.add(floor);
-        meshList.add(wallLeft);
-        meshList.add(wallRight);
-        meshList.add(wallFront);
-        meshList.add(ceiling);
-        meshList.add(outside);
-
         wallBackTop = new TwoTriangles(gl, textureWallBackTop);
         wallBackLeft = new TwoTriangles(gl, textureWallBackLeft);
         wallBackRight = new TwoTriangles(gl, textureWallBackRight);
         wallBackBottom = new TwoTriangles(gl, textureWallBackBottom);
-        wallBackTop.setModelMatrix(getWallBackTopMatrix());
-        wallBackLeft.setModelMatrix(getWallBackLeftMatrix());
-        wallBackRight.setModelMatrix(getWallBackRightMatrix());
-        wallBackBottom.setModelMatrix(getWallBackBottomMatrix());
+        ceiling = new TwoTriangles(gl, textureCeiling);
+        outside = new TwoTriangles(gl, textureOutside);
+
+        meshList.add(floor);
+        meshList.add(wallLeft);
+        meshList.add(wallRight);
+        meshList.add(wallFront);
         meshList.add(wallBackTop);
         meshList.add(wallBackLeft);
         meshList.add(wallBackRight);
         meshList.add(wallBackBottom);
+        meshList.add(ceiling);
+        meshList.add(outside);
+
 
         light = new Light(gl);
         light.setCamera(camera);
@@ -194,6 +186,8 @@ public class Arty_GLEventListener implements GLEventListener {
 
         robotHand = new RobotHand(cubeRobot, sphereRing, sphereRingGem);
         robotHand.initialise(gl);
+
+        gallery = new Gallery(floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outside);
     }
 
     private void render(GL3 gl) {
@@ -203,18 +197,8 @@ public class Arty_GLEventListener implements GLEventListener {
         light.setPosition(robotHand.getRingPos());
         light.render(gl);
 
-        wallBackTop.render(gl);
-        wallBackBottom.render(gl);
-        wallBackLeft.render(gl);
-        wallBackRight.render(gl);
-        wallFront.render(gl);
-        wallLeft.render(gl);
-        wallRight.render(gl);
-        ceiling.render(gl);
-        floor.render(gl);
-        outside.render(gl);
-
         robotHand.render(gl);
+        gallery.render(gl);
     }
 
     private void updatePerspectiveMatrices() {
@@ -240,87 +224,4 @@ public class Arty_GLEventListener implements GLEventListener {
 //        light.setRingLightDir(robotHand.getRingDir());
     }
 
-    private Mat4 getWallLeftMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundY(90), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundZ(-90), model);
-        model = Mat4.multiply(Mat4Transform.translate(-size*0.5f, size*0.5f, 0), model);
-        return model;
-    }
-
-    private Mat4 getWallRightMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundZ(90), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
-        model = Mat4.multiply(Mat4Transform.translate(size*0.5f,size*0.5f,0), model);
-        return model;
-    }
-
-    private Mat4 getWallFrontMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundY(180), model);
-        model = Mat4.multiply(Mat4Transform.translate(0,size*0.5f,size*0.5f), model);
-        return model;
-    }
-
-    private Mat4 getCeilingMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size,1f,size), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundZ(180), model);
-        model = Mat4.multiply(Mat4Transform.translate(0,size,0), model);
-        return model;
-    }
-
-    private Mat4 getWallBackTopMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size,1f,size*0.25f), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
-        model = Mat4.multiply(Mat4Transform.translate(0,size*0.875f,-size*0.5f), model);
-        return model;
-    }
-
-    private Mat4 getWallBackLeftMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size*0.25f,1f,size*0.5f), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
-        model = Mat4.multiply(Mat4Transform.translate(-size*0.375f, size*0.5f,-size*0.5f), model);
-        return model;
-    }
-
-    private Mat4 getWallBackRightMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size*0.25f,1f,size*0.5f), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
-        model = Mat4.multiply(Mat4Transform.translate(size*0.375f,size*0.5f,-size*0.5f), model);
-        return model;
-    }
-
-    private Mat4 getWallBackBottomMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size,1f,size*0.25f), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
-        model = Mat4.multiply(Mat4Transform.translate(0,size*0.125f,-size*0.5f), model);
-        return model;
-    }
-
-    private Mat4 getOutsideMatrix() {
-        float size = 16f;
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(size*1.6f*2f,1f,size*0.9f*2f), model);
-        model = Mat4.multiply(Mat4Transform.rotateAroundX(90), model);
-        model = Mat4.multiply(Mat4Transform.translate(0,size*0.5f,-size*2), model);
-        return model;
-    }
 }
