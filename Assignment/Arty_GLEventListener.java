@@ -6,6 +6,7 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
+import java.util.ArrayList;
   
 public class Arty_GLEventListener implements GLEventListener {
   
@@ -117,9 +118,10 @@ public class Arty_GLEventListener implements GLEventListener {
     private Camera camera;
     private Mat4 perspective;
     private Mesh sphere, cubeRobot, sphereRing, sphereRingGem;
-    private Mesh floor, wallBack, wallLeft, wallRight, wallFront, ceiling;
-    private Light light, ringLight;
+    private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling;
+    private Light light;
     private RobotHand robotHand;
+    private ArrayList<Mesh> meshList = new ArrayList<Mesh>();
 
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -128,10 +130,13 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular.jpg");
         int[] textureRing = TextureLibrary.loadTexture(gl, "textures/textureRing.jpg");
         int[] textureRingSpecular = TextureLibrary.loadTexture(gl, "textures/textureRingSpecular.jpg");
-        int[] textureWallBack = TextureLibrary.loadTexture(gl, "textures/textureWallBackTop.jpg");
-        int[] textureWallDoor = TextureLibrary.loadTexture(gl, "textures/textureWallDoor.jpg");
-        int[] textureWall1 = TextureLibrary.loadTexture(gl, "textures/textureWall1.jpg");
-        int[] textureWall2 = TextureLibrary.loadTexture(gl, "textures/textureWall2.jpg");
+        int[] textureWallBackTop = TextureLibrary.loadTexture(gl, "textures/textureWallBackTop.jpg");
+        int[] textureWallBackLeft = TextureLibrary.loadTexture(gl, "textures/textureWallBackTop.jpg");
+        int[] textureWallBackRight = TextureLibrary.loadTexture(gl, "textures/textureWallBackTop.jpg");
+        int[] textureWallBackBottom = TextureLibrary.loadTexture(gl, "textures/textureWallBackTop.jpg");
+        int[] textureWallFront = TextureLibrary.loadTexture(gl, "textures/textureWallFront.jpg");
+        int[] textureWallLeft = TextureLibrary.loadTexture(gl, "textures/textureWallLeft.jpg");
+        int[] textureWallRight = TextureLibrary.loadTexture(gl, "textures/textureWallRight.jpg");
         int[] textureCeiling = TextureLibrary.loadTexture(gl, "textures/textureCeiling.jpg");
 
         // make meshes
@@ -139,44 +144,47 @@ public class Arty_GLEventListener implements GLEventListener {
         cubeRobot = new Cube(gl, textureRobot, textureRobotSpecular);
         sphereRing = new Sphere(gl, textureRing, textureRingSpecular);
         sphereRingGem = new Sphere(gl, textureRobot, textureRobotSpecular);
+        meshList.add(sphere);
+        meshList.add(cubeRobot);
+        meshList.add(sphereRing);
+        meshList.add(sphereRingGem);
 
         floor = new TwoTriangles(gl, textureFloor);
-        floor.setModelMatrix(Mat4Transform.scale(16,1,16));
-        wallBack = new TwoTriangles(gl, textureWallBack);
-        wallBack.setModelMatrix(getWallBackMatrix());
-        wallLeft = new TwoTriangles(gl, textureWall1);
-        wallLeft.setModelMatrix(getWallLeftMatrix());
-        wallRight = new TwoTriangles(gl, textureWall2);
-        wallRight.setModelMatrix(getWallRightMatrix());
-        wallFront = new TwoTriangles(gl, textureWallDoor);
-        wallFront.setModelMatrix(getWallFrontMatrix());
+        wallLeft = new TwoTriangles(gl, textureWallLeft);
+        wallRight = new TwoTriangles(gl, textureWallRight);
+        wallFront = new TwoTriangles(gl, textureWallFront);
         ceiling = new TwoTriangles(gl, textureCeiling);
+        floor.setModelMatrix(Mat4Transform.scale(16,1,16));
+        wallLeft.setModelMatrix(getWallLeftMatrix());
+        wallRight.setModelMatrix(getWallRightMatrix());
+        wallFront.setModelMatrix(getWallFrontMatrix());
         ceiling.setModelMatrix(getCeilingMatrix());
+        meshList.add(floor);
+        meshList.add(wallLeft);
+        meshList.add(wallRight);
+        meshList.add(wallFront);
+        meshList.add(ceiling);
+
+        wallBackTop = new TwoTriangles(gl, textureWallBackTop);
+        wallBackLeft = new TwoTriangles(gl, textureWallBackLeft);
+        wallBackRight = new TwoTriangles(gl, textureWallBackRight);
+        wallBackBottom = new TwoTriangles(gl, textureWallBackBottom);
+        wallBackTop.setModelMatrix(getWallBackMatrix());
+        wallBackLeft.setModelMatrix(getWallBackMatrix());
+        wallBackRight.setModelMatrix(getWallBackMatrix());
+        wallBackBottom.setModelMatrix(getWallBackMatrix());
+        meshList.add(wallBackTop);
+        meshList.add(wallBackLeft);
+        meshList.add(wallBackRight);
+        meshList.add(wallBackBottom);
 
         light = new Light(gl);
         light.setCamera(camera);
 
-        sphere.setLight(light);
-        sphere.setCamera(camera);
-        cubeRobot.setLight(light);
-        cubeRobot.setCamera(camera);
-        sphereRing.setLight(light);//ringLight);
-        sphereRing.setCamera(camera);
-        sphereRingGem.setLight(light);
-        sphereRingGem.setCamera(camera);
-
-        floor.setLight(light);
-        floor.setCamera(camera);
-        wallBack.setLight(light);
-        wallBack.setCamera(camera);
-        wallLeft.setLight(light);
-        wallLeft.setCamera(camera);
-        wallRight.setLight(light);
-        wallRight.setCamera(camera);
-        wallFront.setLight(light);
-        wallFront.setCamera(camera);
-        ceiling.setLight(light);
-        ceiling.setCamera(camera);
+        for (Mesh mesh : meshList) {
+            mesh.setLight(light);
+            mesh.setCamera(camera);
+        }
 
         // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
 
@@ -187,11 +195,11 @@ public class Arty_GLEventListener implements GLEventListener {
     private void render(GL3 gl) {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
-
         updatePerspectiveMatrices();
         light.setPosition(robotHand.getRingPos());
         light.render(gl);
-        wallBack.render(gl);
+
+        wallBackTop.render(gl);
         wallFront.render(gl);
         wallLeft.render(gl);
         wallRight.render(gl);
@@ -204,33 +212,19 @@ public class Arty_GLEventListener implements GLEventListener {
     private void updatePerspectiveMatrices() {
         // needs to be changed if user resizes the window
         perspective = Mat4Transform.perspective(45, aspect);
-        light.setPerspective(perspective);
-        sphere.setPerspective(perspective);
-        cubeRobot.setPerspective(perspective);
-        sphereRing.setPerspective(perspective);
-        sphereRingGem.setPerspective(perspective);
 
-        floor.setPerspective(perspective);
-        wallBack.setPerspective(perspective);
-        wallLeft.setPerspective(perspective);
-        wallRight.setPerspective(perspective);
-        wallFront.setPerspective(perspective);
-        ceiling.setPerspective(perspective);
+        light.setPerspective(perspective);
+        for (Mesh mesh : meshList) {
+            mesh.setPerspective(perspective);
+        }
     }
 
     private void disposeMeshes(GL3 gl) {
         light.dispose(gl);
-        sphere.dispose(gl);
-        cubeRobot.dispose(gl);
-        sphereRing.dispose(gl);
-        sphereRingGem.dispose(gl);
 
-        floor.dispose(gl);
-        wallBack.dispose(gl);
-        wallLeft.dispose(gl);
-        wallRight.dispose(gl);
-        wallFront.dispose(gl);
-        ceiling.dispose(gl);
+        for (Mesh mesh : meshList) {
+            mesh.dispose(gl);
+        }
     }
 
     private void updateRingLight(){
