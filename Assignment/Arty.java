@@ -44,19 +44,7 @@ public class Arty extends JFrame implements ActionListener {
         menuBar.add(fileMenu);
 
         JPanel panel = new JPanel();
-        JButton btn = new JButton("X++");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("X--");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("Z++");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("Z--");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("Neutral");
+        JButton btn = new JButton("Neutral");
         btn.addActionListener(this);
         panel.add(btn);
         btn = new JButton("aslW");
@@ -68,7 +56,7 @@ public class Arty extends JFrame implements ActionListener {
         btn = new JButton("aslL");
         btn.addActionListener(this);
         panel.add(btn);
-        btn = new JButton("Pos");
+        btn = new JButton("Custom");
         btn.addActionListener(this);
         panel.add(btn);
         JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
@@ -117,7 +105,7 @@ public class Arty extends JFrame implements ActionListener {
         else if (e.getActionCommand().equalsIgnoreCase("aslL")) {
             glEventListener.changeHandPos('L');
         }
-        else if (e.getActionCommand().equalsIgnoreCase("Pos")) {
+        else if (e.getActionCommand().equalsIgnoreCase("Custom")) {
             glEventListener.changeHandPos('P');
         }
         else if(e.getActionCommand().equalsIgnoreCase("quit")){

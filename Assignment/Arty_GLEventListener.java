@@ -7,9 +7,9 @@ import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
 import java.util.ArrayList;
-  
+
 public class Arty_GLEventListener implements GLEventListener {
-  
+
     private static final boolean DISPLAY_SHADERS = false;
     private float aspect;
 
@@ -37,7 +37,7 @@ public class Arty_GLEventListener implements GLEventListener {
         initialise(gl);
         startTime = getSeconds();
     }
-  
+
     /* Called to indicate the drawing surface has been moved and/or resized  */
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
         GL3 gl = drawable.getGL().getGL3();
@@ -67,20 +67,20 @@ public class Arty_GLEventListener implements GLEventListener {
         return System.currentTimeMillis()/1000.0;
     }
 
-      // ***************************************************
+    // ***************************************************
       /* An array of random numbers
        */
-  
-      private int NUM_RANDOMS = 1000;
-      private float[] randoms;
-  
+
+    private int NUM_RANDOMS = 1000;
+    private float[] randoms;
+
     private void createRandomNumbers() {
         randoms = new float[NUM_RANDOMS];
         for (int i=0; i<NUM_RANDOMS; ++i) {
             randoms[i] = (float)Math.random();
         }
     }
-  
+
     // ***************************************************
     /* INTERACTION
     *
@@ -186,6 +186,7 @@ public class Arty_GLEventListener implements GLEventListener {
 
         robotHand = new RobotHand(cubeRobot, sphereRing, sphereRingGem);
         robotHand.initialise(gl);
+
 
         gallery = new Gallery(floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outside);
     }

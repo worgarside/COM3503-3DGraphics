@@ -86,7 +86,6 @@ public class RobotHand {
     }
 
     public void setRobotHandPos(char letter){
-        System.out.println("Position:" + letter);
         switch(letter) {
             case 'W':
                 for (int d = 0; d < DIGIT_COUNT; d++) {
@@ -159,18 +158,6 @@ public class RobotHand {
         x = -0.5f;
         y = 9.75f;
         z = -0.64f;
-        /*
-
-        Mat4(1)
-        -> armRotateY
-            ->  palmTranslate
-                -> digit3ProxTranslate
-                    -> digit3ProxRotZ
-                        -> digit3ProxRotX
-                            -> ringTranslate
-                                -> ringGemTranslate
-
-        */
 
         ringGemMatrixTotal = new Mat4(1);
         ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(armRotateY));
@@ -180,10 +167,6 @@ public class RobotHand {
         ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalRotX[3][0]));
         ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(ringTranslate));
         ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(ringGemTranslate));
-        System.out.println(ringGemMatrixTotal);
-        System.out.println("");
-
-
 
         return coordsFromMat4(ringGemMatrixTotal);
     }
@@ -477,14 +460,6 @@ public class RobotHand {
 
     private Mat4 transformNodeToMat4(TransformNode tNode) {
         Mat4 matrix = tNode.getMat4();
-//        float[][] values = matrix.getValues();
-//        for (int i=0; i<4; ++i) {
-//            for (int j = 0; j < 4; ++j) {
-//                System.out.print(values[i][j]);
-//                System.out.print(" ");
-//            }
-//        }
-
         return matrix;
     }
 
