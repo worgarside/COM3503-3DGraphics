@@ -12,10 +12,10 @@ public class Gallery {
 
     private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outside;
     private ArrayList<Mesh> meshListGallery = new ArrayList<Mesh>();
-    private float gallerySize = 22.5f;
+    private float gallerySize;
 
 
-    public Gallery (Mesh floor, Mesh wallLeft, Mesh wallRight, Mesh wallFront, Mesh wallBackTop, Mesh wallBackLeft, Mesh wallBackRight, Mesh wallBackBottom, Mesh ceiling, Mesh outside) {
+    public Gallery (float gallerySize, Mesh floor, Mesh wallLeft, Mesh wallRight, Mesh wallFront, Mesh wallBackTop, Mesh wallBackLeft, Mesh wallBackRight, Mesh wallBackBottom, Mesh ceiling, Mesh outside) {
         this.floor = floor;
         this.wallLeft = wallLeft;
         this.wallRight = wallRight;
@@ -26,6 +26,7 @@ public class Gallery {
         this.wallBackBottom = wallBackBottom;
         this.ceiling = ceiling;
         this.outside = outside;
+        this.gallerySize = gallerySize;
 
         meshListGallery.add(floor);
         meshListGallery.add(wallLeft);

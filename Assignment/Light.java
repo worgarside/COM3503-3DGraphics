@@ -11,7 +11,7 @@ public class Light {
     private Shader shader;
     private Camera camera;
     private Mat4 perspective;
-    private Vec3 spotlightDirection = 16f, 16f, 16f;
+    private Vec3 spotlightDirection = new Vec3(16f, 16f, 16f);
     private Vec3 spotlightPosition;
 
     public Light(GL3 gl) {
@@ -45,18 +45,17 @@ public class Light {
         this.spotlightPosition = spotlightPosition;
     }
 
-    public void getSpotlightPosition(){
+    public Vec3 getSpotlightPosition(){
         return spotlightPosition;
     }
 
-    public void getSpotlightDirection(Vec3 spotlightDirection){
+    public void setSpotlightDirection(Vec3 spotlightDirection){
         this.spotlightDirection = spotlightDirection;
     }
 
-    public void getSpotlightDirection(){
+    public Vec3 getSpotlightDirection(){
         return spotlightDirection;
     }
-
 
     public void setMaterial(Material m) {
         material = m;
