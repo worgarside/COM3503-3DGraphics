@@ -34,5 +34,13 @@ public class TransformNode extends SGNode {
       children.get(i).print(indent+1, inFull);
     }
   }
+
+  public String toString() {
+    return transform.toString();
+  }
+
+  public Mat4 getMat4() {
+    return transform;
+  }
   
 }

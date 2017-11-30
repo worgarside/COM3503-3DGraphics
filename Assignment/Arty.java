@@ -92,7 +92,7 @@ public class Arty extends JFrame implements ActionListener {
         public void stateChanged(ChangeEvent event)
         {
             JSlider source = (JSlider) event.getSource();
-            glEventListener.rotToAngle(source.getValue());
+            glEventListener.rotArmToAngle(source.getValue());
         }
     };
 

@@ -105,5 +105,8 @@ public class Mat4 {   // row column formulation
     s += "}";
     return s;
   }
-  
+
+  public float[][] getValues() {
+    return values;
+  }
 } // end of Mat4 class

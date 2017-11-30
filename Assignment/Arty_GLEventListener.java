@@ -101,7 +101,7 @@ public class Arty_GLEventListener implements GLEventListener {
         savedTime = elapsedTime;
     }
 
-    public void rotToAngle(int angle) {
+    public void rotArmToAngle(int angle) {
         robotHand.rotRHToAngle(angle);
     }
 
@@ -194,6 +194,7 @@ public class Arty_GLEventListener implements GLEventListener {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 
         updatePerspectiveMatrices();
+
         light.setPosition(robotHand.getRingPos());
         light.render(gl);
 
@@ -202,7 +203,6 @@ public class Arty_GLEventListener implements GLEventListener {
     }
 
     private void updatePerspectiveMatrices() {
-        // needs to be changed if user resizes the window
         perspective = Mat4Transform.perspective(45, aspect);
 
         light.setPerspective(perspective);

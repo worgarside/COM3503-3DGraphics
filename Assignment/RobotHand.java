@@ -150,18 +150,42 @@ public class RobotHand {
                     phalRotX[d][p].update();
                 }
             }
-
         }
     }
 
     public Vec3 getRingPos() {
         float x, y, z;
-        // Default Values
+        // Default Values - from translation values
         x = -0.5f;
         y = 9.75f;
         z = -0.64f;
+        /*
 
-        return new Vec3(x, y, z);
+        Mat4(1)
+        -> armRotateY
+            ->  palmTranslate
+                -> digit3ProxTranslate
+                    -> digit3ProxRotZ
+                        -> digit3ProxRotX
+                            -> ringTranslate
+                                -> ringGemTranslate
+
+        */
+
+        ringGemMatrixTotal = new Mat4(1);
+        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(armRotateY));
+        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(palmTranslate));
+        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalTLate[3][0]));
+        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalRotZ[3][0]));
+        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalRotX[3][0]));
+        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(ringTranslate));
+        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(ringGemTranslate));
+        System.out.println(ringGemMatrixTotal);
+        System.out.println("");
+
+
+
+        return coordsFromMat4(ringGemMatrixTotal);
     }
 
     public Vec3 getRingDir() {
@@ -190,11 +214,21 @@ public class RobotHand {
     private int[][] angleX = new int[DIGIT_COUNT][PHALANGE_COUNT];                          // Current angle of phalange
     private TransformNode[][] phalRotX = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating phalanges about X-axis
     private TransformNode[][] phalRotZ = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating proximal phalanges about Z-axis
-    private TransformNode armRotateY, palmRotateX, palmRotateZ;                             // TransformNodes for arm & palm
+    private TransformNode armRotateY;                                                       // TransformNodes for arm
     private int[][] currentPrmAngles = new int[DIGIT_COUNT][PHALANGE_COUNT];                // current primary angles of digits
     private int[] currentSecAngles = new int[DIGIT_COUNT];                                  // current secondary angles of digits
     private int[][] desiredPrmAngles = new int[DIGIT_COUNT][PHALANGE_COUNT];                // target primary angles for animation
     private int[] desiredSecAngles = new int[DIGIT_COUNT];                                  // target secondary angles for animation
+
+    private Mat4 ringGemMatrix = new Mat4(1);
+    private Mat4 m = new Mat4(1);
+    private Mat4 armMatrix = new Mat4(1);
+    private Mat4 palmMatrix = new Mat4(1);
+    private Mat4 ringGemMatrixTotal = new Mat4(1);
+    private Mat4 digit3ProxMatrix = new Mat4(1);
+    private TransformNode palmTranslate, ringGemTranslate, ringTranslate;
+    private TransformNode phalTLate[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];
+    private TransformNode phalTForm[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];
 
     public void initialise(GL3 gl) {
 
@@ -212,9 +246,6 @@ public class RobotHand {
         NameNode palm = new NameNode("palm");
         NameNode ring = new NameNode("ring");
         NameNode ringGem = new NameNode("ringGem");
-
-        TransformNode phalTLate[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];
-        TransformNode phalTForm[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];
 
         // ------------ Dimensions + Positions ------------ \\
 
@@ -271,7 +302,6 @@ public class RobotHand {
             desiredSecAngles[d] = DIGIT_SEC_ANGLE_NEUTRAL[d];
             currentSecAngles[d] = DIGIT_SEC_ANGLE_NEUTRAL[d];
         }
-        System.out.println("Variables initialised");
 
         // Thumb-Specific Angles
         maxPrmAngle[0][0] = 90;
@@ -304,18 +334,15 @@ public class RobotHand {
 
         // ------------ Arm + Palm ------------ \\
 
-        Mat4 m = Mat4Transform.scale(armWidth, armHeight, armDepth); // Sets dimensions of arm
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0)); // Move up by 0.5*height for origin
-        TransformNode armTransform = new TransformNode("arm transform", m);
+        armMatrix = Mat4Transform.scale(armWidth, armHeight, armDepth); // Sets dimensions of arm
+        armMatrix = Mat4.multiply(armMatrix, Mat4Transform.translate(0,0.5f,0)); // Move up by 0.5*height for origin
+        TransformNode armTransform = new TransformNode("arm transform", armMatrix);
         armRotateY = new TransformNode("arm rotate",Mat4Transform.rotateAroundY(0));
 
-        TransformNode palmTranslate = new TransformNode("palm translate", Mat4Transform.translate(0, armHeight, 0));
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(palmWidth, palmHeight, palmDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
-        TransformNode palmTransform = new TransformNode("palm transform", m);
-        palmRotateX = new TransformNode("palmX rotate",Mat4Transform.rotateAroundX(0));
-        palmRotateZ = new TransformNode("palmZ rotate",Mat4Transform.rotateAroundZ(0));
+        palmTranslate = new TransformNode("palm translate", Mat4Transform.translate(0, armHeight, 0));
+        palmMatrix = Mat4.multiply(palmMatrix, Mat4Transform.scale(palmWidth, palmHeight, palmDepth));
+        palmMatrix = Mat4.multiply(palmMatrix, Mat4Transform.translate(0,0.5f,0));
+        TransformNode palmTransform = new TransformNode("palm transform", palmMatrix);
 
         // ------------ Digit Node Generation ------------ \\
 
@@ -328,6 +355,11 @@ public class RobotHand {
                 }else{
                     m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
                 }
+
+                if ((d==3) && (p==0)){
+                    digit3ProxMatrix = m;
+                }
+
                 phalTForm[d][p] = new TransformNode("phalTForm[" + d + "][" + Integer.toString(p) + "]", m);
                 if (d==0) {
                     phalRotX[d][p] = new TransformNode("phalRotX[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundX(currentSecAngles[d]));
@@ -341,14 +373,14 @@ public class RobotHand {
 
         // ------------ Ring Node Gen ------------ \\
 
-        TransformNode ringTranslate = new TransformNode("ring translate", Mat4Transform.translate(0, 0.5f*phalLrgHeight, 0));
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(1.8f*phalLrgWidth, 0.4f*phalLrgHeight, 1.8f*phalLrgDepth));
-        TransformNode ringTransform = new TransformNode("ring transform", m);
-        TransformNode ringGemTranslate = new TransformNode("ringGem translate", Mat4Transform.translate(0, 0, -0.8f*phalLrgDepth));
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.scale(0.4f, 0.4f, 0.4f));
-        TransformNode ringGemTransform = new TransformNode("ringGem transform", m);
+        ringTranslate = new TransformNode("ring translate", Mat4Transform.translate(0, 0.5f*phalLrgHeight, 0));
+        ringGemMatrix = new Mat4(1);
+        ringGemMatrix = Mat4.multiply(ringGemMatrix, Mat4Transform.scale(1.8f*phalLrgWidth, 0.4f*phalLrgHeight, 1.8f*phalLrgDepth));
+        TransformNode ringTransform = new TransformNode("ring transform", ringGemMatrix);
+        ringGemTranslate = new TransformNode("ringGem translate", Mat4Transform.translate(0, 0, -0.8f*phalLrgDepth));
+        ringGemMatrix = new Mat4(1);
+        ringGemMatrix = Mat4.multiply(ringGemMatrix, Mat4Transform.scale(0.4f, 0.4f, 0.4f));
+        TransformNode ringGemTransform = new TransformNode("ringGem transform", ringGemMatrix);
 
         // ------------ Scene Graph ------------ \\
 
@@ -356,62 +388,60 @@ public class RobotHand {
             arm.addChild(armRotateY);
                 armRotateY.addChild(armTransform);
                     armTransform.addChild(armShape);
-                    armRotateY.addChild(palm);
+                armRotateY.addChild(palm);
 
-                        palm.addChild(palmTranslate);
-                            palmTranslate.addChild(palmRotateX);
-                                palmRotateX.addChild(palmRotateZ);
-                                    palmRotateZ.addChild(palmTransform);
-                                        palmTransform.addChild(palmShape);
+                    palm.addChild(palmTranslate);
+                        palmTranslate.addChild(palmTransform);
+                            palmTransform.addChild(palmShape);
 
-                                    palmRotateZ.addChild(phalTLate[0][0]);
-                                        phalTLate[0][0].addChild(digit[0][0]);
-                                            digit[0][0].addChild(phalRotX[0][0]);
-                                                phalRotX[0][0].addChild(phalRotZ[0][0]);
-                                                    phalRotZ[0][0].addChild(phalTForm[0][0]);
-                                                        phalTForm[0][0].addChild(phalangeShape[0][0]);
+                        palmTranslate.addChild(phalTLate[0][0]);
+                            phalTLate[0][0].addChild(digit[0][0]);
+                                digit[0][0].addChild(phalRotX[0][0]);
+                                    phalRotX[0][0].addChild(phalRotZ[0][0]);
+                                        phalRotZ[0][0].addChild(phalTForm[0][0]);
+                                            phalTForm[0][0].addChild(phalangeShape[0][0]);
 
-                                                    phalRotZ[0][0].addChild(phalTLate[0][1]);
-                                                        phalTLate[0][1].addChild(digit[0][1]);
-                                                            digit[0][1].addChild(phalRotZ[0][1]);
-                                                                phalRotZ[0][1].addChild(phalTForm[0][1]);
-                                                                    phalTForm[0][1].addChild(phalangeShape[0][1]);
+                                        phalRotZ[0][0].addChild(phalTLate[0][1]);
+                                            phalTLate[0][1].addChild(digit[0][1]);
+                                                digit[0][1].addChild(phalRotZ[0][1]);
+                                                    phalRotZ[0][1].addChild(phalTForm[0][1]);
+                                                        phalTForm[0][1].addChild(phalangeShape[0][1]);
 
-                                                                phalRotZ[0][1].addChild(phalTLate[0][2]);
-                                                                    phalTLate[0][2].addChild(digit[0][2]);
-                                                                        digit[0][2].addChild(phalRotZ[0][2]);
-                                                                            phalRotZ[0][2].addChild(phalTForm[0][2]);
-                                                                                phalTForm[0][2].addChild(phalangeShape[0][2]);
+                                                    phalRotZ[0][1].addChild(phalTLate[0][2]);
+                                                        phalTLate[0][2].addChild(digit[0][2]);
+                                                            digit[0][2].addChild(phalRotZ[0][2]);
+                                                                phalRotZ[0][2].addChild(phalTForm[0][2]);
+                                                                    phalTForm[0][2].addChild(phalangeShape[0][2]);
 
-                                    for (int d = 1; d < DIGIT_COUNT; d++) {
-                                        palmRotateZ.addChild(phalTLate[d][0]);
-                                            phalTLate[d][0].addChild(digit[d][0]);
-                                                digit[d][0].addChild(phalRotZ[d][0]);
-                                                    phalRotZ[d][0].addChild(phalRotX[d][0]);
-                                                        phalRotX[d][0].addChild(phalTForm[d][0]);
-                                                            phalTForm[d][0].addChild(phalangeShape[d][0]);
+                        for (int d = 1; d < DIGIT_COUNT; d++) {
+                            palmTranslate.addChild(phalTLate[d][0]);
+                                phalTLate[d][0].addChild(digit[d][0]);
+                                    digit[d][0].addChild(phalRotZ[d][0]);
+                                        phalRotZ[d][0].addChild(phalRotX[d][0]);
+                                            phalRotX[d][0].addChild(phalTForm[d][0]);
+                                                phalTForm[d][0].addChild(phalangeShape[d][0]);
 
-                                                        phalRotX[d][0].addChild(phalTLate[d][1]);
-                                                            phalTLate[d][1].addChild(digit[d][1]);
-                                                                digit[d][1].addChild(phalRotX[d][1]);
-                                                                    phalRotX[d][1].addChild(phalTForm[d][1]);
-                                                                        phalTForm[d][1].addChild(phalangeShape[d][1]);
+                                            phalRotX[d][0].addChild(phalTLate[d][1]);
+                                                phalTLate[d][1].addChild(digit[d][1]);
+                                                    digit[d][1].addChild(phalRotX[d][1]);
+                                                        phalRotX[d][1].addChild(phalTForm[d][1]);
+                                                            phalTForm[d][1].addChild(phalangeShape[d][1]);
 
-                                                                    phalRotX[d][1].addChild(phalTLate[d][2]);
-                                                                        phalTLate[d][2].addChild(digit[d][2]);
-                                                                            digit[d][2].addChild(phalRotX[d][2]);
-                                                                                phalRotX[d][2].addChild(phalTForm[d][2]);
-                                                                                    phalTForm[d][2].addChild(phalangeShape[d][2]);
-                                    }
+                                                        phalRotX[d][1].addChild(phalTLate[d][2]);
+                                                            phalTLate[d][2].addChild(digit[d][2]);
+                                                                digit[d][2].addChild(phalRotX[d][2]);
+                                                                    phalRotX[d][2].addChild(phalTForm[d][2]);
+                                                                        phalTForm[d][2].addChild(phalangeShape[d][2]);
+                        }
 
-                                                        phalRotX[3][0].addChild(ringTranslate);
-                                                            ringTranslate.addChild(ring);
-                                                                ring.addChild(ringTransform);
-                                                                    ringTransform.addChild(ringShape);
-                                                                ring.addChild(ringGemTranslate);
-                                                                    ringGemTranslate.addChild(ringGem);
-                                                                        ringGem.addChild(ringGemTransform);
-                                                                            ringGemTransform.addChild(ringGemShape);
+                                            phalRotX[3][0].addChild(ringTranslate);
+                                                ringTranslate.addChild(ring);
+                                                    ring.addChild(ringTransform);
+                                                        ringTransform.addChild(ringShape);
+                                                    ring.addChild(ringGemTranslate);
+                                                        ringGemTranslate.addChild(ringGem);
+                                                            ringGem.addChild(ringGemTransform);
+                                                                ringGemTransform.addChild(ringGemShape);
         robotHand.update();
     }
 
@@ -443,5 +473,26 @@ public class RobotHand {
         }
         updateAngles();
         robotHand.draw(gl);
+    }
+
+    private Mat4 transformNodeToMat4(TransformNode tNode) {
+        Mat4 matrix = tNode.getMat4();
+//        float[][] values = matrix.getValues();
+//        for (int i=0; i<4; ++i) {
+//            for (int j = 0; j < 4; ++j) {
+//                System.out.print(values[i][j]);
+//                System.out.print(" ");
+//            }
+//        }
+
+        return matrix;
+    }
+
+    private Vec3 coordsFromMat4(Mat4 matrix) {
+        float[][] values = matrix.getValues();
+        float x = values[0][3];
+        float y = values[1][3];
+        float z = values[2][3];
+        return new Vec3(x, y, z);
     }
 }
