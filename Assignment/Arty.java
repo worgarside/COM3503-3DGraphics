@@ -8,7 +8,7 @@ import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 
 public class Arty extends JFrame implements ActionListener {
-  
+
     private static final int WIDTH = 1080;
     private static final int HEIGHT = 920;
     private static final Dimension dimension = new Dimension(WIDTH, HEIGHT);
@@ -112,16 +112,16 @@ public class Arty extends JFrame implements ActionListener {
             System.exit(0);
         }
     }
-  
+
 }
- 
+
 class MyKeyboardInput extends KeyAdapter  {
-  private Camera camera;
-  
-  public MyKeyboardInput(Camera camera) {
-    this.camera = camera;
-  }
-  
+    private Camera camera;
+
+    public MyKeyboardInput(Camera camera) {
+        this.camera = camera;
+    }
+
     public void keyPressed(KeyEvent e) {
         Camera.Movement m = Camera.Movement.NO_MOVEMENT;
         switch (e.getKeyCode()) {
@@ -138,35 +138,35 @@ class MyKeyboardInput extends KeyAdapter  {
 }
 
 class MyMouseInput extends MouseMotionAdapter {
-  private Point lastpoint;
-  private Camera camera;
-  
-  public MyMouseInput(Camera camera) {
-    this.camera = camera;
-  }
-  
-    /**
-   * mouse is used to control camera position
-   *
-   * @param e  instance of MouseEvent
-   */    
-  public void mouseDragged(MouseEvent e) {
-    Point ms = e.getPoint();
-    float sensitivity = 0.001f;
-    float dx=(float) (ms.x-lastpoint.x)*sensitivity;
-    float dy=(float) (ms.y-lastpoint.y)*sensitivity;
-    //System.out.println("dy,dy: "+dx+","+dy);
-    if (e.getModifiers()==MouseEvent.BUTTON1_MASK)
-      camera.updateYawPitch(dx, -dy);
-    lastpoint = ms;
-  }
+    private Point lastpoint;
+    private Camera camera;
 
-  /**
-   * mouse is used to control camera position
-   *
-   * @param e  instance of MouseEvent
-   */  
-  public void mouseMoved(MouseEvent e) {   
-    lastpoint = e.getPoint(); 
-  }
+    public MyMouseInput(Camera camera) {
+        this.camera = camera;
+    }
+
+    /**
+     * mouse is used to control camera position
+     *
+     * @param e  instance of MouseEvent
+     */
+    public void mouseDragged(MouseEvent e) {
+        Point ms = e.getPoint();
+        float sensitivity = 0.001f;
+        float dx=(float) (ms.x-lastpoint.x)*sensitivity;
+        float dy=(float) (ms.y-lastpoint.y)*sensitivity;
+        //System.out.println("dy,dy: "+dx+","+dy);
+        if (e.getModifiers()==MouseEvent.BUTTON1_MASK)
+            camera.updateYawPitch(dx, -dy);
+        lastpoint = ms;
+    }
+
+    /**
+     * mouse is used to control camera position
+     *
+     * @param e  instance of MouseEvent
+     */
+    public void mouseMoved(MouseEvent e) {
+        lastpoint = e.getPoint();
+    }
 }

@@ -6,7 +6,7 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
-  
+
 public class Lamp {
 
     public Lamp(Mesh cubeBase, Mesh cubeBody, Mesh cubeHead, Vec3 position) {
@@ -15,7 +15,7 @@ public class Lamp {
         this.cubeHead = cubeHead;
         this.position = position;
     }
-  
+
     // ***************************************************
     /* THE SCENE
     */
@@ -106,11 +106,11 @@ public class Lamp {
                         bodyTranslate.addChild(arm1);
                             arm1.addChild(arm1Scale);
                                 arm1Scale.addChild(arm1Shape);
-                
+
                         bodyTranslate.addChild(arm2);
                             arm2.addChild(arm2Scale);
                                 arm2Scale.addChild(arm2Shape);
-                
+
                         bodyTranslate.addChild(arm3);
                             arm3.addChild(arm3Scale);
                                 arm3Scale.addChild(arm3Shape);
