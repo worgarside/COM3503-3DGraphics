@@ -32,14 +32,22 @@ public class Cube extends Mesh {
 
         shader.setVec3(gl, "viewPos", camera.getPosition());
 
-        shader.setVec3(gl, "pointLight.position", light.getPosition());
-        shader.setVec3(gl, "pointLight.ambient", light.getMaterial().getAmbient());
-        shader.setVec3(gl, "pointLight.diffuse", light.getMaterial().getDiffuse());
-        shader.setVec3(gl, "pointLight.specular", light.getMaterial().getSpecular());
+        shader.setVec3(gl, "pointLights[0].position", light.getPointLightPosition(0));
+        shader.setFloat(gl, "pointLights[0].falloffConstant", 1.0f);
+        shader.setFloat(gl, "pointLights[0].falloffLinear", 0.0027f); // CHANGE THESE NUMBERS????
+        shader.setFloat(gl, "pointLights[0].falloffSquare", 0.0027f); // CHANGE THESE NUMBERS????
+        shader.setVec3(gl, "pointLights[0].ambient", light.getMaterial().getAmbient());
+        shader.setVec3(gl, "pointLights[0].diffuse", light.getMaterial().getDiffuse());
+        shader.setVec3(gl, "pointLights[0].specular", light.getMaterial().getSpecular());
 
-        //shader.setVec3(gl, "material.ambient", material.getAmbient());
-        //shader.setVec3(gl, "material.diffuse", material.getDiffuse());
-        //shader.setVec3(gl, "material.specular", material.getSpecular());
+        shader.setVec3(gl, "pointLights[1].position", light.getPointLightPosition(1));
+        shader.setFloat(gl, "pointLights[1].falloffConstant", 1.0f);
+        shader.setFloat(gl, "pointLights[1].falloffLinear", 0.0027f); // CHANGE THESE NUMBERS????
+        shader.setFloat(gl, "pointLights[1].falloffSquare", 0.0027f); // CHANGE THESE NUMBERS????
+        shader.setVec3(gl, "pointLights[1].ambient", light.getMaterial().getAmbient());
+        shader.setVec3(gl, "pointLights[1].diffuse", light.getMaterial().getDiffuse());
+        shader.setVec3(gl, "pointLights[1].specular", light.getMaterial().getSpecular());
+
         shader.setFloat(gl, "material.shininess", material.getShininess());
 
         shader.setInt(gl, "material.diffuse", 0);  // be careful to match these with GL_TEXTURE0 and GL_TEXTURE1

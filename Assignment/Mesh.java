@@ -88,7 +88,6 @@ public abstract class Mesh {
         gl.glBindVertexArray(0);
     }
 
-    // public abstract void display(int indent);
 
     public abstract void render(GL3 gl, Mat4 model);
 
@@ -96,15 +95,6 @@ public abstract class Mesh {
         render(gl, model);
     }
 
-    //public abstract void render(GL3 gl, Light light, Vec3 viewPosition, Mat4 perspective, Mat4 view);
-  /*public void render(GL3 gl, Light light, Vec3 viewPosition, Mat4 perspective, Mat4 view) {
-    setViewPosition(viewPosition);
-    setView(view);
-    setPerspective(perspective);
-    setLight(light);
-    render(gl, this.model);
-  }
-  */
 
 
 }

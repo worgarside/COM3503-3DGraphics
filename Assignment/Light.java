@@ -14,6 +14,12 @@ public class Light {
     private Vec3 spotlightDirection = new Vec3(16f, 16f, 16f);
     private Vec3 spotlightPosition;
 
+
+    private Vec3[] pointLightPositions = new Vec3[] {
+            new Vec3 (3f, 5f, 4f),
+            new Vec3 (-3f, 5f, 4f)
+    };
+
     public Light(GL3 gl) {
         material = new Material();
         material.setAmbient(0.5f, 0.5f, 0.5f);
@@ -39,6 +45,10 @@ public class Light {
 
     public Vec3 getPosition() {
         return position;
+    }
+
+    public Vec3 getPointLightPosition(int lightNum) {
+        return pointLightPositions[lightNum];
     }
 
     public void setSpotlightPosition(Vec3 spotlightPosition) {
@@ -74,17 +84,14 @@ public class Light {
     }
 
     public void render(GL3 gl) {
-        Mat4 model = new Mat4(1);
-        model = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), model);
-        model = Mat4.multiply(Mat4Transform.translate(position), model);
-
-        Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), model));
+        gl.glBindVertexArray(vertexArrayId[0]);
 
         shader.use(gl);
-        shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
+        for (int i = 0; i < pointLightPositions.length; i++) {
+            setLightColor(gl, i);
+            drawLight(gl, i);
+        }
 
-        gl.glBindVertexArray(vertexArrayId[0]);
-        gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
         gl.glBindVertexArray(0);
     }
 
@@ -157,4 +164,29 @@ public class Light {
         gl.glBindVertexArray(0);
     }
 
+    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void drawLight(GL3 gl, int i) {
+        Mat4 model;
+        Mat4 mvpMatrix;
+        model = new Mat4(1);
+        model = Mat4.multiply(Mat4Transform.scale(1f,1f,1f), model);
+        if (i==2 || i==3) {
+            model = Mat4.multiply(Mat4Transform.scale(2f,2f,2f), model);
+        }
+        model = Mat4.multiply(Mat4Transform.translate(pointLightPositions[i]), model);
+        model = Mat4.multiply(Mat4Transform.translate(0,0.5f,0), model);
+
+        mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), model));
+
+        shader.use(gl);
+        shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
+
+        gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
+    }
+
+    // sets the color of the light 'bulb' to either grey (off) or white (on)
+    public void setLightColor(GL3 gl, int i) {
+        shader.setFloat(gl, "lightColor", 1.0f);
+    }
 }
