@@ -16,7 +16,7 @@ public class TwoTriangles extends Mesh {
     material.setDiffuse(1f, 1f, 1f);
     material.setSpecular(0.5f, 0.5f, 0.5f);
     material.setShininess(32.0f);
-    shader = new Shader(gl, "vs_tt_05.glsl", "fs_tt_05.glsl");
+    shader = new Shader(gl, "vs_tt_05.txt", "fs_tt_05.txt");
     fillBuffers(gl);
   }
 

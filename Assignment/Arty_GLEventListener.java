@@ -122,7 +122,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private Light light;
     private RobotHand robotHand;
     private Gallery gallery;
-    private Lamp lamp1, lamp2;
+    private Lamp lamp1, lamp2, lamp3, lamp4;
     private ArrayList<Mesh> meshList = new ArrayList<Mesh>();
     private float gallerySize = 24f;
 
@@ -201,8 +201,14 @@ public class Arty_GLEventListener implements GLEventListener {
         lamp1 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(gallerySize*0.4f, 0, -gallerySize*0.4f));
         lamp1.initialise(gl);
 
-        lamp2 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(-gallerySize*0.4f, 0, -gallerySize*0.4f));
+        lamp2 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(gallerySize*0.4f, 0, gallerySize*0.4f));
         lamp2.initialise(gl);
+
+        lamp3 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(-gallerySize*0.4f, 0, gallerySize*0.4f));
+        lamp3.initialise(gl);
+
+        lamp4 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(-gallerySize*0.4f, 0, -gallerySize*0.4f));
+        lamp4.initialise(gl);
     }
 
     private void render(GL3 gl) {
@@ -217,6 +223,8 @@ public class Arty_GLEventListener implements GLEventListener {
         gallery.render(gl);
         lamp1.render(gl);
         lamp2.render(gl);
+        lamp3.render(gl);
+        lamp4.render(gl);
     }
 
     private void updatePerspectiveMatrices() {
