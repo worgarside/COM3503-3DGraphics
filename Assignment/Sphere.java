@@ -19,7 +19,7 @@ public class Sphere extends Mesh {
     material.setDiffuse(1.0f, 0.5f, 0.31f);
     material.setSpecular(0.5f, 0.5f, 0.5f);
     material.setShininess(32.0f);
-    shader = new Shader(gl, "vs_cube_04.txt", "fs_cube_04.txt");
+    shader = new Shader(gl, "shaders/vs_cube_04.glsl", "shaders/fs_cube_04.glsl");
     fillBuffers(gl);
   }
   
