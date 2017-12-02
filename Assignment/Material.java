@@ -1,6 +1,6 @@
 import gmaths.*;
 
- /**
+/**
  * This class stores the Material properties for a Mesh
  *
  * @author    Dr Steve Maddock
@@ -9,177 +9,126 @@ import gmaths.*;
 
 public class Material {
 
-  public static final Vec3 DEFAULT_AMBIENT = new Vec3(0.2f, 0.2f, 0.2f);
-  public static final Vec3 DEFAULT_DIFFUSE = new Vec3(0.8f, 0.8f, 0.8f);
-  public static final Vec3 DEFAULT_SPECULAR = new Vec3(0.5f, 0.5f, 0.5f);
-  public static final Vec3 DEFAULT_EMISSION = new Vec3(0.0f, 0.0f, 0.0f);
-  public static final float DEFAULT_SHININESS = 32;
-  
-  private Vec3 ambient;
-  private Vec3 diffuse;
-  private Vec3 specular;
-  private Vec3 emission;
-  private float shininess;
-  
-  /**
-   * Constructor. Sets attributes to default initial values.
-   */    
-  public Material() {
-    ambient = new Vec3(DEFAULT_AMBIENT);
-    diffuse = new Vec3(DEFAULT_DIFFUSE);
-    specular = new Vec3(DEFAULT_SPECULAR);
-    emission = new Vec3(DEFAULT_EMISSION);
-    shininess = DEFAULT_SHININESS;
-  }
-  
-  /**
-   * Sets the ambient value (as used in Phong local reflection model)
-   * 
-   * @param  red    the red value in the range 0.0..1.0
-   * @param  green  the green value in the range 0.0..1.0
-   * @param  blue   the blue value in the range 0.0..1.0
-   */    
-  public void setAmbient(float red, float green, float blue) {
-    ambient.x = red;
-    ambient.y = green;
-    ambient.z = blue;
-  }  
-  
-  /**
-   * Sets the ambient value (as used in Phong local reflection model)
-   * 
-   * @param  rgb  vector of 3 values, where the  3 values are the values for red, green and blue, 
-                   in the range 0.0..1.0.
-   */    
-  public void setAmbient(Vec3 rgb) {
-    setAmbient(rgb.x, rgb.y, rgb.z);
-  }
-  
-  /**
-   * Gets the ambient value (as a clone)
-   * 
-   * @return  vector of 3 values, where the  3 values are the values for red, green and blue.
-   */  
-  public Vec3 getAmbient() {
-    return new Vec3(ambient);
-  }
+    public static final Vec3 DEFAULT_AMBIENT = new Vec3(0.2f, 0.2f, 0.2f);
+    public static final Vec3 DEFAULT_DIFFUSE = new Vec3(0.8f, 0.8f, 0.8f);
+    public static final Vec3 DEFAULT_SPECULAR = new Vec3(0.5f, 0.5f, 0.5f);
+    public static final Vec3 DEFAULT_EMISSION = new Vec3(0.0f, 0.0f, 0.0f);
+    public static final float DEFAULT_SHININESS = 32;
 
-  /**
-   * Sets the diffuse value (as used in Phong local reflection model)
-   * 
-   * @param  red    the red value in the range 0.0..1.0
-   * @param  green  the green value in the range 0.0..1.0
-   * @param  blue   the blue value in the range 0.0..1.0
-  */  
-  public void setDiffuse(float red, float green, float blue) {
-    diffuse.x = red;
-    diffuse.y = green;
-    diffuse.z = blue;
-  }
-  
-  /**
-   * Sets the diffuse value (as used in Phong local reflection model)
-   * 
-   * @param  rgb  vector of 3 values, where the  3 values are the values for red, green and blue, 
-                   in the range 0.0..1.0.
-   */      
-  public void setDiffuse(Vec3 rgb) {
-    setDiffuse(rgb.x, rgb.y, rgb.z);
-  }
+    private Vec3 ambient;
+    private Vec3 diffusePoint;
+    private Vec3 diffuseSpot;
+    private Vec3 specularPoint;
+    private Vec3 specularSpot;
+    private Vec3 emission;
+    private float shininess;
 
-  /**
-   * Gets the diffuse value (clone) (as used in Phong local reflection model)
-   * 
-   * @return  vector of 3 values, where the  3 values are the values for red, green and blue
-   */    
-  public Vec3 getDiffuse() {
-    return new Vec3(diffuse);
-  }
+    public Material() {
+        ambient = new Vec3(DEFAULT_AMBIENT);
+        diffusePoint = new Vec3(DEFAULT_DIFFUSE);
+        diffuseSpot = new Vec3(DEFAULT_DIFFUSE);
+        specularPoint = new Vec3(DEFAULT_SPECULAR);
+        specularSpot = new Vec3(DEFAULT_SPECULAR);
+        emission = new Vec3(DEFAULT_EMISSION);
+        shininess = DEFAULT_SHININESS;
+    }
 
-  /**
-   * Sets the specular value (as used in Phong local reflection model)
-   * 
-   * @param  red    the red value in the range 0.0..1.0
-   * @param  green  the green value in the range 0.0..1.0
-   * @param  blue   the blue value in the range 0.0..1.0
-  */    
-  public void setSpecular(float red, float green, float blue) {
-    specular.x = red;
-    specular.y = green;
-    specular.z = blue;
-  }
+    public String toString() {
+        return "a: " + ambient + ", dP: " + diffusePoint +", sP: " + specularPoint + ", e:" + emission + ", shininess:" + shininess;
+    }
 
-  /**
-   * Sets the specular value (as used in Phong local reflection model)
-   * 
-   * @param  rgb  vector of 3 values, where the first 3 values are the values for red, green and blue, 
-                   in the range 0.0..1.0, and the last value is an alpha term, which is always 1.
-   */    
-  public void setSpecular(Vec3 rgb) {
-    setSpecular(rgb.x, rgb.y, rgb.z);
-  }
-    
-  /**
-   * Gets the specular value (clone) (as used in Phong local reflection model)
-   * 
-   * @return  vector of 3 values, where the  3 values are the values for red, green and blue.
-   */  
-  public Vec3 getSpecular() {
-    return new Vec3(specular);
-  }
+    // ------------ Ambient ------------ \\
 
-  /**
-   * Sets the emission value (as used in OpenGL lighting model)
-   * 
-   * @param  red    the red value in the range 0.0..1.0
-   * @param  green  the green value in the range 0.0..1.0
-   * @param  blue   the blue value in the range 0.0..1.0
-   */    
-  public void setEmission(float red, float green, float blue) {
-    emission.x = red;
-    emission.y = green;
-    emission.z = blue;
-  }
-  
-  /**
-   * Sets the emission value (as used in OpenGL lighting model)
-   * 
-   * @param  rgb  vector of 3 values, where the 3 values are the values for red, green and blue, 
-                   in the range 0.0..1.0.
-   */    
-  public void setEmission(Vec3 rgb) {
-    setEmission(rgb.x, rgb.y, rgb.z);
-  }
+    public void setAmbient(float red, float green, float blue) {
+        ambient.x = red;
+        ambient.y = green;
+        ambient.z = blue;
+    }
 
-  /**
-   * Gets the emission value (clone) (as used in OpenGL lighting model)
-   * 
-   * @return  vector of 3 values, where the  3 values are the values for red, green and blue.
-   */ 
-  public Vec3 getEmission() {
-    return new Vec3(emission);
-  }
-    
-  /**
-   * Sets the shininess value (as used in Phong local reflection model)
-   * 
-   * @param  shininess  the shininess value.
-   */   
-  public void setShininess(float shininess) {
-    this.shininess = shininess;
-  }
-  
-  /**
-   * Gets the shininess value (as used in Phong local reflection model)
-   * 
-   * @return  the shininess value.
-   */   
-  public float getShininess() {
-    return shininess;
-  }
+    public void setAmbient(Vec3 rgb) {
+        setAmbient(rgb.x, rgb.y, rgb.z);
+    }
 
-  public String toString() {
-    return "a:"+ambient+", d:"+diffuse+", s:"+specular+", e:"+emission+", shininess:"+shininess;
-  }  
+    public Vec3 getAmbient() {
+        return new Vec3(ambient);
+    }
+
+    // ------------ Diffuse ------------ \\
+
+    public void setDiffusePoint(float red, float green, float blue) {
+        diffusePoint.x = red;
+        diffusePoint.y = green;
+        diffusePoint.z = blue;
+    }
+
+    public void setDiffuseSpot(float red, float green, float blue) {
+        diffuseSpot.x = red;
+        diffuseSpot.y = green;
+        diffuseSpot.z = blue;
+    }
+
+//    public void setDiffuse(Vec3 rgb) {
+//        setDiffuse(rgb.x, rgb.y, rgb.z);
+//    }
+
+    public Vec3 getDiffusePoint() {
+        return new Vec3(diffusePoint);
+    }
+
+    public Vec3 getDiffuseSpot() {
+        return new Vec3(diffuseSpot);
+    }
+
+    // ------------ Specular ------------ \\
+
+    public void setSpecularPoint(float red, float green, float blue) {
+        specularPoint.x = red;
+        specularPoint.y = green;
+        specularPoint.z = blue;
+    }
+
+    public void setSpecularSpot(float red, float green, float blue) {
+        specularSpot.x = red;
+        specularSpot.y = green;
+        specularSpot.z = blue;
+    }
+
+//    public void setSpecular(Vec3 rgb) {
+//        setSpecular(rgb.x, rgb.y, rgb.z);
+//    }
+
+    public Vec3 getSpecularPoint() {
+        return new Vec3(specularPoint);
+    }
+    public Vec3 getSpecularSpot() {
+        return new Vec3(specularSpot);
+    }
+
+    // ------------ Emission ------------ \\
+
+
+    public void setEmission(float red, float green, float blue) {
+        emission.x = red;
+        emission.y = green;
+        emission.z = blue;
+    }
+
+    public void setEmission(Vec3 rgb) {
+        setEmission(rgb.x, rgb.y, rgb.z);
+    }
+
+    public Vec3 getEmission() {
+        return new Vec3(emission);
+    }
+
+    // ------------ Shininess ------------ \\
+
+    public void setShininess(float shininess) {
+        this.shininess = shininess;
+    }
+
+    public float getShininess() {
+        return shininess;
+    }
 
 }
