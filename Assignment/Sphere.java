@@ -19,11 +19,11 @@ public class Sphere extends Mesh {
         this.textureId2 = textureId2;
         material.setAmbient(1.0f, 0.5f, 0.31f);
 
-        material.setDiffusePoint(1.0f, 0.5f, 0.31f);
-        material.setSpecularPoint(0.5f, 0.5f, 0.5f);
+        material.setAllDiffusePoints(1.0f, 0.5f, 0.31f);
+        material.setAllSpecularPoints(0.5f, 0.5f, 0.5f);
 
-        material.setDiffuseSpot(1.0f, 0.5f, 0.31f);
-        material.setSpecularSpot(0.5f, 0.5f, 0.5f);
+        material.setAllDiffuseSpots(1.0f, 0.5f, 0.31f);
+        material.setAllSpecularSpots(0.5f, 0.5f, 0.5f);
 
         material.setShininess(32.0f);
         shader = new Shader(gl, "shaders/vs_object.glsl", "shaders/fs_object.glsl");
@@ -44,8 +44,8 @@ public class Sphere extends Mesh {
         for (int i =0; i < LIGHT_COUNT; i++) {
             shader.setVec3(gl, "lightSources[" + i + "].position", light.getPosition(i));
             shader.setVec3(gl, "lightSources[" + i + "].ambient", SCENE_AMBIENT);
-            shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint());  //new Vec3(1f, 0.2f, 0.2f));/
-            shader.setVec3(gl, "lightSources[" + i + "].specular", light.getMaterial().getSpecularPoint());
+            shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint(i));  //new Vec3(1f, 0.2f, 0.2f));/
+            shader.setVec3(gl, "lightSources[" + i + "].specular", light.getMaterial().getSpecularPoint(i));
             shader.setFloat(gl, "lightSources[" + i + "].falloffConstant", 1f);      // Change this number
             shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", 1f);        // Change this number
             shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", 1f);     // Change this number

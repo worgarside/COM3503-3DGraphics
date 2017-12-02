@@ -11,7 +11,6 @@ public class Light {
     private Shader shader;
     private Camera camera;
     private Mat4 perspective;
-    private static final int LIGHT_COUNT = 1;
 
     private Vec3[] position = new Vec3[] {
             new Vec3(3f, 4f, 5f),
@@ -42,10 +41,10 @@ public class Light {
     public Light(GL3 gl) {
         material = new Material();
         material.setAmbient(0.5f, 0.5f, 0.5f);
-        material.setDiffusePoint(0.8f, 0.8f, 0.8f);
-        material.setSpecularPoint(1.0f, 1.0f, 1.0f);
-        material.setDiffuseSpot(0.8f, 0.8f, 0.8f);
-        material.setSpecularSpot(1.0f, 1.0f, 1.0f);
+        material.setAllDiffusePoints(0.8f, 0.8f, 0.8f);
+        material.setAllSpecularPoints(1.0f, 1.0f, 1.0f);
+        material.setAllDiffuseSpots(0.8f, 0.8f, 0.8f);
+        material.setAllSpecularSpots(1.0f, 1.0f, 1.0f);
         model = new Mat4(1);
         shader = new Shader(gl, "shaders/vs_light_01.glsl", "shaders/fs_light_01.glsl");
         fillBuffers(gl);
@@ -124,7 +123,7 @@ public class Light {
         return exponent[i];
     }
 
-    // ------------ Mesh Methods ------------ \\
+    // ------------ Methods ------------ \\
 
     public void render(GL3 gl) {
         gl.glBindVertexArray(vertexArrayId[0]);
@@ -148,6 +147,10 @@ public class Light {
         gl.glDeleteBuffers(1, vertexBufferId, 0);
         gl.glDeleteVertexArrays(1, vertexArrayId, 0);
         gl.glDeleteBuffers(1, elementBufferId, 0);
+    }
+
+    public void setPower(int lightNum, int powerLevel) {
+        System.out.println(lightNum + " : " + powerLevel);
     }
 
     // ------------ Data ------------ \\

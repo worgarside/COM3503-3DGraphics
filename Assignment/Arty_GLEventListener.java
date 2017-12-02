@@ -109,6 +109,11 @@ public class Arty_GLEventListener implements GLEventListener {
         robotHand.setRobotHandPos(letter);
     }
 
+    public void toggleLamps() {
+        lamp1.setState(light, 0);
+        lamp2.setState(light, 0);
+    }
+
     // ***************************************************
     /* THE SCENE
     * Now define all the methods to handle the scene.
@@ -125,6 +130,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private Lamp lamp1, lamp2;
     private ArrayList<Mesh> meshList = new ArrayList<Mesh>();
     private float gallerySize = 24f;
+    private boolean lampsOn = true;
 
     private void initialise(GL3 gl) {
         createRandomNumbers();
@@ -201,10 +207,10 @@ public class Arty_GLEventListener implements GLEventListener {
 
         gallery = new Gallery(gallerySize, floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outside);
 
-        lamp1 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(-gallerySize*0.4f, 0, -gallerySize*0.4f));
+        lamp1 = new Lamp(1, cubeLampBase, cubeLampBody, cubeRobot, new Vec3(-gallerySize*0.4f, 0, -gallerySize*0.4f));
         lamp1.initialise(gl);
 
-        lamp2 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(gallerySize*0.4f, 0, -gallerySize*0.4f));
+        lamp2 = new Lamp(2, cubeLampBase, cubeLampBody, cubeRobot, new Vec3(gallerySize*0.4f, 0, -gallerySize*0.4f));
         lamp2.initialise(gl);
     }
 

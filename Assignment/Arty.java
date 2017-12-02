@@ -59,6 +59,9 @@ public class Arty extends JFrame implements ActionListener {
         btn = new JButton("Custom");
         btn.addActionListener(this);
         panel.add(btn);
+        btn = new JButton("Toggle Lamps");
+        btn.addActionListener(this);
+        panel.add(btn);
         JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
         armAngleSlider.addChangeListener(sliderListener);
         panel.add(armAngleSlider);
@@ -107,6 +110,9 @@ public class Arty extends JFrame implements ActionListener {
         }
         else if (e.getActionCommand().equalsIgnoreCase("Custom")) {
             glEventListener.changeHandPos('P');
+        }
+        else if (e.getActionCommand().equalsIgnoreCase("Toggle Lamps")) {
+            glEventListener.toggleLamps();
         }
         else if(e.getActionCommand().equalsIgnoreCase("quit")){
             System.exit(0);

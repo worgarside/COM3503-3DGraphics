@@ -7,21 +7,25 @@ public class Material {
     public static final Vec3 DEFAULT_SPECULAR = new Vec3(0.05f, 0.05f, 0.05f);
     public static final Vec3 DEFAULT_EMISSION = new Vec3(0.0f, 0.0f, 0.0f);
     public static final float DEFAULT_SHININESS = 32;
+    private static final int LIGHT_COUNT = 3;
 
     private Vec3 ambient;
-    private Vec3 diffusePoint;
-    private Vec3 diffuseSpot;
-    private Vec3 specularPoint;
-    private Vec3 specularSpot;
+    private Vec3[] diffusePoint = new Vec3[LIGHT_COUNT];
+    private Vec3[] diffuseSpot = new Vec3[LIGHT_COUNT];
+    private Vec3[] specularPoint = new Vec3[LIGHT_COUNT];
+    private Vec3[] specularSpot = new Vec3[LIGHT_COUNT];
     private Vec3 emission;
     private float shininess;
 
     public Material() {
         ambient = new Vec3(DEFAULT_AMBIENT);
-        diffusePoint = new Vec3(DEFAULT_DIFFUSE);
-        diffuseSpot = new Vec3(DEFAULT_DIFFUSE);
-        specularPoint = new Vec3(DEFAULT_SPECULAR);
-        specularSpot = new Vec3(DEFAULT_SPECULAR);
+        for (int i = 0; i < LIGHT_COUNT; i++) {
+            diffusePoint[i] = new Vec3(DEFAULT_DIFFUSE);
+            diffuseSpot[i] = new Vec3(DEFAULT_DIFFUSE);
+            specularPoint[i] = new Vec3(DEFAULT_SPECULAR);
+            specularSpot[i] = new Vec3(DEFAULT_SPECULAR);
+        }
+
         emission = new Vec3(DEFAULT_EMISSION);
         shininess = DEFAULT_SHININESS;
     }
@@ -48,49 +52,79 @@ public class Material {
 
     // ------------ Diffuse ------------ \\
 
-    public void setDiffusePoint(float red, float green, float blue) {
-        diffusePoint.x = red;
-        diffusePoint.y = green;
-        diffusePoint.z = blue;
+    public void setDiffusePoint(int i, float red, float green, float blue) {
+        diffusePoint[i].x = red;
+        diffusePoint[i].y = green;
+        diffusePoint[i].z = blue;
     }
 
-    public void setDiffuseSpot(float red, float green, float blue) {
-        diffuseSpot.x = red;
-        diffuseSpot.y = green;
-        diffuseSpot.z = blue;
+    public void setDiffuseSpot(int i, float red, float green, float blue) {
+        diffuseSpot[i].x = red;
+        diffuseSpot[i].y = green;
+        diffuseSpot[i].z = blue;
     }
 
-    public Vec3 getDiffusePoint() {
-        return new Vec3(diffusePoint);
+    public void setAllDiffusePoints(float red, float green, float blue) {
+        for (int i = 0; i < LIGHT_COUNT; i++) {
+            setDiffusePoint(i, red, green, blue);
+        }
     }
 
-    public Vec3 getDiffuseSpot() {
-        return new Vec3(diffuseSpot);
+    public void setAllDiffuseSpots(float red, float green, float blue) {
+        for (int i = 0; i < LIGHT_COUNT; i++) {
+            setDiffuseSpot(i, red, green, blue);
+        }
+    }
+
+    public Vec3 getDiffusePoint(int i) {
+        return diffusePoint[i];
+    }
+
+    public Vec3 getDefaultDiffusePoint() {
+        return DEFAULT_DIFFUSE;
+    }
+
+    public Vec3 getDiffuseSpot(int i) {
+        return diffuseSpot[i];
     }
 
     // ------------ Specular ------------ \\
 
-    public void setSpecularPoint(float red, float green, float blue) {
-        specularPoint.x = red;
-        specularPoint.y = green;
-        specularPoint.z = blue;
+    public void setSpecularPoint(int i, float red, float green, float blue) {
+        specularPoint[i].x = red;
+        specularPoint[i].y = green;
+        specularPoint[i].z = blue;
     }
 
-    public void setSpecularSpot(float red, float green, float blue) {
-        specularSpot.x = red;
-        specularSpot.y = green;
-        specularSpot.z = blue;
+    public void setSpecularSpot(int i, float red, float green, float blue) {
+        specularSpot[i].x = red;
+        specularSpot[i].y = green;
+        specularSpot[i].z = blue;
     }
 
-//    public void setSpecular(Vec3 rgb) {
-//        setSpecular(rgb.x, rgb.y, rgb.z);
-//    }
-
-    public Vec3 getSpecularPoint() {
-        return new Vec3(specularPoint);
+    public void setAllSpecularPoints(float red, float green, float blue) {
+        for (int i = 0; i < LIGHT_COUNT; i++) {
+            setSpecularPoint(i, red, green, blue);
+        }
     }
-    public Vec3 getSpecularSpot() {
-        return new Vec3(specularSpot);
+
+    public void setAllSpecularSpots(float red, float green, float blue) {
+        for (int i = 0; i < LIGHT_COUNT; i++) {
+            setSpecularSpot(i, red, green, blue);
+        }
+    }
+
+
+    public Vec3 getSpecularPoint(int i) {
+        return specularPoint[i];
+    }
+
+    public Vec3 getDefaultSpecularPoint() {
+        return DEFAULT_SPECULAR;
+    }
+
+    public Vec3 getSpecularSpot(int i) {
+        return specularSpot[i];
     }
 
     // ------------ Emission ------------ \\

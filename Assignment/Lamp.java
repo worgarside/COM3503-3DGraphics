@@ -9,7 +9,8 @@ import com.jogamp.opengl.util.glsl.*;
 
 public class Lamp {
 
-    public Lamp(Mesh cubeBase, Mesh cubeBody, Mesh cubeHead, Vec3 position) {
+    public Lamp(int lightNum, Mesh cubeBase, Mesh cubeBody, Mesh cubeHead, Vec3 position) {
+        this.lightNum = lightNum;
         this.cubeBase = cubeBase;
         this.cubeBody = cubeBody;
         this.cubeHead = cubeHead;
@@ -29,6 +30,7 @@ public class Lamp {
     /* THE SCENE
     */
 
+    private int lightNum;
     private Mesh cubeBase, cubeBody, cubeHead;
     private Vec3 position;
     private SGNode lamp;
@@ -135,4 +137,7 @@ public class Lamp {
         return new Vec3(x, y, z);
     }
 
+    public void setState(Light light, int state) {
+        light.setPower(lightNum, state);
+    }
 }
