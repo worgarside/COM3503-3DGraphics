@@ -5,15 +5,16 @@ import com.jogamp.opengl.*;
 
 public class Cube extends Mesh {
 
-    private int[] textureId1;
-    private int[] textureId2;
+    private int[] texture;
+    private int[] textureSpecular;
+    private static final int LIGHT_COUNT = 2;
 
-    public Cube(GL3 gl, int[] textureId1, int[] textureId2) {
+    public Cube(GL3 gl, int[] texture, int[] textureSpecular) {
         super(gl);
         super.vertices = this.vertices;
         super.indices = this.indices;
-        this.textureId1 = textureId1;
-        this.textureId2 = textureId2;
+        this.texture = texture;
+        this.textureSpecular = textureSpecular;
         material.setAmbient(1.0f, 0.5f, 0.31f);
 
         material.setDiffusePoint(1.0f, 0.5f, 0.31f);
@@ -36,18 +37,16 @@ public class Cube extends Mesh {
         shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
 
         shader.setVec3(gl, "viewPos", camera.getPosition());
+//        shader.setVec3(gl, "sceneAmbient", new Vec3(0.2f, 0.2f, 0.2f));
 
-    /*
-        for l in light
-            shader.setVec3(pos, light1.pos
-            shedvnb amb, light1.amb
-
-     */
-
-        shader.setVec3(gl, "light.position", light.getPosition());
-        shader.setVec3(gl, "light.ambient", light.getMaterial().getAmbient());
-        shader.setVec3(gl, "light.diffuse", light.getMaterial().getDiffusePoint());
-        shader.setVec3(gl, "light.specular", light.getMaterial().getSpecularPoint());
+        for (int i =0; i < LIGHT_COUNT; i++) {
+            shader.setVec3(gl, "lightSources[" + i + "].position", light.getPosition(i));
+            shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint());  //new Vec3(1f, 0.2f, 0.2f));/
+            shader.setVec3(gl, "lightSources[" + i + "].specular", light.getMaterial().getSpecularPoint());
+            shader.setFloat(gl, "lightSources[" + i + "].falloffConstant", 1f);      // Change this number
+            shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", 1f);        // Change this number
+            shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", 1f);     // Change this number
+        }
 
         shader.setFloat(gl, "material.shininess", material.getShininess());
 
@@ -55,9 +54,9 @@ public class Cube extends Mesh {
         shader.setInt(gl, "material.specular", 1);
 
         gl.glActiveTexture(GL.GL_TEXTURE0);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, textureId1[0]);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, texture[0]);
         gl.glActiveTexture(GL.GL_TEXTURE1);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, textureId2[0]);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, textureSpecular[0]);
 
         gl.glBindVertexArray(vertexArrayId[0]);
         gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
@@ -66,8 +65,8 @@ public class Cube extends Mesh {
 
     public void dispose(GL3 gl) {
         super.dispose(gl);
-        gl.glDeleteBuffers(1, textureId1, 0);
-        gl.glDeleteBuffers(1, textureId2, 0);
+        gl.glDeleteBuffers(1, texture, 0);
+        gl.glDeleteBuffers(1, textureSpecular, 0);
     }
 
     // ***************************************************

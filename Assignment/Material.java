@@ -1,12 +1,5 @@
 import gmaths.*;
 
-/**
- * This class stores the Material properties for a Mesh
- *
- * @author    Dr Steve Maddock
- * @version   1.0 (15/10/2017)
- */
-
 public class Material {
 
     public static final Vec3 DEFAULT_AMBIENT = new Vec3(0.2f, 0.2f, 0.2f);
@@ -67,12 +60,9 @@ public class Material {
         diffuseSpot.z = blue;
     }
 
-//    public void setDiffuse(Vec3 rgb) {
-//        setDiffuse(rgb.x, rgb.y, rgb.z);
-//    }
-
     public Vec3 getDiffusePoint() {
         return new Vec3(diffusePoint);
+//        return new Vec3(1f, 1f, 1f);
     }
 
     public Vec3 getDiffuseSpot() {
@@ -105,7 +95,6 @@ public class Material {
     }
 
     // ------------ Emission ------------ \\
-
 
     public void setEmission(float red, float green, float blue) {
         emission.x = red;

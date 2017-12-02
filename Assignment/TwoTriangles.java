@@ -35,7 +35,7 @@ public class TwoTriangles extends Mesh {
 
         shader.setVec3(gl, "viewPos", camera.getPosition());
 
-        shader.setVec3(gl, "light.position", light.getPosition());
+        shader.setVec3(gl, "light.position", light.getPosition(1));
         shader.setVec3(gl, "light.ambient", light.getMaterial().getAmbient());
         shader.setVec3(gl, "light.diffuse", light.getMaterial().getDiffusePoint());
         shader.setVec3(gl, "light.specular", light.getMaterial().getSpecularPoint());

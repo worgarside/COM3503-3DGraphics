@@ -11,7 +11,13 @@ public class Light {
     private Shader shader;
     private Camera camera;
     private Mat4 perspective;
-    private static final int LIGHT_COUNT = 2;
+    private static final int LIGHT_COUNT = 1;
+
+    private Vec3[] pointLightPositions = new Vec3[] {
+            new Vec3(3f, 4f, 5f),
+            new Vec3(-4f, 4f, -5f)
+    };
+
 
     public Light(GL3 gl) {
 
@@ -44,8 +50,8 @@ public class Light {
         position.z = z;
     }
 
-    public Vec3 getPosition() {
-        return position;
+    public Vec3 getPosition(int i) {
+        return pointLightPositions[i];
     }
 
     public void setMaterial(Material m) {
@@ -69,35 +75,6 @@ public class Light {
 
         Mat4 model = new Mat4(1);
 
-//        for (int i = 0; i < LIGHT_COUNT; i++) {
-//            model = new Mat4(1);
-//            model =
-//        }
-
-
-        /*
-
-        for l in light
-            model = Mat4(1)
-            model * scale(l)
-            model * trasnform(light)
-
-            mvpmatrix = perspective * cameraVM * model
-
-            shader.use(gl)
-
-            shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
-            gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
-         */
-
-
-
-
-
-
-
-
-
         model = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), model);
         model = Mat4.multiply(Mat4Transform.translate(position), model);
 
@@ -106,10 +83,7 @@ public class Light {
         shader.use(gl);
         shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
 
-
         gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
-
-
 
         gl.glBindVertexArray(0);
     }
