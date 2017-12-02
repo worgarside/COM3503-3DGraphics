@@ -216,7 +216,10 @@ public class Arty_GLEventListener implements GLEventListener {
 
         updatePerspectiveMatrices();
 
-        light.setPosition(robotHand.getRingPos());
+//        light.setPosition(robotHand.getRingPos());
+        light.setPosition(getLightPosition());
+
+
         light.render(gl);
 
         robotHand.render(gl);
@@ -242,5 +245,14 @@ public class Arty_GLEventListener implements GLEventListener {
         for (Mesh mesh : meshList) {
             mesh.dispose(gl);
         }
+    }
+
+    private Vec3 getLightPosition() {
+        double elapsedTime = getSeconds()-startTime;
+        float x = 5.0f*(float)(Math.sin(Math.toRadians(elapsedTime*50)));
+        float y = 2.7f;
+        float z = 5.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
+        return new Vec3(x,y,z);
+        //return new Vec3(5f,3.4f,5f);
     }
 }

@@ -11,14 +11,13 @@ public class Light {
     private Shader shader;
     private Camera camera;
     private Mat4 perspective;
-    private Vec3 spotlightDirection = new Vec3(16f, 16f, 16f);
-    private Vec3 spotlightPosition;
+    private static final int LIGHT_COUNT = 2;
 
     public Light(GL3 gl) {
         material = new Material();
         material.setAmbient(0.5f, 0.5f, 0.5f);
-        material.setDiffuse(0.8f, 0.8f, 0.8f);
-        material.setSpecular(1.0f, 1.0f, 1.0f);
+        material.setDiffuse(4f, 0.8f, 0.8f);
+        material.setSpecular(1.0f, 1.0f, 10.0f);
         position = new Vec3(7f, 2f, 1f);
         model = new Mat4(1);
         shader = new Shader(gl, "shaders/vs_light_01.glsl", "shaders/fs_light_01.glsl");
@@ -41,22 +40,6 @@ public class Light {
         return position;
     }
 
-    public void setSpotlightPosition(Vec3 spotlightPosition) {
-        this.spotlightPosition = spotlightPosition;
-    }
-
-    public Vec3 getSpotlightPosition(){
-        return spotlightPosition;
-    }
-
-    public void setSpotlightDirection(Vec3 spotlightDirection){
-        this.spotlightDirection = spotlightDirection;
-    }
-
-    public Vec3 getSpotlightDirection(){
-        return spotlightDirection;
-    }
-
     public void setMaterial(Material m) {
         material = m;
     }
@@ -74,7 +57,39 @@ public class Light {
     }
 
     public void render(GL3 gl) {
+        gl.glBindVertexArray(vertexArrayId[0]);
+
         Mat4 model = new Mat4(1);
+
+//        for (int i = 0; i < LIGHT_COUNT; i++) {
+//            model = new Mat4(1);
+//            model =
+//        }
+
+
+        /*
+
+        for l in light
+            model = Mat4(1)
+            model * scale(l)
+            model * trasnform(light)
+
+            mvpmatrix = perspective * cameraVM * model
+
+            shader.use(gl)
+
+            shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
+            gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
+         */
+
+
+
+
+
+
+
+
+
         model = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), model);
         model = Mat4.multiply(Mat4Transform.translate(position), model);
 
@@ -83,8 +98,11 @@ public class Light {
         shader.use(gl);
         shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
 
-        gl.glBindVertexArray(vertexArrayId[0]);
+
         gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
+
+
+
         gl.glBindVertexArray(0);
     }
 
