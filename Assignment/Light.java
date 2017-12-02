@@ -16,8 +16,8 @@ public class Light {
     public Light(GL3 gl) {
         material = new Material();
         material.setAmbient(0.5f, 0.5f, 0.5f);
-        material.setDiffuse(4f, 0.8f, 0.8f);
-        material.setSpecular(1.0f, 1.0f, 10.0f);
+        material.setDiffuse(0.8f, 0.8f, 0.8f);
+        material.setSpecular(1.0f, 1.0f, 1.0f);
         position = new Vec3(7f, 2f, 1f);
         model = new Mat4(1);
         shader = new Shader(gl, "shaders/vs_light_01.glsl", "shaders/fs_light_01.glsl");
