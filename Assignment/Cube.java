@@ -49,6 +49,9 @@ public class Cube extends Mesh {
             shader.setFloat(gl, "lightSources[" + i + "].falloffConstant", 1f);      // Change this number
             shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", 1f);        // Change this number
             shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", 1f);     // Change this number
+            shader.setVec3(gl, "lightSources[" + i + "].spotDirection", light.getDirection(i));
+            shader.setFloat(gl, "lightSources[" + i + "].spotCutoff", light.getCutoff(i));
+            shader.setFloat(gl, "lightSources[" + i + "].position", light.getExponent(i));
         }
 
         shader.setFloat(gl, "material.shininess", material.getShininess());

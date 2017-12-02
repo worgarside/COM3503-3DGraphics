@@ -13,80 +13,128 @@ public class Light {
     private Mat4 perspective;
     private static final int LIGHT_COUNT = 1;
 
-    private Vec3[] lightPosition = new Vec3[] {
+    private Vec3[] position = new Vec3[] {
             new Vec3(3f, 4f, 5f),
             new Vec3(-4f, 4f, -5f),
-            new Vec3(7f, 6f, -5f)
+            new Vec3(7f, 6f, -5f),
     };
 
-    private Vec3[] lightSize = new Vec3[] {
+    private Vec3[] size = new Vec3[] {
             new Vec3(0.2f, 0.2f, 0.2f),
             new Vec3(1.38f, 1.38f, 1.38f),
-            new Vec3(1.38f, 1.38f, 1.38f)
+            new Vec3(1.38f, 1.38f, 1.38f),
     };
 
-    private int[] lightRotation = new int[] {0, 45, 45};
+    private float[] bulbRotation = new float[] {0, 45, 45};
+
+    private Vec3[] direction = new Vec3[] {
+            new Vec3(0.5f, 0.5f, 0.5f),
+            new Vec3(0.5f, 0.5f, 0.5f),
+            new Vec3(0.5f, 0.5f, 0.5f),
+    };
+
+    private float[] cutoff = new float[] {0.5f, 0.5f, 0.5f};
+
+    private float[] exponent = new float[] {0.5f, 0.5f, 0.5f};
+
+    // ------------ Constructor ------------ \\
 
     public Light(GL3 gl) {
-
         material = new Material();
         material.setAmbient(0.5f, 0.5f, 0.5f);
-
         material.setDiffusePoint(0.8f, 0.8f, 0.8f);
         material.setSpecularPoint(1.0f, 1.0f, 1.0f);
-
         material.setDiffuseSpot(0.8f, 0.8f, 0.8f);
         material.setSpecularSpot(1.0f, 1.0f, 1.0f);
-
-
-        bulbPos = lightPosition[0];//new Vec3(1f, 2f, 1f);
-
         model = new Mat4(1);
         shader = new Shader(gl, "shaders/vs_light_01.glsl", "shaders/fs_light_01.glsl");
         fillBuffers(gl);
     }
 
-    public void setPosition(int i, Vec3 v) {
-        lightPosition[i].x = v.x;
-        lightPosition[i].y = v.y;
-        lightPosition[i].z = v.z;
-    }
-
-    public void setPosition(int i, float x, float y, float z) {
-        lightPosition[i].x = x;
-        lightPosition[i].y = y;
-        lightPosition[i].z = z;
-    }
-
-    public Vec3 getPosition(int i) {
-        return lightPosition[i];
+    // ------------ Setters ------------ \\
+    public void setPosition(int i, Vec3 pos) {
+        position[i].x = pos.x;
+        position[i].y = pos.y;
+        position[i].z = pos.z;
     }
 
     public void setMaterial(Material m) {
         material = m;
     }
 
-    public Material getMaterial() {
-        return material;
+    public void setSize(int i, Vec3 size){
+        this.size[i].x = size.x;
+        this.size[i].y = size.y;
+        this.size[i].z = size.z;
     }
 
-    public void setCamera(Camera camera) {
-        this.camera = camera;
+    public void setRotation(int i, float rot){
+        bulbRotation[i] = rot;
+    }
+
+    public void setDirection(int i, Vec3 dir){
+        direction[i].x = dir.x;
+        direction[i].y = dir.y;
+        direction[i].z = dir.z;
+    }
+
+    public void setCutoff(int i, float cutoff){
+        this.cutoff[i] = cutoff;
+    }
+
+    public void setExponent(int i, float exp){
+        exponent[i] = exp;
     }
 
     public void setPerspective(Mat4 perspective) {
         this.perspective = perspective;
     }
 
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+    }
+
+    // ------------ Getters ------------ \\
+
+    public Vec3 getPosition(int i) {
+        return position[i];
+    }
+
+    public Material getMaterial() {
+        return material;
+    }
+
+    public Vec3 getSize(int i){
+        return size[i];
+    }
+
+    public float getRotation(int i){
+        return bulbRotation[i];
+    }
+
+    public Vec3 getDirection(int i){
+        return direction[i];
+    }
+
+    public float getCutoff(int i){
+        return cutoff[i];
+    }
+
+    public float getExponent(int i){
+        return exponent[i];
+    }
+
+    // ------------ Mesh Methods ------------ \\
+
     public void render(GL3 gl) {
         gl.glBindVertexArray(vertexArrayId[0]);
         Mat4 m = new Mat4(1);
 
-        for (int i = 0; i < lightPosition.length; i++) {
+        for (int i = 0; i < position.length; i++) {
             m = new Mat4(1);
-            m = Mat4.multiply(Mat4Transform.scale(lightSize[i]), m);
-            m = Mat4.multiply(Mat4Transform.rotateAroundY(lightRotation[i]), m);
-            m = Mat4.multiply(Mat4Transform.translate(lightPosition[i]), m);
+            m = Mat4.multiply(Mat4Transform.scale(size[i]), m);
+            m = Mat4.multiply(Mat4Transform.rotateAroundY(bulbRotation[i]), m);
+            m = Mat4.multiply(Mat4Transform.translate(position[i]), m);
             Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), m));
             shader.use(gl);
             shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
@@ -102,9 +150,7 @@ public class Light {
         gl.glDeleteBuffers(1, elementBufferId, 0);
     }
 
-    // ***************************************************
-    // THE DATA
-    // anticlockwise/counterclockwise ordering
+    // ------------ Data ------------ \\
 
     private float[] vertices = new float[] {  // x,y,z
             -0.5f, -0.5f, -0.5f,  // 0
@@ -135,9 +181,7 @@ public class Light {
     private int vertexStride = 3;
     private int vertexXYZFloats = 3;
 
-    // ***************************************************
-  /* THE LIGHT BUFFERS
-   */
+    // ------------ Buffers ------------ \\
 
     private int[] vertexBufferId = new int[1];
     private int[] vertexArrayId = new int[1];
