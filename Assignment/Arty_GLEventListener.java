@@ -122,7 +122,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private Light light;
     private RobotHand robotHand;
     private Gallery gallery;
-    private Lamp lamp1, lamp2, lamp3, lamp4;
+    private Lamp lamp1, lamp2;
     private ArrayList<Mesh> meshList = new ArrayList<Mesh>();
     private float gallerySize = 24f;
 
@@ -133,6 +133,8 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular.jpg");
         int[] textureRing = TextureLibrary.loadTexture(gl, "textures/textureRing.jpg");
         int[] textureRingSpecular = TextureLibrary.loadTexture(gl, "textures/textureRingSpecular.jpg");
+        int[] textureRingGem = TextureLibrary.loadTexture(gl, "textures/textureRingGem.jpg");
+        int[] textureRingGemSpecular = TextureLibrary.loadTexture(gl, "textures/textureRingGemSpecular.jpg");
         int[] textureWallBackTop = TextureLibrary.loadTexture(gl, "textures/textureWallBackTop.jpg");
         int[] textureWallBackLeft = TextureLibrary.loadTexture(gl, "textures/textureWallBackLeft.jpg");
         int[] textureWallBackRight = TextureLibrary.loadTexture(gl, "textures/textureWallBackRight.jpg");
@@ -144,15 +146,16 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureOutside = TextureLibrary.loadTexture(gl, "textures/textureOutside.jpg");
         int[] textureLampBase = TextureLibrary.loadTexture(gl, "textures/textureLampBase.jpg");
         int[] textureLampBody = TextureLibrary.loadTexture(gl, "textures/textureLampBody.jpg");
-        int[] textureDefaultSpecular = TextureLibrary.loadTexture(gl, "textures/textureDefaultSpecular.jpg");
+        int[] textureDefaultSpecularLow = TextureLibrary.loadTexture(gl, "textures/textureDefaultSpecularLow.jpg");
+        int[] textureDefaultSpecularHigh = TextureLibrary.loadTexture(gl, "textures/textureDefaultSpecularHigh.jpg");
 
         // make meshes
         sphere = new Sphere(gl, textureRobot, textureRobotSpecular);
         cubeRobot = new Cube(gl, textureRobot, textureRobotSpecular);
         sphereRing = new Sphere(gl, textureRing, textureRingSpecular);
-        sphereRingGem = new Sphere(gl, textureRobot, textureRobotSpecular);
-        cubeLampBase = new Cube(gl, textureLampBase, textureDefaultSpecular);
-        cubeLampBody = new Cube(gl, textureLampBody, textureDefaultSpecular);
+        sphereRingGem = new Sphere(gl, textureRingGem, textureRingGemSpecular);
+        cubeLampBase = new Cube(gl, textureLampBase, textureDefaultSpecularLow);
+        cubeLampBody = new Cube(gl, textureLampBody, textureDefaultSpecularLow);
         meshList.add(sphere);
         meshList.add(cubeRobot);
         meshList.add(sphereRing);
@@ -198,36 +201,25 @@ public class Arty_GLEventListener implements GLEventListener {
 
         gallery = new Gallery(gallerySize, floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outside);
 
-        lamp1 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(gallerySize*0.4f, 0, -gallerySize*0.4f));
+        lamp1 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(-gallerySize*0.4f, 0, -gallerySize*0.4f));
         lamp1.initialise(gl);
 
-        lamp2 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(gallerySize*0.4f, 0, gallerySize*0.4f));
+        lamp2 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(gallerySize*0.4f, 0, -gallerySize*0.4f));
         lamp2.initialise(gl);
-
-        lamp3 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(-gallerySize*0.4f, 0, gallerySize*0.4f));
-        lamp3.initialise(gl);
-
-        lamp4 = new Lamp(cubeLampBase, cubeLampBody, cubeRobot, new Vec3(-gallerySize*0.4f, 0, -gallerySize*0.4f));
-        lamp4.initialise(gl);
     }
 
     private void render(GL3 gl) {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-
         updatePerspectiveMatrices();
 
-//        light.setPosition(0, robotHand.getRingPos());
-        light.setPosition(0, getLightPosition());
-
-
+        light.setPosition(0, robotHand.getRingPos()); //set spotlight pos
+        light.setPosition(1, lamp1.getLightBulbPos()); //set bulb pos
+        light.setPosition(2, lamp2.getLightBulbPos()); //set bulb pos
         light.render(gl);
-
         robotHand.render(gl);
         gallery.render(gl);
         lamp1.render(gl);
         lamp2.render(gl);
-        lamp3.render(gl);
-        lamp4.render(gl);
     }
 
     private void updatePerspectiveMatrices() {
@@ -245,14 +237,5 @@ public class Arty_GLEventListener implements GLEventListener {
         for (Mesh mesh : meshList) {
             mesh.dispose(gl);
         }
-    }
-
-    private Vec3 getLightPosition() {
-        double elapsedTime = getSeconds()-startTime;
-        float x = 5.0f*(float)(Math.sin(Math.toRadians(elapsedTime*50)));
-        float y = 2.7f;
-        float z = 5.0f*(float)(Math.cos(Math.toRadians(elapsedTime*50)));
-        return new Vec3(x,y,z);
-        //return new Vec3(5f,3.4f,5f);
     }
 }

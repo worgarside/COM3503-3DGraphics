@@ -4,7 +4,7 @@ public class Material {
 
     public static final Vec3 DEFAULT_AMBIENT = new Vec3(0.2f, 0.2f, 0.2f);
     public static final Vec3 DEFAULT_DIFFUSE = new Vec3(0.8f, 0.8f, 0.8f);
-    public static final Vec3 DEFAULT_SPECULAR = new Vec3(0.5f, 0.5f, 0.5f);
+    public static final Vec3 DEFAULT_SPECULAR = new Vec3(0.05f, 0.05f, 0.05f);
     public static final Vec3 DEFAULT_EMISSION = new Vec3(0.0f, 0.0f, 0.0f);
     public static final float DEFAULT_SHININESS = 32;
 
@@ -62,7 +62,6 @@ public class Material {
 
     public Vec3 getDiffusePoint() {
         return new Vec3(diffusePoint);
-//        return new Vec3(1f, 1f, 1f);
     }
 
     public Vec3 getDiffuseSpot() {

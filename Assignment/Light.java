@@ -13,11 +13,19 @@ public class Light {
     private Mat4 perspective;
     private static final int LIGHT_COUNT = 1;
 
-    private Vec3[] pointLightPositions = new Vec3[] {
+    private Vec3[] lightPosition = new Vec3[] {
             new Vec3(3f, 4f, 5f),
             new Vec3(-4f, 4f, -5f),
             new Vec3(7f, 6f, -5f)
     };
+
+    private Vec3[] lightSize = new Vec3[] {
+            new Vec3(0.2f, 0.2f, 0.2f),
+            new Vec3(1.38f, 1.38f, 1.38f),
+            new Vec3(1.38f, 1.38f, 1.38f)
+    };
+
+    private int[] lightRotation = new int[] {0, 45, 45};
 
     public Light(GL3 gl) {
 
@@ -31,7 +39,7 @@ public class Light {
         material.setSpecularSpot(1.0f, 1.0f, 1.0f);
 
 
-        bulbPos = pointLightPositions[0];//new Vec3(1f, 2f, 1f);
+        bulbPos = lightPosition[0];//new Vec3(1f, 2f, 1f);
 
         model = new Mat4(1);
         shader = new Shader(gl, "shaders/vs_light_01.glsl", "shaders/fs_light_01.glsl");
@@ -39,19 +47,19 @@ public class Light {
     }
 
     public void setPosition(int i, Vec3 v) {
-        pointLightPositions[i].x = v.x;
-        pointLightPositions[i].y = v.y;
-        pointLightPositions[i].z = v.z;
+        lightPosition[i].x = v.x;
+        lightPosition[i].y = v.y;
+        lightPosition[i].z = v.z;
     }
 
     public void setPosition(int i, float x, float y, float z) {
-        pointLightPositions[i].x = x;
-        pointLightPositions[i].y = y;
-        pointLightPositions[i].z = z;
+        lightPosition[i].x = x;
+        lightPosition[i].y = y;
+        lightPosition[i].z = z;
     }
 
     public Vec3 getPosition(int i) {
-        return pointLightPositions[i];
+        return lightPosition[i];
     }
 
     public void setMaterial(Material m) {
@@ -72,21 +80,19 @@ public class Light {
 
     public void render(GL3 gl) {
         gl.glBindVertexArray(vertexArrayId[0]);
+        Mat4 m = new Mat4(1);
 
-        Mat4 model = new Mat4(1);
-
-        for (int i = 0; i < pointLightPositions.length; i++) {
-            model = new Mat4(1);
-            model = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), model);
-            model = Mat4.multiply(Mat4Transform.translate(pointLightPositions[i]), model);
-
-            Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), model));
-
+        for (int i = 0; i < lightPosition.length; i++) {
+            m = new Mat4(1);
+            m = Mat4.multiply(Mat4Transform.scale(lightSize[i]), m);
+            m = Mat4.multiply(Mat4Transform.rotateAroundY(lightRotation[i]), m);
+            m = Mat4.multiply(Mat4Transform.translate(lightPosition[i]), m);
+            Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), m));
             shader.use(gl);
             shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
-
             gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
         }
+
         gl.glBindVertexArray(0);
     }
 

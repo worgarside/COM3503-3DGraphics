@@ -7,16 +7,38 @@ public class TwoTriangles extends Mesh {
 
     private int[] textureId;
     private static final int LIGHT_COUNT = 3;
+    private static final Vec3 SCENE_AMBIENT = new Vec3(0.05f, 0.05f, 0.05f);
 
     public TwoTriangles(GL3 gl, int[] textureId) {
         super(gl);
         super.vertices = this.vertices;
         super.indices = this.indices;
         this.textureId = textureId;
-        material.setAmbient(1f, 1f, 1f);
+        material.setAmbient(SCENE_AMBIENT);
 
-        material.setDiffusePoint(1f, 1f, 1f);
-        material.setSpecularPoint(0.5f, 0.5f, 0.5f);
+        System.out.println(textureId[0]);
+
+        material.setDiffusePoint(0.75f, 0.75f, 0.75f);
+
+
+        switch(textureId[0]) {
+            case 1 : // Floor
+                material.setSpecularPoint(0.6f, 0.6f, 0.6f);
+                break;
+            case 13 : // textureWallLeft
+            case 14 : // textureWallRight
+            case 12 : // textureWallFront
+            case 8 : // textureWallBackTop
+            case 9 : // textureWallBackLeft
+            case 10 : // textureWallBackRight
+            case 11 : // textureWallBackBottom
+            case 15 : // textureCeiling
+                material.setSpecularPoint(0.1f, 0.1f, 0.1f);
+                break;
+            case 16 : // textureOutside
+                material.setSpecularPoint(0f, 0f, 0f);
+                break;
+        }
 
         material.setDiffuseSpot(1f, 1f, 1f);
         material.setSpecularSpot(0.5f, 0.5f, 0.5f);
@@ -36,10 +58,15 @@ public class TwoTriangles extends Mesh {
 
         shader.setVec3(gl, "viewPos", camera.getPosition());
 
-        shader.setVec3(gl, "light.position", light.getPosition(1));
-        shader.setVec3(gl, "light.ambient", light.getMaterial().getAmbient());
-        shader.setVec3(gl, "light.diffuse", light.getMaterial().getDiffusePoint());
-        shader.setVec3(gl, "light.specular", light.getMaterial().getSpecularPoint());
+        for (int i =0; i < LIGHT_COUNT; i++) {
+            shader.setVec3(gl, "lightSources[" + i + "].position", light.getPosition(i));
+            shader.setVec3(gl, "lightSources[" + i + "].ambient", SCENE_AMBIENT);
+            shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint());
+            shader.setVec3(gl, "lightSources[" + i + "].specular", light.getMaterial().getSpecularPoint());
+            shader.setFloat(gl, "lightSources[" + i + "].falloffConstant", 1f);      // Change this number
+            shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", 1f);        // Change this number
+            shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", 1f);     // Change this number
+        }
 
         shader.setVec3(gl, "material.ambient", material.getAmbient());
         shader.setVec3(gl, "material.diffuse", material.getDiffusePoint());

@@ -8,6 +8,7 @@ public class Sphere extends Mesh {
     private int[] textureId1;
     private int[] textureId2;
     private static final int LIGHT_COUNT = 3;
+    private static final Vec3 SCENE_AMBIENT = new Vec3(0.2f, 0.2f, 0.2f);
 
     public Sphere(GL3 gl, int[] textureId1, int[] textureId2) {
         super(gl);
@@ -39,13 +40,10 @@ public class Sphere extends Mesh {
 
         shader.setVec3(gl, "viewPos", camera.getPosition());
 
-//        shader.setVec3(gl, "light.position", light.getPosition(1));
-//        shader.setVec3(gl, "light.ambient", light.getMaterial().getAmbient());
-//        shader.setVec3(gl, "light.diffuse", light.getMaterial().getDiffusePoint());
-//        shader.setVec3(gl, "light.specular", light.getMaterial().getSpecularPoint());
 
         for (int i =0; i < LIGHT_COUNT; i++) {
             shader.setVec3(gl, "lightSources[" + i + "].position", light.getPosition(i));
+            shader.setVec3(gl, "lightSources[" + i + "].ambient", SCENE_AMBIENT);
             shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint());  //new Vec3(1f, 0.2f, 0.2f));/
             shader.setVec3(gl, "lightSources[" + i + "].specular", light.getMaterial().getSpecularPoint());
             shader.setFloat(gl, "lightSources[" + i + "].falloffConstant", 1f);      // Change this number

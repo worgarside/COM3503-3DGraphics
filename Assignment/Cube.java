@@ -8,6 +8,8 @@ public class Cube extends Mesh {
     private int[] texture;
     private int[] textureSpecular;
     private static final int LIGHT_COUNT = 3;
+    private static final Vec3 SCENE_AMBIENT = new Vec3(0.2f, 0.2f, 0.2f);
+
 
     public Cube(GL3 gl, int[] texture, int[] textureSpecular) {
         super(gl);
@@ -41,7 +43,8 @@ public class Cube extends Mesh {
 
         for (int i =0; i < LIGHT_COUNT; i++) {
             shader.setVec3(gl, "lightSources[" + i + "].position", light.getPosition(i));
-            shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint());  //new Vec3(1f, 0.2f, 0.2f));/
+            shader.setVec3(gl, "lightSources[" + i + "].ambient", SCENE_AMBIENT);
+            shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint());
             shader.setVec3(gl, "lightSources[" + i + "].specular", light.getMaterial().getSpecularPoint());
             shader.setFloat(gl, "lightSources[" + i + "].falloffConstant", 1f);      // Change this number
             shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", 1f);        // Change this number

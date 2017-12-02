@@ -153,12 +153,6 @@ public class RobotHand {
     }
 
     public Vec3 getRingPos() {
-        float x, y, z;
-        // Default Values - from translation values
-        x = -0.5f;
-        y = 9.75f;
-        z = -0.64f;
-
         ringGemMatrixTotal = new Mat4(1);
         ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(armRotateY));
         ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(palmTranslate));

@@ -1,10 +1,6 @@
 @echo off
 
-javac RobotHand.java
-
-javac Gallery.java
-
-javac Lamp.java
+del *.class
 
 javac Arty.java
 

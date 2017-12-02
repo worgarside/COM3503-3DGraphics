@@ -6,7 +6,7 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
-  
+
 public class Lamp {
 
     public Lamp(Mesh cubeBase, Mesh cubeBody, Mesh cubeHead, Vec3 position) {
@@ -15,7 +15,16 @@ public class Lamp {
         this.cubeHead = cubeHead;
         this.position = position;
     }
-  
+
+    public Vec3 getLightBulbPos() {
+        lightBulbMatrix = new Mat4(1);
+        lightBulbMatrix = Mat4.multiply(lightBulbMatrix, transformNodeToMat4(baseTranslate));
+        lightBulbMatrix = Mat4.multiply(lightBulbMatrix, transformNodeToMat4(bodyTranslate));
+        lightBulbMatrix = Mat4.multiply(lightBulbMatrix, transformNodeToMat4(bulbTranslate));
+
+        return coordsFromMat4(lightBulbMatrix);
+    }
+
     // ***************************************************
     /* THE SCENE
     */
@@ -23,6 +32,9 @@ public class Lamp {
     private Mesh cubeBase, cubeBody, cubeHead;
     private Vec3 position;
     private SGNode lamp;
+    private Mat4 lightBulbMatrix = new Mat4(1);
+    private TransformNode bodyTranslate, baseTranslate, bulbTranslate;
+    private static final int LAMP_ARM_COUNT = 4;
 
     public void initialise(GL3 gl) {
 
@@ -30,16 +42,10 @@ public class Lamp {
 
         MeshNode baseShape = new MeshNode("Cube(base)", cubeBase);
         MeshNode bodyShape = new MeshNode("Cube(body)", cubeBody);
-        MeshNode arm1Shape = new MeshNode("Cube(arm1)", cubeBody);
-        MeshNode arm2Shape = new MeshNode("Cube(arm1)", cubeBody);
-        MeshNode arm3Shape = new MeshNode("Cube(arm1)", cubeBody);
 
         lamp = new NameNode("root");
         NameNode base = new NameNode("base");
         NameNode body = new NameNode("body");
-        NameNode arm1 = new NameNode("arm1");
-        NameNode arm2 = new NameNode("arm2");
-        NameNode arm3 = new NameNode("arm3");
 
         // ------------ Dimensions + Positions ------------ \\
 
@@ -55,41 +61,41 @@ public class Lamp {
         float armHeight = 1.6f;
         float armDepth = 0.28f;
 
+        int armAngleX = 45;
+        int[] armAngleY = {45, 135, 225, 315};
+
         // ------------ Initialise ------------ \\
 
-        TransformNode baseTranslate = new TransformNode("base translate", Mat4Transform.translate(position.x, position.y, position.z));
+        baseTranslate = new TransformNode("base translate", Mat4Transform.translate(position.x, position.y, position.z));
         Mat4 m = Mat4Transform.scale(baseWidth, baseHeight, baseDepth);
         m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
         TransformNode baseScale = new TransformNode("base scale", m);
 
         m = new Mat4(1);
-        TransformNode bodyTranslate = new TransformNode("body translate", Mat4Transform.translate(0, baseHeight, 0));
+        bodyTranslate = new TransformNode("body translate", Mat4Transform.translate(0, baseHeight, 0));
         m = Mat4Transform.scale(bodyWidth, bodyHeight, bodyDepth);
         m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
         TransformNode bodyScale = new TransformNode("body scale", m);
 
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(0, bodyHeight-0.1f, 0));
-        m = Mat4.multiply(m, Mat4Transform.rotateAroundY(120));
-        m = Mat4.multiply(m, Mat4Transform.rotateAroundX(45));
-        m = Mat4.multiply(m, Mat4Transform.scale(armWidth, armHeight, armDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-        TransformNode arm1Scale = new TransformNode("arm1 scale", m);
 
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(0, bodyHeight-0.1f, 0));
-        m = Mat4.multiply(m, Mat4Transform.rotateAroundY(240));
-        m = Mat4.multiply(m, Mat4Transform.rotateAroundX(45));
-        m = Mat4.multiply(m, Mat4Transform.scale(armWidth, armHeight, armDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-        TransformNode arm2Scale = new TransformNode("arm2 scale", m);
+        TransformNode[] armScale = new TransformNode[LAMP_ARM_COUNT];
+        MeshNode[] armShape = new MeshNode[LAMP_ARM_COUNT];
+        NameNode[] arm = new NameNode[LAMP_ARM_COUNT];
 
-        m = new Mat4(1);
-        m = Mat4.multiply(m, Mat4Transform.translate(0, bodyHeight-0.1f, 0));
-        m = Mat4.multiply(m, Mat4Transform.rotateAroundX(45));
-        m = Mat4.multiply(m, Mat4Transform.scale(armWidth, armHeight, armDepth));
-        m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-        TransformNode arm3Scale = new TransformNode("arm3 scale", m);
+        for (int i = 0; i < LAMP_ARM_COUNT; i++) {
+            armShape[i]  = new MeshNode("Cube(arm" + i + ")", cubeBody);
+
+            arm[i] = new NameNode("arm" + i);
+            m = new Mat4(1);
+            m = Mat4.multiply(m, Mat4Transform.translate(0, bodyHeight-0.1f, 0));
+            m = Mat4.multiply(m, Mat4Transform.rotateAroundY(armAngleY[i]));
+            m = Mat4.multiply(m, Mat4Transform.rotateAroundX(armAngleX));
+            m = Mat4.multiply(m, Mat4Transform.scale(armWidth, armHeight, armDepth));
+            m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
+            armScale[i] = new TransformNode("arm" + i + " scale", m);
+        }
+
+        bulbTranslate = new TransformNode("bulb translate", Mat4Transform.translate(0, bodyHeight + 1.5f, 0));
 
         // ------------ Scene Graph ------------ \\
 
@@ -103,23 +109,30 @@ public class Lamp {
                         bodyTranslate.addChild(bodyScale);
                             bodyScale.addChild(bodyShape);
 
-                        bodyTranslate.addChild(arm1);
-                            arm1.addChild(arm1Scale);
-                                arm1Scale.addChild(arm1Shape);
-                
-                        bodyTranslate.addChild(arm2);
-                            arm2.addChild(arm2Scale);
-                                arm2Scale.addChild(arm2Shape);
-                
-                        bodyTranslate.addChild(arm3);
-                            arm3.addChild(arm3Scale);
-                                arm3Scale.addChild(arm3Shape);
+                        for (int i = 0; i < LAMP_ARM_COUNT; i++) {
+                            bodyTranslate.addChild(arm[i]);
+                                arm[i].addChild(armScale[i]);
+                                    armScale[i].addChild(armShape[i]);
+                        }
 
         lamp.update();
     }
 
     public void render(GL3 gl) {
         lamp.draw(gl);
+    }
+
+    private Mat4 transformNodeToMat4(TransformNode tNode) {
+        Mat4 matrix = tNode.getMat4();
+        return matrix;
+    }
+
+    private Vec3 coordsFromMat4(Mat4 matrix) {
+        float[][] values = matrix.getValues();
+        float x = values[0][3];
+        float y = values[1][3];
+        float z = values[2][3];
+        return new Vec3(x, y, z);
     }
 
 }
