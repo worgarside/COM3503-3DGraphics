@@ -47,8 +47,8 @@ public class Sphere extends Mesh {
             shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint(i));  //new Vec3(1f, 0.2f, 0.2f));/
             shader.setVec3(gl, "lightSources[" + i + "].specular", light.getMaterial().getSpecularPoint(i));
             shader.setFloat(gl, "lightSources[" + i + "].falloffConstant", 1f);      // Change this number
-            shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", 1f);        // Change this number
-            shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", 1f);     // Change this number
+            shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", 0.25f);        // Change this number
+            shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", 0.1f);     // Change this number
             shader.setVec3(gl, "lightSources[" + i + "].spotDirection", light.getDirection(i));
             shader.setFloat(gl, "lightSources[" + i + "].spotCutoff", light.getCutoff(i));
             shader.setFloat(gl, "lightSources[" + i + "].position", light.getExponent(i));

@@ -5,12 +5,27 @@ import com.jogamp.opengl.*;
 
 public class Light {
 
+    public static final Vec3 DEFAULT_AMBIENT = new Vec3(0.2f, 0.2f, 0.2f);
+    private static final int LIGHT_COUNT = 3;
+
     private Material material;
     private Vec3 bulbPos;
     private Mat4 model;
     private Shader shader;
     private Camera camera;
     private Mat4 perspective;
+
+    private Vec3 originalDiffuse[] = new Vec3[] {
+            new Vec3(0.75f, 0.75f, 0.75f),
+            new Vec3(0.75f, 0.75f, 0.75f),
+            new Vec3(0.75f, 0.75f, 0.75f),
+    };
+
+    private Vec3 originalSpecular[] = new Vec3[] {
+            new Vec3(0.0f, 0.0f, 0.0f),
+            new Vec3(1.0f, 1.0f, 1.0f),
+            new Vec3(1.0f, 1.0f, 1.0f),
+    };
 
     private Vec3[] position = new Vec3[] {
             new Vec3(3f, 4f, 5f),
@@ -40,11 +55,16 @@ public class Light {
 
     public Light(GL3 gl) {
         material = new Material();
-        material.setAmbient(0.5f, 0.5f, 0.5f);
-        material.setAllDiffusePoints(0.8f, 0.8f, 0.8f);
-        material.setAllSpecularPoints(1.0f, 1.0f, 1.0f);
-        material.setAllDiffuseSpots(0.8f, 0.8f, 0.8f);
-        material.setAllSpecularSpots(1.0f, 1.0f, 1.0f);
+        material.setAmbient(DEFAULT_AMBIENT);
+
+        for (int i =0; i < LIGHT_COUNT; i++) {
+            material.setDiffusePoint(i, originalDiffuse[i].x, originalDiffuse[i].y, originalDiffuse[i].z);
+            material.setSpecularPoint(i, originalSpecular[i].x, originalSpecular[i].y, originalSpecular[i].z);
+        }
+//        material.setAllDiffusePoints(DEFAULT_DIFFUSE.x, DEFAULT_DIFFUSE.y, DEFAULT_DIFFUSE.z);
+//        material.setAllSpecularPoints(DEFAULT_SPECULAR.x, DEFAULT_SPECULAR.y, DEFAULT_SPECULAR.z);
+//        material.setAllDiffuseSpots(DEFAULT_DIFFUSE.x, DEFAULT_DIFFUSE.y, DEFAULT_DIFFUSE.z);
+//        material.setAllSpecularSpots(DEFAULT_SPECULAR.x, DEFAULT_SPECULAR.y, DEFAULT_SPECULAR.z);
         model = new Mat4(1);
         shader = new Shader(gl, "shaders/vs_light_01.glsl", "shaders/fs_light_01.glsl");
         fillBuffers(gl);
@@ -150,7 +170,9 @@ public class Light {
     }
 
     public void setPower(int lightNum, int powerLevel) {
-        System.out.println(lightNum + " : " + powerLevel);
+        material.setDiffusePoint(lightNum, originalDiffuse[lightNum].x*powerLevel, originalDiffuse[lightNum].y*powerLevel, originalDiffuse[lightNum].z*powerLevel);
+        material.setSpecularPoint(lightNum, originalSpecular[lightNum].x*powerLevel, originalSpecular[lightNum].y*powerLevel, originalSpecular[lightNum].z*powerLevel);
+
     }
 
     // ------------ Data ------------ \\

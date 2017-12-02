@@ -110,8 +110,17 @@ public class Arty_GLEventListener implements GLEventListener {
     }
 
     public void toggleLamps() {
-        lamp1.setState(light, 0);
-        lamp2.setState(light, 0);
+        if (lampsOn) {
+            lamp1.setState(light, 0);
+            lamp2.setState(light, 0);
+            lampsOn = false;
+            System.out.println("Off");
+        } else {
+            lamp1.setState(light, 1);
+            lamp2.setState(light, 1);
+            lampsOn = true;
+            System.out.println("On");
+        }
     }
 
     // ***************************************************

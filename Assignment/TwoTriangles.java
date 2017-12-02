@@ -62,7 +62,7 @@ public class TwoTriangles extends Mesh {
             shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint(i));
             shader.setVec3(gl, "lightSources[" + i + "].specular", light.getMaterial().getSpecularPoint(i));
             shader.setFloat(gl, "lightSources[" + i + "].falloffConstant", 1f);      // Change this number
-            shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", 1f);        // Change this number
+            shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", 0.25f);        // Change this number
             shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", 1f);     // Change this number
             shader.setVec3(gl, "lightSources[" + i + "].spotDirection", light.getDirection(i));
             shader.setFloat(gl, "lightSources[" + i + "].spotCutoff", light.getCutoff(i));
