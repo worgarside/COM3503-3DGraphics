@@ -357,9 +357,9 @@ public class RobotHand {
         // ------------ Ring Node Gen ------------ \\
 
         ringTranslate = new TransformNode("ring translate", Mat4Transform.translate(0, 0.5f*phalLrgHeight, 0));
-        ringGemMatrix = new Mat4(1);
-        ringGemMatrix = Mat4.multiply(ringGemMatrix, Mat4Transform.scale(1.8f*phalLrgWidth, 0.4f*phalLrgHeight, 1.8f*phalLrgDepth));
-        TransformNode ringTransform = new TransformNode("ring transform", ringGemMatrix);
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.scale(1.8f*phalLrgWidth, 0.4f*phalLrgHeight, 1.8f*phalLrgDepth));
+        TransformNode ringTransform = new TransformNode("ring transform", m);
         ringGemTranslate = new TransformNode("ringGem translate", Mat4Transform.translate(0, 0, -0.8f*phalLrgDepth));
         ringGemMatrix = new Mat4(1);
         ringGemMatrix = Mat4.multiply(ringGemMatrix, Mat4Transform.scale(0.4f, 0.4f, 0.4f));

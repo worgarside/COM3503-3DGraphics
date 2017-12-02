@@ -12,7 +12,8 @@ public class TwoTriangles extends Mesh {
     super.vertices = this.vertices;
     super.indices = this.indices;
     this.textureId = textureId;
-    material.setAmbient(1f, 1f, 1f);
+//    material.setAmbient(1f, 1f, 1f);
+    material.setAmbient(0f, 0f, 0f);
     material.setDiffuse(1f, 1f, 1f);
     material.setSpecular(0.5f, 0.5f, 0.5f);
     material.setShininess(32.0f);

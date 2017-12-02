@@ -24,21 +24,21 @@ struct LightSource {
 LightSource lightSources[lightSourceCount];
 
 LightSource light0 = LightSource(
-  vec3(-3.0,  8.0,  -2.0),
-  vec3(1.0,  1.0,  1.0),
-  vec3(1.0,  1.0,  1.0),
-  0.0, 1.0, 0.0,
-  180.0, 0.0,
-  vec3(0.0, 0.0, 0.0)
+    vec3(-3.0,  8.0,  -2.0),    // position
+    vec3(0.0,  0.0,  0.0),      // diffuse
+    vec3(1.0,  1.0,  1.0),      // specular
+    0.0, 1.0, 0.0,              // const, lin, quad
+    180.0, 0.0,                 // cutOff, exponent
+    vec3(0.0, 0.0, 0.0)         // spotDirection
 );
 
 LightSource light1 = LightSource(
-    vec3(4.0, 2.0,  5.0),
-    vec3(2.0,  0.0,  0.0),
-    vec3(0.1,  0.1,  0.1),
-    0.0, 1.0, 0.0,
-    80.0, 10.0,
-    vec3(0.0, 1.0, 0.0)
+    vec3(4.0, 2.0,  5.0),       // position
+    vec3(4.0,  1.0,  1.0),      // diffuse
+    vec3(1.0,  1.0,  1.0),      // specular
+    0.0, 1.0, 0.0,              // const, lin, qua
+    180, 10.0,                 // cutOff, exponen
+    vec3(0.0, 1.0, 0.0)         // spotDirection
 );
 
 struct Material {
@@ -58,18 +58,6 @@ void main() {
     vec3 lightDir;
     float falloff;
 
-    vec3 totalLighting = vec3(sceneAmbient) * vec3(material.shininess);
-
-
-
-    /*
-    // diffuse
-
-    // specular
-
-    vec3 result = ambient + diffuse + specular;
-
-    */
     vec3 result = vec3(0,0,0);
     // for all light sources
     for (int i = 0; i < lightSourceCount; i++) {
@@ -90,28 +78,17 @@ void main() {
             }
         }
 
-//        vec3 diffuseReflection = falloff * vec3(lightSources[i].diffuse) * max(0.0, dot(normDir, lightDir));
-
-
         float diff = max(dot(normDir, lightDir), 0.0);
 
-        vec3 diffuse = lightSources[i].diffuse * diff * vec3(texture(material.diffuse, ourTexCoord));
-
-        /*
-        vec3 specularReflection;
-        // light source on the wrong side?
-        if (dot(normDir, lightDir) < 0.0) {
-          specularReflection = vec3(0.0, 0.0, 0.0); // no specular reflection
-        } else {// light source on the right side
-            specularReflection = falloff * vec3(lightSources[i].specular) * vec3(texture(material.specular, ourTexCoord)) * pow(max(0.0, dot(reflect(-lightDir, normDir), viewDir)), material.shininess);
-        }
-    	*/
+        vec3 diffuse = falloff * vec3(lightSources[i].diffuse) * diff * vec3(texture(material.diffuse, ourTexCoord));
 
         vec3 reflectDir = reflect(-lightDir, normDir);
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-        vec3 specular = lightSources[i].specular * spec * vec3(texture(material.specular, ourTexCoord));
+        vec3 specular = falloff * lightSources[i].specular * spec * vec3(texture(material.specular, ourTexCoord));
 
-        result = result + diffuse + specular;
+        vec3 ambient  = sceneAmbient  * vec3(texture(material.diffuse, ourTexCoord));
+
+        result = result + diffuse + specular + ambient;
     }
 
     fragColor = vec4(result, 1.0);
