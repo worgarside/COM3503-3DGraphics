@@ -6,7 +6,7 @@ import com.jogamp.opengl.*;
 public class Light {
 
     private Material material;
-    private Vec3 position;
+    private Vec3 bulbPos;
     private Mat4 model;
     private Shader shader;
     private Camera camera;
@@ -15,9 +15,9 @@ public class Light {
 
     private Vec3[] pointLightPositions = new Vec3[] {
             new Vec3(3f, 4f, 5f),
-            new Vec3(-4f, 4f, -5f)
+            new Vec3(-4f, 4f, -5f),
+            new Vec3(7f, 6f, -5f)
     };
-
 
     public Light(GL3 gl) {
 
@@ -31,23 +31,23 @@ public class Light {
         material.setSpecularSpot(1.0f, 1.0f, 1.0f);
 
 
+        bulbPos = pointLightPositions[0];//new Vec3(1f, 2f, 1f);
 
-        position = new Vec3(7f, 2f, 1f);
         model = new Mat4(1);
         shader = new Shader(gl, "shaders/vs_light_01.glsl", "shaders/fs_light_01.glsl");
         fillBuffers(gl);
     }
 
-    public void setPosition(Vec3 v) {
-        position.x = v.x;
-        position.y = v.y;
-        position.z = v.z;
+    public void setPosition(int i, Vec3 v) {
+        pointLightPositions[i].x = v.x;
+        pointLightPositions[i].y = v.y;
+        pointLightPositions[i].z = v.z;
     }
 
-    public void setPosition(float x, float y, float z) {
-        position.x = x;
-        position.y = y;
-        position.z = z;
+    public void setPosition(int i, float x, float y, float z) {
+        pointLightPositions[i].x = x;
+        pointLightPositions[i].y = y;
+        pointLightPositions[i].z = z;
     }
 
     public Vec3 getPosition(int i) {
@@ -75,16 +75,18 @@ public class Light {
 
         Mat4 model = new Mat4(1);
 
-        model = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), model);
-        model = Mat4.multiply(Mat4Transform.translate(position), model);
+        for (int i = 0; i < pointLightPositions.length; i++) {
+            model = new Mat4(1);
+            model = Mat4.multiply(Mat4Transform.scale(0.3f, 0.3f, 0.3f), model);
+            model = Mat4.multiply(Mat4Transform.translate(pointLightPositions[i]), model);
 
-        Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), model));
+            Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), model));
 
-        shader.use(gl);
-        shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
+            shader.use(gl);
+            shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
 
-        gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
-
+            gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
+        }
         gl.glBindVertexArray(0);
     }
 

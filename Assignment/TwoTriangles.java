@@ -6,6 +6,7 @@ import com.jogamp.opengl.*;
 public class TwoTriangles extends Mesh {
 
     private int[] textureId;
+    private static final int LIGHT_COUNT = 3;
 
     public TwoTriangles(GL3 gl, int[] textureId) {
         super(gl);

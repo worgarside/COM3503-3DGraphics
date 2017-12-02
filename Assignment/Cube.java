@@ -7,7 +7,7 @@ public class Cube extends Mesh {
 
     private int[] texture;
     private int[] textureSpecular;
-    private static final int LIGHT_COUNT = 2;
+    private static final int LIGHT_COUNT = 3;
 
     public Cube(GL3 gl, int[] texture, int[] textureSpecular) {
         super(gl);

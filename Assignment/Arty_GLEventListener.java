@@ -216,8 +216,8 @@ public class Arty_GLEventListener implements GLEventListener {
 
         updatePerspectiveMatrices();
 
-//        light.setPosition(robotHand.getRingPos());
-        light.setPosition(getLightPosition());
+//        light.setPosition(0, robotHand.getRingPos());
+        light.setPosition(0, getLightPosition());
 
 
         light.render(gl);

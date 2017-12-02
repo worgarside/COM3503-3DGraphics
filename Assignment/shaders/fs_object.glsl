@@ -1,6 +1,6 @@
 #version 330 core
 
-const int lightSourceCount = 2;
+const int lightSourceCount = 3;
 
 in vec3 fragPos;
 in vec3 ourNormal;
@@ -20,7 +20,6 @@ struct LightSource {
     float spotCutoff, spotExponent;
     vec3 spotDirection;
 };
-
 
 uniform LightSource lightSources[lightSourceCount];
 
