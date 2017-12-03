@@ -2,11 +2,11 @@ import gmaths.*;
 import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
+import java.util.ArrayList;
 
 public class Light {
 
     public static final Vec3 DEFAULT_AMBIENT = new Vec3(0.2f, 0.2f, 0.2f);
-    private static final int LIGHT_COUNT = 3;
 
     private Material material;
     private Vec3 bulbPos;
@@ -15,41 +15,50 @@ public class Light {
     private Camera camera;
     private Mat4 perspective;
 
-    private Vec3 originalDiffuse[] = new Vec3[] {
-            new Vec3(0.75f, 0.75f, 0.75f),
-            new Vec3(0.75f, 0.75f, 0.75f),
-            new Vec3(0.75f, 0.75f, 0.75f),
-    };
+    private static ArrayList<Vec3> originalDiffuse = new ArrayList<Vec3>();
+    private static ArrayList<Vec3> originalSpecular = new ArrayList<Vec3>();
+    private static ArrayList<Vec3> position = new ArrayList<Vec3>();
+    private static ArrayList<Vec3> size = new ArrayList<Vec3>();
+    private static ArrayList<Vec3> direction = new ArrayList<Vec3>();
+    private static ArrayList<Float> bulbRotation = new ArrayList<Float>();
+    private static ArrayList<Float> cutoff = new ArrayList<Float>();
+    private static ArrayList<Float> exponent = new ArrayList<Float>();
 
-    private Vec3 originalSpecular[] = new Vec3[] {
-            new Vec3(0.0f, 0.0f, 0.0f),
-            new Vec3(1.0f, 1.0f, 1.0f),
-            new Vec3(1.0f, 1.0f, 1.0f),
-    };
-
-    private Vec3[] position = new Vec3[] {
-            new Vec3(3f, 4f, 5f),
-            new Vec3(-4f, 4f, -5f),
-            new Vec3(7f, 6f, -5f),
-    };
-
-    private Vec3[] size = new Vec3[] {
-            new Vec3(0.2f, 0.2f, 0.2f),
-            new Vec3(1.38f, 1.38f, 1.38f),
-            new Vec3(1.38f, 1.38f, 1.38f),
-    };
-
-    private float[] bulbRotation = new float[] {0, 45, 45};
-
-    private Vec3[] direction = new Vec3[] {
-            new Vec3(0.5f, 0.5f, 0.5f),
-            new Vec3(0.5f, 0.5f, 0.5f),
-            new Vec3(0.5f, 0.5f, 0.5f),
-    };
-
-    private float[] cutoff = new float[] {0.5f, 0.5f, 0.5f};
-
-    private float[] exponent = new float[] {0.5f, 0.5f, 0.5f};
+//    private Vec3 originalDiffuse[] = new Vec3[] {
+//            new Vec3(0.75f, 0.75f, 0.75f),
+//            new Vec3(0.75f, 0.75f, 0.75f),
+//            new Vec3(0.75f, 0.75f, 0.75f),
+//    };
+//
+//    private Vec3 originalSpecular[] = new Vec3[] {
+//            new Vec3(0.0f, 0.0f, 0.0f),
+//            new Vec3(1.0f, 1.0f, 1.0f),
+//            new Vec3(1.0f, 1.0f, 1.0f),
+//    };
+//
+//    private Vec3[] position = new Vec3[] {
+//            new Vec3(0f, 0f, 0f),
+//            new Vec3(0f, 0f, 0f),
+//            new Vec3(0f, 0f, 0f),
+//    };
+//
+//    private Vec3[] size = new Vec3[] {
+//            new Vec3(0.2f, 0.2f, 0.2f),
+//            new Vec3(1.38f, 1.38f, 1.38f),
+//            new Vec3(1.38f, 1.38f, 1.38f),
+//    };
+//
+//    private float[] bulbRotation = new float[] {0, 45, 45};
+//
+//    private Vec3[] direction = new Vec3[] {
+//            new Vec3(0.5f, 0.5f, 0.5f),
+//            new Vec3(0.5f, 0.5f, 0.5f),
+//            new Vec3(0.5f, 0.5f, 0.5f),
+//    };
+//
+//    private float[] cutoff = new float[] {0.5f, 0.5f, 0.5f};
+//
+//    private float[] exponent = new float[] {0.5f, 0.5f, 0.5f};
 
     // ------------ Constructor ------------ \\
 
@@ -57,9 +66,18 @@ public class Light {
         material = new Material();
         material.setAmbient(DEFAULT_AMBIENT);
 
-        for (int i =0; i < LIGHT_COUNT; i++) {
-            material.setDiffusePoint(i, originalDiffuse[i].x, originalDiffuse[i].y, originalDiffuse[i].z);
-            material.setSpecularPoint(i, originalSpecular[i].x, originalSpecular[i].y, originalSpecular[i].z);
+        for(int i = 0; i < Arty.lightCount; i++) {
+            originalDiffuse.add(new Vec3(Arty.lightData.get(i)[0], Arty.lightData.get(i)[1], Arty.lightData.get(i)[2]));
+            originalSpecular.add(new Vec3(Arty.lightData.get(i)[3], Arty.lightData.get(i)[4], Arty.lightData.get(i)[5]));
+            position.add(new Vec3(Arty.lightData.get(i)[6], Arty.lightData.get(i)[7], Arty.lightData.get(i)[8]));
+            size.add(new Vec3(Arty.lightData.get(i)[9], Arty.lightData.get(i)[10], Arty.lightData.get(i)[11]));
+            direction.add(new Vec3(Arty.lightData.get(i)[12], Arty.lightData.get(i)[13], Arty.lightData.get(i)[14]));
+            bulbRotation.add(Arty.lightData.get(i)[15]);
+            cutoff.add(Arty.lightData.get(i)[16]);
+            exponent.add(Arty.lightData.get(i)[17]);
+
+            material.setDiffusePoint(i, originalDiffuse.get(i).x, originalDiffuse.get(i).y, originalDiffuse.get(i).z);
+            material.setSpecularPoint(i, originalSpecular.get(i).x, originalSpecular.get(i).y, originalSpecular.get(i).z);
         }
 //        material.setAllDiffusePoints(DEFAULT_DIFFUSE.x, DEFAULT_DIFFUSE.y, DEFAULT_DIFFUSE.z);
 //        material.setAllSpecularPoints(DEFAULT_SPECULAR.x, DEFAULT_SPECULAR.y, DEFAULT_SPECULAR.z);
@@ -72,9 +90,9 @@ public class Light {
 
     // ------------ Setters ------------ \\
     public void setPosition(int i, Vec3 pos) {
-        position[i].x = pos.x;
-        position[i].y = pos.y;
-        position[i].z = pos.z;
+        position.get(i).x = pos.x;
+        position.get(i).y = pos.y;
+        position.get(i).z = pos.z;
     }
 
     public void setMaterial(Material m) {
@@ -82,27 +100,27 @@ public class Light {
     }
 
     public void setSize(int i, Vec3 size){
-        this.size[i].x = size.x;
-        this.size[i].y = size.y;
-        this.size[i].z = size.z;
+        this.size.get(i).x = size.x;
+        this.size.get(i).y = size.y;
+        this.size.get(i).z = size.z;
     }
 
     public void setRotation(int i, float rot){
-        bulbRotation[i] = rot;
+        bulbRotation.set(i, rot);
     }
 
     public void setDirection(int i, Vec3 dir){
-        direction[i].x = dir.x;
-        direction[i].y = dir.y;
-        direction[i].z = dir.z;
+        direction.get(i).x = dir.x;
+        direction.get(i).y = dir.y;
+        direction.get(i).z = dir.z;
     }
 
     public void setCutoff(int i, float cutoff){
-        this.cutoff[i] = cutoff;
+        this.cutoff.set(i, cutoff);
     }
 
     public void setExponent(int i, float exp){
-        exponent[i] = exp;
+        exponent.set(i, exp);
     }
 
     public void setPerspective(Mat4 perspective) {
@@ -116,7 +134,7 @@ public class Light {
     // ------------ Getters ------------ \\
 
     public Vec3 getPosition(int i) {
-        return position[i];
+        return position.get(i);
     }
 
     public Material getMaterial() {
@@ -124,23 +142,23 @@ public class Light {
     }
 
     public Vec3 getSize(int i){
-        return size[i];
+        return size.get(i);
     }
 
     public float getRotation(int i){
-        return bulbRotation[i];
+        return bulbRotation.get(i);
     }
 
     public Vec3 getDirection(int i){
-        return direction[i];
+        return direction.get(i);
     }
 
     public float getCutoff(int i){
-        return cutoff[i];
+        return cutoff.get(i);
     }
 
     public float getExponent(int i){
-        return exponent[i];
+        return exponent.get(i);
     }
 
     // ------------ Methods ------------ \\
@@ -149,11 +167,11 @@ public class Light {
         gl.glBindVertexArray(vertexArrayId[0]);
         Mat4 m = new Mat4(1);
 
-        for (int i = 0; i < position.length; i++) {
+        for (int i = 0; i < Arty.lightCount; i++) {
             m = new Mat4(1);
-            m = Mat4.multiply(Mat4Transform.scale(size[i]), m);
-            m = Mat4.multiply(Mat4Transform.rotateAroundY(bulbRotation[i]), m);
-            m = Mat4.multiply(Mat4Transform.translate(position[i]), m);
+            m = Mat4.multiply(Mat4Transform.scale(size.get(i)), m);
+            m = Mat4.multiply(Mat4Transform.rotateAroundY(bulbRotation.get(i)), m);
+            m = Mat4.multiply(Mat4Transform.translate(position.get(i)), m);
             Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), m));
             shader.use(gl);
             shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
@@ -170,9 +188,8 @@ public class Light {
     }
 
     public void setPower(int lightNum, int powerLevel) {
-        material.setDiffusePoint(lightNum, originalDiffuse[lightNum].x*powerLevel, originalDiffuse[lightNum].y*powerLevel, originalDiffuse[lightNum].z*powerLevel);
-        material.setSpecularPoint(lightNum, originalSpecular[lightNum].x*powerLevel, originalSpecular[lightNum].y*powerLevel, originalSpecular[lightNum].z*powerLevel);
-
+        material.setDiffusePoint(lightNum, originalDiffuse.get(lightNum).x*powerLevel, originalDiffuse.get(lightNum).y*powerLevel, originalDiffuse.get(lightNum).z*powerLevel);
+        material.setSpecularPoint(lightNum, originalSpecular.get(lightNum).x*powerLevel, originalSpecular.get(lightNum).y*powerLevel, originalSpecular.get(lightNum).z*powerLevel);
     }
 
     // ------------ Data ------------ \\

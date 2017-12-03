@@ -7,19 +7,18 @@ public class Material {
     public static final Vec3 DEFAULT_SPECULAR = new Vec3(0.05f, 0.05f, 0.05f);
     public static final Vec3 DEFAULT_EMISSION = new Vec3(0.0f, 0.0f, 0.0f);
     public static final float DEFAULT_SHININESS = 32;
-    private static final int LIGHT_COUNT = 3;
 
     private Vec3 ambient;
-    private Vec3[] diffusePoint = new Vec3[LIGHT_COUNT];
-    private Vec3[] diffuseSpot = new Vec3[LIGHT_COUNT];
-    private Vec3[] specularPoint = new Vec3[LIGHT_COUNT];
-    private Vec3[] specularSpot = new Vec3[LIGHT_COUNT];
+    private Vec3[] diffusePoint = new Vec3[Arty.lightCount];
+    private Vec3[] diffuseSpot = new Vec3[Arty.lightCount];
+    private Vec3[] specularPoint = new Vec3[Arty.lightCount];
+    private Vec3[] specularSpot = new Vec3[Arty.lightCount];
     private Vec3 emission;
     private float shininess;
 
     public Material() {
         ambient = new Vec3(DEFAULT_AMBIENT);
-        for (int i = 0; i < LIGHT_COUNT; i++) {
+        for (int i = 0; i < Arty.lightCount; i++) {
             diffusePoint[i] = new Vec3(DEFAULT_DIFFUSE);
             diffuseSpot[i] = new Vec3(DEFAULT_DIFFUSE);
             specularPoint[i] = new Vec3(DEFAULT_SPECULAR);
@@ -65,13 +64,13 @@ public class Material {
     }
 
     public void setAllDiffusePoints(float red, float green, float blue) {
-        for (int i = 0; i < LIGHT_COUNT; i++) {
+        for (int i = 0; i < Arty.lightCount; i++) {
             setDiffusePoint(i, red, green, blue);
         }
     }
 
     public void setAllDiffuseSpots(float red, float green, float blue) {
-        for (int i = 0; i < LIGHT_COUNT; i++) {
+        for (int i = 0; i < Arty.lightCount; i++) {
             setDiffuseSpot(i, red, green, blue);
         }
     }
@@ -103,13 +102,13 @@ public class Material {
     }
 
     public void setAllSpecularPoints(float red, float green, float blue) {
-        for (int i = 0; i < LIGHT_COUNT; i++) {
+        for (int i = 0; i < Arty.lightCount; i++) {
             setSpecularPoint(i, red, green, blue);
         }
     }
 
     public void setAllSpecularSpots(float red, float green, float blue) {
-        for (int i = 0; i < LIGHT_COUNT; i++) {
+        for (int i = 0; i < Arty.lightCount; i++) {
             setSpecularSpot(i, red, green, blue);
         }
     }
