@@ -15,8 +15,8 @@ public class RobotHand {
         this.sphereRingGem = sphereRingGem;
     }
   
-    private static final int DIGIT_COUNT = 5;
-    private static final int PHALANGE_COUNT = 3;
+    static final int DIGIT_COUNT = 5;
+    static final int PHALANGE_COUNT = 3;
 
     private static final int[][] DIGIT_PRM_ANGLE_NEUTRAL = {
         {60, 20, 10},

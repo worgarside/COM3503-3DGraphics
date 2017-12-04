@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Arty extends JFrame implements ActionListener {
 
@@ -20,11 +21,17 @@ public class Arty extends JFrame implements ActionListener {
     private Arty_GLEventListener glEventListener;
     private final FPSAnimator animator;
     private Camera camera;
-    static String testy = "testy";
-    private static final String DELIMITER = ",";
-    static ArrayList<float[]> lightData= new ArrayList<float[]>();
-    static int lightCount = 0;
+
+    private static final String CSV_DELIM = ",";
+    private static final String LIGHT_DATA_FILE = "lightData.csv";
     private static final int LIGHT_DATA_COUNT = 18;
+    static ArrayList<float[]> lightData = new ArrayList<float[]>();
+    static int lightCount = 0;
+
+    private static final String KEYFRAME_DATA_FILE = "keyframes.csv";
+    static ArrayList<Keyframe> keyframes = new ArrayList<Keyframe>();
+
+
 
     public static void main(String[] args) {
         Arty b1 = new Arty("COM3503 - Robot Hand");
@@ -32,6 +39,10 @@ public class Arty extends JFrame implements ActionListener {
         b1.pack();
         b1.setVisible(true);
         readLightData();
+        readKeyframeData();
+        for(int i = 0; i < keyframes.size(); i++) {
+            System.out.println(keyframes.get(i));
+        }
     }
 
     public Arty(String textForTitleBar) {
@@ -133,13 +144,13 @@ public class Arty extends JFrame implements ActionListener {
         BufferedReader br = null;
 
         try{
-            br = new BufferedReader(new FileReader("lightData.csv"));
+            br = new BufferedReader(new FileReader(LIGHT_DATA_FILE));
 
             String line = "";
             br.readLine();
 
             while ((line = br.readLine()) != null) {
-                String[] dataString = line.split(DELIMITER);
+                String[] dataString = line.split(CSV_DELIM);
                 if(dataString.length > 0 ) {
                     float[] dataFloats = new float[LIGHT_DATA_COUNT];
                     for (int i = 0; i < LIGHT_DATA_COUNT; i++) {
@@ -147,6 +158,57 @@ public class Arty extends JFrame implements ActionListener {
                     }
                     lightData.add(dataFloats);
                     lightCount ++;
+                    System.out.print(".");
+                }
+            }
+            System.out.println("!");
+        } catch(Exception ee) {
+            ee.printStackTrace();
+        }
+        finally {
+            try {
+                br.close();
+            } catch(IOException ie) {
+                System.out.println("Error occured while closing the BufferedReader");
+                ie.printStackTrace();
+            }
+        }
+    }
+
+    public static void readKeyframeData() {
+        BufferedReader br = null;
+
+        try{
+            br = new BufferedReader(new FileReader(KEYFRAME_DATA_FILE));
+
+            String line = "";
+            br.readLine();
+
+            while ((line = br.readLine()) != null) {
+
+                String[] dataString = line.split(CSV_DELIM);
+
+                if(dataString.length > 0 ) {
+                    String keyframeName = dataString[0];
+
+                    String[] prmAnglesSection = Arrays.copyOfRange(dataString, 1, 16);
+                    String[] secAnglesSection = Arrays.copyOfRange(dataString, 16, 21);
+
+                    int[][] prmAngles = new int[RobotHand.DIGIT_COUNT][RobotHand.PHALANGE_COUNT];
+                    int[] secAngles = new int[RobotHand.DIGIT_COUNT];
+
+                    int i = 0;
+                    for (int j = 0; j < RobotHand.DIGIT_COUNT; j++) {
+                        for (int k = 0; k < RobotHand.PHALANGE_COUNT; k++) {
+                            prmAngles[j][k] = Integer.parseInt(prmAnglesSection[i++]);
+                        }
+                    }
+
+                    for (int j = 0; j < secAnglesSection.length; j++) {
+                        secAngles[j] = Integer.parseInt(secAnglesSection[j]);
+                    }
+
+                    keyframes.add(new Keyframe(keyframeName, prmAngles, secAngles));
                     System.out.print(".");
                 }
             }
@@ -195,11 +257,6 @@ class MyMouseInput extends MouseMotionAdapter {
         this.camera = camera;
     }
 
-    /**
-     * mouse is used to control camera position
-     *
-     * @param e  instance of MouseEvent
-     */
     public void mouseDragged(MouseEvent e) {
         Point ms = e.getPoint();
         float sensitivity = 0.001f;
@@ -211,11 +268,6 @@ class MyMouseInput extends MouseMotionAdapter {
         lastpoint = ms;
     }
 
-    /**
-     * mouse is used to control camera position
-     *
-     * @param e  instance of MouseEvent
-     */
     public void mouseMoved(MouseEvent e) {
         lastpoint = e.getPoint();
     }
