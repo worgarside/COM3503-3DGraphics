@@ -35,7 +35,6 @@ public class Arty_GLEventListener implements GLEventListener {
         gl.glCullFace(GL.GL_BACK);   // default is 'back', assuming CCW
         gl.glEnable(GL2.GL_LIGHTING);
         initialise(gl);
-        startTime = getSeconds();
     }
 
     /* Called to indicate the drawing surface has been moved and/or resized  */
@@ -56,30 +55,6 @@ public class Arty_GLEventListener implements GLEventListener {
         GL3 gl = drawable.getGL().getGL3();
         disposeMeshes(gl);
     }
-
-    // ***************************************************
-    /* TIME
-    */
-
-    private double startTime;
-
-    public static double getSeconds() {
-        return System.currentTimeMillis()/1000.0;
-    }
-
-    // ***************************************************
-      /* An array of random numbers
-       */
-
-//    private int NUM_RANDOMS = 1000;
-//    private float[] randoms;
-//
-//    private void createRandomNumbers() {
-//        randoms = new float[NUM_RANDOMS];
-//        for (int i=0; i<NUM_RANDOMS; ++i) {
-//            randoms[i] = (float)Math.random();
-//        }
-//    }
 
     // ***************************************************
     /* INTERACTION
@@ -109,6 +84,10 @@ public class Arty_GLEventListener implements GLEventListener {
 
     public void toggleKeyframeSequence() {
         robotHand.toggleKeyframeSequence();
+    }
+
+    public void toggleGlobalAnims() {
+        robotHand.toggleGlobalAnims();
     }
 
     // ***************************************************

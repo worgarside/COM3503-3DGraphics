@@ -49,15 +49,24 @@ public class Arty extends JFrame implements ActionListener {
         canvas.addMouseMotionListener(new MyMouseInput(camera));
         canvas.addKeyListener(new MyKeyboardInput(camera));
         getContentPane().add(canvas, BorderLayout.CENTER);
-
         JPanel panel = new JPanel();
         JButton btn = new JButton();
 
+        JLabel posLabel  = new JLabel("Position: ");
+        panel.add(posLabel);
         for (int i = 0; i < keyframes.size(); i++) {
-            btn = new JButton(keyframes.get(i).getName() + " Pos");
+            btn = new JButton(keyframes.get(i).getName());
             btn.addActionListener(this);
             panel.add(btn);
         }
+
+        panel.add(new JSeparator(SwingConstants.VERTICAL));
+
+        JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
+        armAngleSlider.addChangeListener(sliderListener);
+        panel.add(armAngleSlider);
+
+        panel.add(new JSeparator(SwingConstants.VERTICAL));
 
         btn = new JButton("Toggle Lamps");
         btn.addActionListener(this);
@@ -65,13 +74,12 @@ public class Arty extends JFrame implements ActionListener {
         btn = new JButton("Toggle Keyframe Sequence");
         btn.addActionListener(this);
         panel.add(btn);
+        btn = new JButton("Toggle All Animations");
+        btn.addActionListener(this);
+        panel.add(btn);
         btn = new JButton("Exit");
         btn.addActionListener(this);
         panel.add(btn);
-
-        JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
-        armAngleSlider.addChangeListener(sliderListener);
-        panel.add(armAngleSlider);
 
         this.add(panel, BorderLayout.SOUTH);
 
@@ -97,7 +105,7 @@ public class Arty extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         for (int i = 0; i < keyframes.size(); i++) {
-            if (e.getActionCommand().equalsIgnoreCase(keyframes.get(i).getName() + " Pos")) {
+            if (e.getActionCommand().equalsIgnoreCase(keyframes.get(i).getName())) {
                 glEventListener.changeHandPos(i);
             }
         }
@@ -108,6 +116,9 @@ public class Arty extends JFrame implements ActionListener {
                 break;
             case "toggle keyframe sequence":
                 glEventListener.toggleKeyframeSequence();
+                break;
+            case "toggle all animations":
+                glEventListener.toggleGlobalAnims();
                 break;
             case "exit":
                 System.exit(0);

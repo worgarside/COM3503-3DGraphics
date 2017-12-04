@@ -6,6 +6,7 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
+import java.util.Arrays;
   
 public class RobotHand {
 
@@ -17,29 +18,15 @@ public class RobotHand {
   
     static final int DIGIT_COUNT = 5;
     static final int PHALANGE_COUNT = 3;
-
-
-
-    private double startTime;
-
-    private boolean animation = false;
-    private boolean animating = false;
-    private double savedTime = 0;
-
-    public void startAnimation() {
-        animation = true;
-        startTime = Arty_GLEventListener.getSeconds()-savedTime;
-    }
-
-    public void stopAnimation() {
-        animation = false;
-        double elapsedTime = Arty_GLEventListener.getSeconds()-startTime;
-        savedTime = elapsedTime;
-    }
+    private boolean keyframeAnimation = false;
+    private boolean midAnimation = false;
+    private boolean animationOn = true;
+    private boolean prmRotComplete = true;
+    private boolean secRotComplete = true;
+    private int currentKeyframe = -1;
 
     public void rotRHToAngle(int angle) {
         armRotateY.setTransform(Mat4Transform.rotateAroundY(angle));
-        armRotateY.update();
     }
 
     public void moveToKeyframe(int keyframe){
@@ -49,32 +36,75 @@ public class RobotHand {
             }
             desiredSecAngles[d] = Arty.keyframes.get(keyframe).getSecAngles()[d];
         }
+        midAnimation = true;
+        currentKeyframe = keyframe;
+    }
+
+    public void toggleGlobalAnims() {
+        animationOn = !animationOn;
     }
 
     public void toggleKeyframeSequence() {
-        animating = !animating;
+        keyframeAnimation = !keyframeAnimation;
     }
 
-    public void updateAngles(){
+    private void updateCurrentAngles(){
+        if (midAnimation) {
+            prmRotComplete = false;
+            secRotComplete = false;
+            for (int d = 0; d < DIGIT_COUNT; d++) {
+                //Primary Angles
+                for (int p = 0; p < PHALANGE_COUNT; p++){
+                    if (currentPrmAngles[d][p] - desiredPrmAngles[d][p] < 0) {
+                        if (currentPrmAngles[d][p] < maxPrmAngle[d][p]){
+                            currentPrmAngles[d][p]++;
+                        }else{
+                            desiredPrmAngles[d][p] = currentPrmAngles[d][p];
+                        }
+                    } else if (currentPrmAngles[d][p] - desiredPrmAngles[d][p] > 0) {
+                        if (currentPrmAngles[d][p] > minPrmAngle[d][p]){
+                            currentPrmAngles[d][p]--;
+                        }else{
+                            desiredPrmAngles[d][p] = currentPrmAngles[d][p];
+                        }
+                    }
+                }
+
+                //Secondary Angles
+                if (currentSecAngles[d] - desiredSecAngles[d] < 0) {
+                    if (currentSecAngles[d] < maxSecAngle[d]) {
+                        currentSecAngles[d]++;
+                    }else{
+                        desiredSecAngles[d] = currentSecAngles[d];
+                    }
+                } else if (currentSecAngles[d] - desiredSecAngles[d] > 0) {
+                    if (currentSecAngles[d] > minSecAngle[d]) {
+                        currentSecAngles[d]--;
+                    }else{
+                        desiredSecAngles[d] = currentSecAngles[d];
+                    }
+                }
+            }
+            midAnimation = !((Arrays.deepEquals(currentPrmAngles, desiredPrmAngles)) && (Arrays.equals(currentSecAngles, desiredSecAngles)));
+        }
+    }
+
+    private void updateFingerPositions(){
         for (int d = 0; d < DIGIT_COUNT; d++) {
             for (int p = 0; p < PHALANGE_COUNT; p++) {
                 if (d!=0){
                     phalRotX[d][p].setTransform(Mat4Transform.rotateAroundX(currentPrmAngles[d][p]));
-                    phalRotX[d][p].update();
                     phalRotZ[d][p].setTransform(Mat4Transform.rotateAroundZ(currentSecAngles[d]));
-                    phalRotZ[d][p].update();
                 }else{
                     phalRotZ[d][p].setTransform(Mat4Transform.rotateAroundZ(currentPrmAngles[d][p]));
-                    phalRotZ[d][p].update();
                     phalRotX[d][p].setTransform(Mat4Transform.rotateAroundX(currentSecAngles[d]));
-                    phalRotX[d][p].update();
                 }
             }
         }
     }
 
     public Vec3 getRingPos() {
-        ringGemMatrixTotal = new Mat4(1);
+        Mat4 ringGemMatrixTotal = new Mat4(1);
         ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(armRotateY));
         ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(palmTranslate));
         ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalTLate[3][0]));
@@ -122,14 +152,12 @@ public class RobotHand {
     private Mat4 m = new Mat4(1);
     private Mat4 armMatrix = new Mat4(1);
     private Mat4 palmMatrix = new Mat4(1);
-    private Mat4 ringGemMatrixTotal = new Mat4(1);
     private Mat4 digit3ProxMatrix = new Mat4(1);
     private TransformNode palmTranslate, ringGemTranslate, ringTranslate;
     private TransformNode phalTLate[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];
     private TransformNode phalTForm[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];
 
     public void initialise(GL3 gl) {
-
         // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
 
         MeshNode phalangeShape[][] = new MeshNode[DIGIT_COUNT][PHALANGE_COUNT];
@@ -349,32 +377,21 @@ public class RobotHand {
     }
 
     public void render(GL3 gl) {
-        for (int d = 0; d < DIGIT_COUNT; d++) {
-            //Primary Angles
-            for (int p = 0; p < PHALANGE_COUNT; p++){
-                if (currentPrmAngles[d][p] - desiredPrmAngles[d][p] < 0) {
-                    if (currentPrmAngles[d][p] < maxPrmAngle[d][p]){
-                        currentPrmAngles[d][p]++;
-                    }
-                } else if (currentPrmAngles[d][p] - desiredPrmAngles[d][p] > 0) {
-                    if (currentPrmAngles[d][p] > minPrmAngle[d][p]){
-                        currentPrmAngles[d][p]--;
-                    }
+        if (animationOn){
+            if ((keyframeAnimation) && (!midAnimation)) {
+                currentKeyframe++;
+                System.out.println("Next Keyframe!   "  + currentKeyframe);
+                if (currentKeyframe > Arty.keyframes.size()-1){
+                    currentKeyframe = 0;
                 }
+                moveToKeyframe(currentKeyframe);
             }
 
-            //Secondary Angles
-            if (currentSecAngles[d] - desiredSecAngles[d] < 0) {
-                if (currentSecAngles[d] < maxSecAngle[d]) {
-                    currentSecAngles[d]++;
-                }
-            } else if (currentSecAngles[d] - desiredSecAngles[d] > 0) {
-                if (currentSecAngles[d] > minSecAngle[d]) {
-                    currentSecAngles[d]--;
-                }
-            }
+            updateCurrentAngles();
+            updateFingerPositions();
         }
-        updateAngles();
+
+        robotHand.update();
         robotHand.draw(gl);
     }
 
