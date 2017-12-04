@@ -85,53 +85,13 @@ public class RobotHand {
         armRotateY.update();
     }
 
-    public void setRobotHandPos(char letter){
-        switch(letter) {
-            case 'W':
-                for (int d = 0; d < DIGIT_COUNT; d++) {
-                    for (int p = 0; p < PHALANGE_COUNT; p++) {
-                        desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_W[d][p];
-                    }
-                    desiredSecAngles[d] = DIGIT_SEC_ANGLE_W[d];
-                }
-                break;
-            case 'I':
-                for (int d = 0; d < DIGIT_COUNT; d++) {
-                    for (int p = 0; p < PHALANGE_COUNT; p++) {
-                        desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_I[d][p];
-                    }
-                    desiredSecAngles[d] = DIGIT_SEC_ANGLE_I[d];
-                }
-                break;
-            case 'L':
-                for (int d = 0; d < DIGIT_COUNT; d++) {
-                    for (int p = 0; p < PHALANGE_COUNT; p++) {
-                        desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_L[d][p];
-                    }
-                    desiredSecAngles[d] = DIGIT_SEC_ANGLE_L[d];
-                }
-                break;
-            case 'N':
-                for (int d = 0; d < DIGIT_COUNT; d++) {
-                    for (int p = 0; p < PHALANGE_COUNT; p++) {
-                        desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_NEUTRAL[d][p];
-                    }
-                    desiredSecAngles[d] = DIGIT_SEC_ANGLE_NEUTRAL[d];
-                }
-                break;
-            case 'P':
-                for (int d = 0; d < DIGIT_COUNT; d++) {
-                    for (int p = 0; p < PHALANGE_COUNT; p++) {
-                        desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_POS[d][p];
-                    }
-                    desiredSecAngles[d] = DIGIT_SEC_ANGLE_POS[d];
-                }
-                break;
-            default:
-                System.out.println("Invalid ASL Position");
-                System.exit(0);
+    public void moveToKeyframe(int keyframe){
+        for (int d = 0; d < DIGIT_COUNT; d++) {
+            for (int p = 0; p < PHALANGE_COUNT; p++) {
+                desiredPrmAngles[d][p] = Arty.keyframes.get(keyframe).getPrmAngles()[d][p];
+            }
+            desiredSecAngles[d] = Arty.keyframes.get(keyframe).getSecAngles()[d];
         }
-
     }
 
     public void updateAngles(){

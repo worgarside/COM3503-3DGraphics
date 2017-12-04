@@ -105,8 +105,8 @@ public class Arty_GLEventListener implements GLEventListener {
         robotHand.rotRHToAngle(angle);
     }
 
-    public void changeHandPos(char letter){
-        robotHand.setRobotHandPos(letter);
+    public void changeHandPos(int keyframe){
+        robotHand.moveToKeyframe(keyframe);
     }
 
     public void toggleLamps() {
@@ -114,12 +114,10 @@ public class Arty_GLEventListener implements GLEventListener {
             lamp1.setState(light, 0);
             lamp2.setState(light, 0);
             lampsOn = false;
-            System.out.println("Off");
         } else {
             lamp1.setState(light, 1);
             lamp2.setState(light, 1);
             lampsOn = true;
-            System.out.println("On");
         }
     }
 

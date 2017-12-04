@@ -34,15 +34,12 @@ public class Arty extends JFrame implements ActionListener {
 
 
     public static void main(String[] args) {
-        Arty b1 = new Arty("COM3503 - Robot Hand");
-        b1.getContentPane().setPreferredSize(dimension);
-        b1.pack();
-        b1.setVisible(true);
         readLightData();
         readKeyframeData();
-        for(int i = 0; i < keyframes.size(); i++) {
-            System.out.println(keyframes.get(i));
-        }
+        Arty arty = new Arty("COM3503 - Robot Hand");
+        arty.getContentPane().setPreferredSize(dimension);
+        arty.pack();
+        arty.setVisible(true);
     }
 
     public Arty(String textForTitleBar) {
@@ -56,31 +53,22 @@ public class Arty extends JFrame implements ActionListener {
         canvas.addKeyListener(new MyKeyboardInput(camera));
         getContentPane().add(canvas, BorderLayout.CENTER);
 
-        JMenuBar menuBar=new JMenuBar();
-        this.setJMenuBar(menuBar);
-        JMenu fileMenu = new JMenu("File");
-        JMenuItem quitItem = new JMenuItem("Quit");
-        quitItem.addActionListener(this);
-        fileMenu.add(quitItem);
-        menuBar.add(fileMenu);
-
         JPanel panel = new JPanel();
         JButton btn = new JButton("Neutral");
         btn.addActionListener(this);
         panel.add(btn);
-        btn = new JButton("aslW");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("aslI");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("aslL");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("Custom");
-        btn.addActionListener(this);
-        panel.add(btn);
+
+        for (int i = 0; i < keyframes.size(); i++) {
+            btn = new JButton(keyframes.get(i).getName() + " Pos");
+            btn.addActionListener(this);
+            panel.add(btn);
+        }
+
+
         btn = new JButton("Toggle Lamps");
+        btn.addActionListener(this);
+        panel.add(btn);
+        btn = new JButton("Exit");
         btn.addActionListener(this);
         panel.add(btn);
         JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
@@ -109,33 +97,16 @@ public class Arty extends JFrame implements ActionListener {
     };
 
     public void actionPerformed(ActionEvent e) {
-        if (e.getActionCommand().equalsIgnoreCase("camera X")) {
-            camera.setCamera(Camera.CameraType.X);
-            canvas.requestFocusInWindow();
+        for (int i = 0; i < keyframes.size(); i++) {
+            if (e.getActionCommand().equalsIgnoreCase(keyframes.get(i).getName() + " Pos")) {
+                glEventListener.changeHandPos(i);
+            }
         }
-        else if (e.getActionCommand().equalsIgnoreCase("camera Z")) {
-            camera.setCamera(Camera.CameraType.Z);
-            canvas.requestFocusInWindow();
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("Neutral")) {
-            glEventListener.changeHandPos('N');
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("aslW")) {
-            glEventListener.changeHandPos('W');
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("aslI")) {
-            glEventListener.changeHandPos('I');
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("aslL")) {
-            glEventListener.changeHandPos('L');
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("Custom")) {
-            glEventListener.changeHandPos('P');
-        }
-        else if (e.getActionCommand().equalsIgnoreCase("Toggle Lamps")) {
+
+        if (e.getActionCommand().equalsIgnoreCase("Toggle Lamps")) {
             glEventListener.toggleLamps();
         }
-        else if(e.getActionCommand().equalsIgnoreCase("quit")){
+        else if(e.getActionCommand().equalsIgnoreCase("Exit")){
             System.exit(0);
         }
     }

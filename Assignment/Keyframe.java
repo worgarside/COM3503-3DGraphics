@@ -44,4 +44,16 @@ public class Keyframe {
 
         return "Keyframe: " + name + "," + prmAnglesString;// + secAnglesString;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public int[][] getPrmAngles() {
+        return prmAngles;
+    }
+
+    public int[] getSecAngles() {
+        return secAngles;
+    }
 }
