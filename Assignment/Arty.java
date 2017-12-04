@@ -21,17 +21,14 @@ public class Arty extends JFrame implements ActionListener {
     private Arty_GLEventListener glEventListener;
     private final FPSAnimator animator;
     private Camera camera;
-
     private static final String CSV_DELIM = ",";
     private static final String LIGHT_DATA_FILE = "lightData.csv";
     private static final int LIGHT_DATA_COUNT = 18;
     static ArrayList<float[]> lightData = new ArrayList<float[]>();
     static int lightCount = 0;
-
     private static final String KEYFRAME_DATA_FILE = "keyframes.csv";
     static ArrayList<Keyframe> keyframes = new ArrayList<Keyframe>();
-
-
+    static Keyframe neutralKeyframe;
 
     public static void main(String[] args) {
         readLightData();
@@ -54,9 +51,7 @@ public class Arty extends JFrame implements ActionListener {
         getContentPane().add(canvas, BorderLayout.CENTER);
 
         JPanel panel = new JPanel();
-        JButton btn = new JButton("Neutral");
-        btn.addActionListener(this);
-        panel.add(btn);
+        JButton btn = new JButton();
 
         for (int i = 0; i < keyframes.size(); i++) {
             btn = new JButton(keyframes.get(i).getName() + " Pos");
@@ -64,16 +59,20 @@ public class Arty extends JFrame implements ActionListener {
             panel.add(btn);
         }
 
-
         btn = new JButton("Toggle Lamps");
+        btn.addActionListener(this);
+        panel.add(btn);
+        btn = new JButton("Toggle Keyframe Sequence");
         btn.addActionListener(this);
         panel.add(btn);
         btn = new JButton("Exit");
         btn.addActionListener(this);
         panel.add(btn);
+
         JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
         armAngleSlider.addChangeListener(sliderListener);
         panel.add(armAngleSlider);
+
         this.add(panel, BorderLayout.SOUTH);
 
         addWindowListener(new WindowAdapter() {
@@ -103,11 +102,16 @@ public class Arty extends JFrame implements ActionListener {
             }
         }
 
-        if (e.getActionCommand().equalsIgnoreCase("Toggle Lamps")) {
-            glEventListener.toggleLamps();
-        }
-        else if(e.getActionCommand().equalsIgnoreCase("Exit")){
-            System.exit(0);
+        switch (e.getActionCommand().toLowerCase()) {
+            case "toggle lamps":
+                glEventListener.toggleLamps();
+                break;
+            case "toggle keyframe sequence":
+                glEventListener.toggleKeyframeSequence();
+                break;
+            case "exit":
+                System.exit(0);
+                break;
         }
     }
 
@@ -129,10 +133,8 @@ public class Arty extends JFrame implements ActionListener {
                     }
                     lightData.add(dataFloats);
                     lightCount ++;
-                    System.out.print(".");
                 }
             }
-            System.out.println("!");
         } catch(Exception ee) {
             ee.printStackTrace();
         }
@@ -180,10 +182,11 @@ public class Arty extends JFrame implements ActionListener {
                     }
 
                     keyframes.add(new Keyframe(keyframeName, prmAngles, secAngles));
-                    System.out.print(".");
+                    if (keyframeName.equalsIgnoreCase("neutral")) {
+                        neutralKeyframe = new Keyframe(keyframeName, prmAngles, secAngles);
+                    }
                 }
             }
-            System.out.println("!");
         } catch(Exception ee) {
             ee.printStackTrace();
         }
@@ -233,7 +236,6 @@ class MyMouseInput extends MouseMotionAdapter {
         float sensitivity = 0.001f;
         float dx=(float) (ms.x-lastpoint.x)*sensitivity;
         float dy=(float) (ms.y-lastpoint.y)*sensitivity;
-        //System.out.println("dy,dy: "+dx+","+dy);
         if (e.getModifiers()==MouseEvent.BUTTON1_MASK)
             camera.updateYawPitch(dx, -dy);
         lastpoint = ms;

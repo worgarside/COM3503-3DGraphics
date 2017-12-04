@@ -18,55 +18,12 @@ public class RobotHand {
     static final int DIGIT_COUNT = 5;
     static final int PHALANGE_COUNT = 3;
 
-    private static final int[][] DIGIT_PRM_ANGLE_NEUTRAL = {
-        {60, 20, 10},
-        {-2, 5, 5},
-        {-2, 5, 5},
-        {-2, 5, 5},
-        {-2, 5, 5}
-    };
-    private static final int[] DIGIT_SEC_ANGLE_NEUTRAL = {10, -2, -1, 1, 2};
-
-    private static final int[][] DIGIT_PRM_ANGLE_W = {
-            {90, 85, 25},
-            {2, 2, 2},
-            {2, 2, 2},
-            {2, 2, 2},
-            {90, 90, 2}
-    };
-    private static final int[] DIGIT_SEC_ANGLE_W = {35, -10, 0, 10, 30};
-
-    private static final int[][] DIGIT_PRM_ANGLE_I = {
-            {90, 90, 30},
-            {90, 90, 2},
-            {90, 90, 2},
-            {90, 90, 2},
-            {2, 2, 2}
-    };
-    private static final int[] DIGIT_SEC_ANGLE_I = {60, 0, 0, 0, 10};
-
-    private static final int[][] DIGIT_PRM_ANGLE_L = {
-            {2, 2, 2},
-            {2, 2, 2},
-            {90, 90, 2},
-            {90, 90, 2},
-            {90, 90, 2}
-    };
-    private static final int[] DIGIT_SEC_ANGLE_L = {0, 0, 0, 0, 0};
-
-    private static final int[][] DIGIT_PRM_ANGLE_POS = {
-            {90, 85, 25},
-            {-2, 5, 5},
-            {-2, 5, 5},
-            {90, 90, 2},
-            {90, 90, 2}
-    };
-    private static final int[] DIGIT_SEC_ANGLE_POS = {40, -10, 10, 8, 7};
 
 
     private double startTime;
 
     private boolean animation = false;
+    private boolean animating = false;
     private double savedTime = 0;
 
     public void startAnimation() {
@@ -92,6 +49,10 @@ public class RobotHand {
             }
             desiredSecAngles[d] = Arty.keyframes.get(keyframe).getSecAngles()[d];
         }
+    }
+
+    public void toggleKeyframeSequence() {
+        animating = !animating;
     }
 
     public void updateAngles(){
@@ -227,8 +188,10 @@ public class RobotHand {
             maxSecAngle[d] = 20;
             minSecAngle[d] = -20;
             for (int p = 0; p < PHALANGE_COUNT; p++) {
-                desiredPrmAngles[d][p] = DIGIT_PRM_ANGLE_NEUTRAL[d][p];
-                currentPrmAngles[d][p] = DIGIT_PRM_ANGLE_NEUTRAL[d][p];
+                if (Arty.neutralKeyframe != null) {
+                desiredPrmAngles[d][p] = Arty.neutralKeyframe.getPrmAngles()[d][p];
+                currentPrmAngles[d][p] = Arty.neutralKeyframe.getPrmAngles()[d][p];
+                }
                 if (d != 0){
                     maxPrmAngle[d][p] = 90;
                 }
@@ -236,8 +199,11 @@ public class RobotHand {
                 phalangeShape[d][p] = new MeshNode("Cube(digit" + Integer.toString(d) + "-phal" + Integer.toString(p) + ")", cubeRobot);
                 digit[d][p] = new NameNode("[" + Integer.toString(d) + "][" + Integer.toString(p) + "]");
             }
-            desiredSecAngles[d] = DIGIT_SEC_ANGLE_NEUTRAL[d];
-            currentSecAngles[d] = DIGIT_SEC_ANGLE_NEUTRAL[d];
+
+            if (Arty.neutralKeyframe != null) {
+                desiredSecAngles[d] = Arty.neutralKeyframe.getSecAngles()[d];
+                currentSecAngles[d] = Arty.neutralKeyframe.getSecAngles()[d];
+            }
         }
 
         // Thumb-Specific Angles

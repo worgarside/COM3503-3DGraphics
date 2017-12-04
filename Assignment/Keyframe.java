@@ -24,14 +24,6 @@ public class Keyframe {
     }
 
     public String toString() {
-        int[][] testint = {
-                {60, 20, 10},
-                {-2, 5, 5},
-                {-2, 5, 5},
-                {-2, 5, 5},
-                {-2, 5, 5}
-        };
-
         String prmAnglesString = "";
         String secAnglesString = "";
 
@@ -42,7 +34,7 @@ public class Keyframe {
             secAnglesString += Integer.toString(secAngles[i]) + ",";
         }
 
-        return "Keyframe: " + name + "," + prmAnglesString;// + secAnglesString;
+        return "Keyframe: " + name + "," + prmAnglesString + secAnglesString;
     }
 
     public String getName() {

@@ -71,35 +71,21 @@ public class Arty_GLEventListener implements GLEventListener {
       /* An array of random numbers
        */
 
-    private int NUM_RANDOMS = 1000;
-    private float[] randoms;
-
-    private void createRandomNumbers() {
-        randoms = new float[NUM_RANDOMS];
-        for (int i=0; i<NUM_RANDOMS; ++i) {
-            randoms[i] = (float)Math.random();
-        }
-    }
+//    private int NUM_RANDOMS = 1000;
+//    private float[] randoms;
+//
+//    private void createRandomNumbers() {
+//        randoms = new float[NUM_RANDOMS];
+//        for (int i=0; i<NUM_RANDOMS; ++i) {
+//            randoms[i] = (float)Math.random();
+//        }
+//    }
 
     // ***************************************************
     /* INTERACTION
     *
     *
     */
-
-    private boolean animation = false;
-    private double savedTime = 0;
-
-    public void startAnimation() {
-        animation = true;
-        startTime = getSeconds()-savedTime;
-    }
-
-    public void stopAnimation() {
-        animation = false;
-        double elapsedTime = getSeconds()-startTime;
-        savedTime = elapsedTime;
-    }
 
     public void rotArmToAngle(int angle) {
         robotHand.rotRHToAngle(angle);
@@ -121,6 +107,10 @@ public class Arty_GLEventListener implements GLEventListener {
         }
     }
 
+    public void toggleKeyframeSequence() {
+        robotHand.toggleKeyframeSequence();
+    }
+
     // ***************************************************
     /* THE SCENE
     * Now define all the methods to handle the scene.
@@ -140,7 +130,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private boolean lampsOn = true;
 
     private void initialise(GL3 gl) {
-        createRandomNumbers();
+//        createRandomNumbers();
         int[] textureFloor = TextureLibrary.loadTexture(gl, "textures/textureFloor.jpg");
         int[] textureRobot = TextureLibrary.loadTexture(gl, "textures/textureRobot.jpg");
         int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular.jpg");
@@ -228,6 +218,7 @@ public class Arty_GLEventListener implements GLEventListener {
         light.setPosition(0, robotHand.getRingPos()); //set spotlight pos
         light.setPosition(1, lamp1.getLightBulbPos()); //set bulb pos
         light.setPosition(2, lamp2.getLightBulbPos()); //set bulb pos
+
         light.render(gl);
         robotHand.render(gl);
         gallery.render(gl);
@@ -237,7 +228,6 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private void updatePerspectiveMatrices() {
         perspective = Mat4Transform.perspective(45, aspect);
-
         light.setPerspective(perspective);
         for (Mesh mesh : meshList) {
             mesh.setPerspective(perspective);
@@ -246,7 +236,6 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private void disposeMeshes(GL3 gl) {
         light.dispose(gl);
-
         for (Mesh mesh : meshList) {
             mesh.dispose(gl);
         }
