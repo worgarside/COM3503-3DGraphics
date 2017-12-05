@@ -179,7 +179,10 @@ public class Light {
     public void setPower(int lightNum, int powerLevel) {
         material.setDiffusePoint(lightNum, originalDiffuse.get(lightNum).x*powerLevel, originalDiffuse.get(lightNum).y*powerLevel, originalDiffuse.get(lightNum).z*powerLevel);
         material.setSpecularPoint(lightNum, originalSpecular.get(lightNum).x*powerLevel, originalSpecular.get(lightNum).y*powerLevel, originalSpecular.get(lightNum).z*powerLevel);
-        lampColor = powerLevel + 0.1f;
+        if (lightNum != 3) {
+            lampColor = powerLevel + 0.1f;
+        }
+
     }
 
     public String toString() {

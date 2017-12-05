@@ -70,6 +70,9 @@ public class Arty extends JFrame implements ActionListener {
         btn = new JButton("Toggle Lamps");
         btn.addActionListener(this);
         panel.add(btn);
+        btn = new JButton("Toggle World Light");
+        btn.addActionListener(this);
+        panel.add(btn);
         btn = new JButton("Toggle Keyframe Sequence");
         btn.addActionListener(this);
         panel.add(btn);
@@ -112,6 +115,9 @@ public class Arty extends JFrame implements ActionListener {
         switch (e.getActionCommand().toLowerCase()) {
             case "toggle lamps":
                 glEventListener.toggleLamps();
+                break;
+            case "toggle world light":
+                glEventListener.toggleWorldLight();
                 break;
             case "toggle keyframe sequence":
                 glEventListener.toggleKeyframeSequence();

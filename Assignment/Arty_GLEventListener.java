@@ -80,6 +80,16 @@ public class Arty_GLEventListener implements GLEventListener {
         }
     }
 
+    public void toggleWorldLight() {
+        if (worldLightOn) {
+            light.setPower(3, 0);
+            worldLightOn = false;
+        } else {
+            light.setPower(3, 1);
+            worldLightOn = true;
+        }
+    }
+
     public void toggleKeyframeSequence() {
         robotHand.toggleKeyframeSequence();
     }
@@ -105,6 +115,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private ArrayList<Mesh> meshList = new ArrayList<Mesh>();
     private float gallerySize = 24f;
     private boolean lampsOn = true;
+    private boolean worldLightOn = true;
 
     private void initialise(GL3 gl) {
         int[] textureFloor = TextureLibrary.loadTexture(gl, "textures/textureFloor.jpg");
