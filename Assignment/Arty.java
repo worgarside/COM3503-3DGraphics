@@ -23,14 +23,15 @@ public class Arty extends JFrame implements ActionListener {
     private Camera camera;
     private static final String CSV_DELIM = ",";
     private static final String LIGHT_DATA_FILE = "lightData.csv";
-    static ArrayList<float[]> lightData = new ArrayList<float[]>();
-    static int lightCount = 0;
     private static final String KEYFRAME_DATA_FILE = "keyframes.csv";
+    static ArrayList<float[]> lightData = new ArrayList<float[]>();
     static ArrayList<Keyframe> keyframes = new ArrayList<Keyframe>();
+    static int lightCount = 0;
     static Keyframe neutralKeyframe;
     private static JPanel panel = new JPanel();
     private static RotatedIcon clockRot;
     public static boolean night = false;
+    private ArrayList<JLabel> labelList = new ArrayList<JLabel>();
 
     public static void main(String[] args) {
         readLightData();
@@ -51,49 +52,16 @@ public class Arty extends JFrame implements ActionListener {
         canvas.addMouseMotionListener(new MyMouseInput(camera));
         canvas.addKeyListener(new MyKeyboardInput(camera));
         getContentPane().add(canvas, BorderLayout.CENTER);
-        panel.setPreferredSize(new Dimension(WIDTH, 110));
-        JButton btn = new JButton();
 
+        panel.setPreferredSize(new Dimension(WIDTH, 100));
+        panel.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
 
-        createClockFace(panel);
+        createClockFace(panel, gbc);
 
-        JLabel posLabel  = new JLabel("Position: ");
-        panel.add(posLabel);
-        for (int i = 0; i < keyframes.size(); i++) {
-            btn = new JButton(keyframes.get(i).getName());
-            btn.addActionListener(this);
-            panel.add(btn);
-        }
-
-        panel.add(new JSeparator(SwingConstants.VERTICAL));
-
-        JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
-        armAngleSlider.addChangeListener(sliderListener);
-        panel.add(armAngleSlider);
-
-        panel.add(new JSeparator(SwingConstants.VERTICAL));
-
-        btn = new JButton("Toggle Lamps");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("Toggle World Light");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("Toggle Keyframe Sequence");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("Toggle All Animations");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("Toggle Day/Night Cycle");
-        btn.addActionListener(this);
-        panel.add(btn);
-        btn = new JButton("Exit");
-        btn.addActionListener(this);
-        panel.add(btn);
+        createControls(panel, gbc);
 
         this.add(panel, BorderLayout.SOUTH);
-
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -105,12 +73,10 @@ public class Arty extends JFrame implements ActionListener {
         });
         animator = new FPSAnimator(canvas, 60);
         animator.start();
-        updateClock(45);
     }
 
     ChangeListener sliderListener = new ChangeListener(){
-        public void stateChanged(ChangeEvent event)
-        {
+        public void stateChanged(ChangeEvent event){
             JSlider source = (JSlider) event.getSource();
             glEventListener.rotArmToAngle(source.getValue());
         }
@@ -124,19 +90,19 @@ public class Arty extends JFrame implements ActionListener {
         }
 
         switch (e.getActionCommand().toLowerCase()) {
-            case "toggle lamps":
+            case "lamps":
                 glEventListener.toggleLamps();
                 break;
-            case "toggle world light":
+            case "world light":
                 glEventListener.toggleWorldLight();
                 break;
-            case "toggle keyframe sequence":
+            case "keyframe sequence":
                 glEventListener.toggleKeyframeSequence();
                 break;
-            case "toggle all animations":
+            case "all animations":
                 glEventListener.toggleGlobalAnims();
                 break;
-            case "toggle day/night cycle":
+            case "day/night cycle":
                 glEventListener.toggleDayNight();
                 break;
             case "exit":
@@ -145,7 +111,7 @@ public class Arty extends JFrame implements ActionListener {
         }
     }
 
-    public static void readLightData() {
+    private static void readLightData() {
         BufferedReader br = null;
 
         try{
@@ -178,7 +144,7 @@ public class Arty extends JFrame implements ActionListener {
         }
     }
 
-    public static void readKeyframeData() {
+    private static void readKeyframeData() {
         BufferedReader br = null;
 
         try{
@@ -230,7 +196,7 @@ public class Arty extends JFrame implements ActionListener {
         }
     }
 
-    private static void createClockFace(JPanel panel) {
+    private static void createClockFace(JPanel panel, GridBagConstraints gbc) {
         JPanel clockPanel = new JPanel();
         LayoutManager overlay = new OverlayLayout(clockPanel);
         clockPanel.setLayout(overlay);
@@ -246,8 +212,87 @@ public class Arty extends JFrame implements ActionListener {
         JLabel clockLabel = new JLabel("", clockRot, JLabel.CENTER);
 
         clockFace.add(clockLabel);
-        clockPanel.add( clockFace, BorderLayout.CENTER );
-        panel.add(clockPanel);
+        clockPanel.add(clockFace, BorderLayout.CENTER );
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridheight = 2;
+        panel.add(clockPanel, gbc);
+    }
+
+    private void createControls(JPanel panel, GridBagConstraints gbc){
+        // Create buttons for each keyframe defined in KEYFRAME_DATA_FILE
+        JButton btn = new JButton();
+        JLabel posLabel  = new JLabel("Positions");
+        JLabel armLabel  = new JLabel("Arm Bearing");
+        JLabel toggleLabel = new JLabel("Toggle Controls");
+        labelList.add(posLabel);
+        labelList.add(armLabel);
+        labelList.add(toggleLabel);
+
+        for (JLabel label : labelList) {
+            label.setHorizontalAlignment(SwingConstants.CENTER);
+        }
+
+        JPanel posBtnPanel = new JPanel();
+        for (int i = 0; i < keyframes.size(); i++) {
+            btn = new JButton(keyframes.get(i).getName());
+            btn.addActionListener(this);
+            posBtnPanel.add(btn);
+        }
+
+        // Controls for rotating the entire model
+        JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
+        armAngleSlider.setPreferredSize(new Dimension(125, 25));
+        armAngleSlider.addChangeListener(sliderListener);
+        JPanel sliderPanel = new JPanel();
+        sliderPanel.add(armAngleSlider);
+
+        JPanel toggleBtnPanel = new JPanel();
+        btn = new JButton("Lamps");
+        btn.addActionListener(this);
+        toggleBtnPanel.add(btn);
+        btn = new JButton("World Light");
+        btn.addActionListener(this);
+        toggleBtnPanel.add(btn);
+        btn = new JButton("Keyframe Sequence");
+        btn.addActionListener(this);
+        toggleBtnPanel.add(btn);
+        btn = new JButton("All Animations");
+        btn.addActionListener(this);
+        toggleBtnPanel.add(btn);
+        btn = new JButton("Day/Night Cycle");
+        btn.addActionListener(this);
+        toggleBtnPanel.add(btn);
+
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        panel.add(posLabel, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        panel.add(armLabel, gbc);
+
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        panel.add(toggleLabel, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        panel.add(posBtnPanel, gbc);
+
+        gbc.gridx = 2;
+        gbc.gridy = 1;
+        panel.add(sliderPanel, gbc);
+
+        gbc.gridx = 3;
+        gbc.gridy = 1;
+        panel.add(toggleBtnPanel, gbc);
+
+        btn = new JButton("Exit");
+        btn.addActionListener(this);
+        panel.add(btn);
     }
 
     public static void updateClock(int seconds){

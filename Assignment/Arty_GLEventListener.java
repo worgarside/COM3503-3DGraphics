@@ -1,109 +1,15 @@
-import gmaths.*;
-
-import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
+import gmaths.*;
+
 import java.util.ArrayList;
 
 public class Arty_GLEventListener implements GLEventListener {
 
-    private static final boolean DISPLAY_SHADERS = false;
     private float aspect;
-
-    public Arty_GLEventListener(Camera camera) {
-        this.camera = camera;
-    }
-
-    // ***************************************************
-    /*
-    * METHODS DEFINED BY GLEventListener
-    */
-
-    public void init(GLAutoDrawable drawable) {
-        GL3 gl = drawable.getGL().getGL3();
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        gl.glClearDepth(1.0f);
-        gl.glEnable(GL.GL_DEPTH_TEST);
-        gl.glDepthFunc(GL.GL_LESS);
-        gl.glFrontFace(GL.GL_CCW);    // default is 'CCW'
-        gl.glEnable(GL.GL_CULL_FACE); // default is 'not enabled'
-        gl.glCullFace(GL.GL_BACK);   // default is 'back', assuming CCW
-        gl.glEnable(GL2.GL_LIGHTING);
-        initialise(gl);
-    }
-
-    /* Called to indicate the drawing surface has been moved and/or resized  */
-    public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        GL3 gl = drawable.getGL().getGL3();
-        gl.glViewport(x, y, width, height);
-        aspect = (float)width/(float)height;
-    }
-
-    /* Draw */
-    public void display(GLAutoDrawable drawable) {
-        GL3 gl = drawable.getGL().getGL3();
-        render(gl);
-    }
-
-    /* Clean up memory, if necessary */
-    public void dispose(GLAutoDrawable drawable) {
-        GL3 gl = drawable.getGL().getGL3();
-        disposeMeshes(gl);
-    }
-
-    // ***************************************************
-    /* INTERACTION
-    *
-    *
-    */
-
-    public void rotArmToAngle(int angle) {
-        robotHand.rotRHToAngle(angle);
-    }
-
-    public void changeHandPos(int keyframe){
-        robotHand.moveToKeyframe(keyframe);
-    }
-
-    public void toggleLamps() {
-        if (lampsOn) {
-            lamp1.setState(light, 0);
-            lamp2.setState(light, 0);
-            lampsOn = false;
-        } else {
-            lamp1.setState(light, 1);
-            lamp2.setState(light, 1);
-            lampsOn = true;
-        }
-    }
-
-    public void toggleWorldLight() {
-        worldLightOn = !worldLightOn;
-    }
-
-
-    public void toggleDayNight() {
-        dayNightCycle = !dayNightCycle;
-        System.out.println(dayNightCycle);
-    }
-
-    public void toggleKeyframeSequence() {
-        robotHand.toggleKeyframeSequence();
-    }
-
-    public void toggleGlobalAnims() {
-        robotHand.toggleGlobalAnims();
-    }
-
-    // ***************************************************
-    /* THE SCENE
-    * Now define all the methods to handle the scene.
-    * This will be added to in later examples.
-    */
-
     private Camera camera;
     private Mat4 perspective;
     private Mesh sphere, cubeRobot, sphereRing, sphereRingGem, cubeLampBase, cubeLampBody;
@@ -115,13 +21,44 @@ public class Arty_GLEventListener implements GLEventListener {
     private ArrayList<Mesh> meshList = new ArrayList<Mesh>();
     private float gallerySize = 24f;
     private boolean lampsOn = true;
-    private boolean worldLightOn = true;
+    private boolean worldLightOn = false;
     private boolean dayNightCycle = true;
     private double time = 0;
     private float worldLightPower = 1;
 
-    private void initialise(GL3 gl) {
+    // ------------ Constructor & GL Functions ------------ \\
 
+    public Arty_GLEventListener(Camera camera) {
+        this.camera = camera;
+    }
+
+    public void init(GLAutoDrawable drawable) {
+        GL3 gl = drawable.getGL().getGL3();
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        gl.glClearDepth(1.0f);
+        gl.glEnable(GL.GL_DEPTH_TEST);
+        gl.glDepthFunc(GL.GL_LESS);
+        gl.glFrontFace(GL.GL_CCW);
+        gl.glEnable(GL.GL_CULL_FACE);
+        gl.glCullFace(GL.GL_BACK);
+        gl.glEnable(GL2.GL_LIGHTING);
+        initialise(gl);
+    }
+
+    public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
+        GL3 gl = drawable.getGL().getGL3();
+        gl.glViewport(x, y, width, height);
+        aspect = (float)width/(float)height;
+    }
+
+    public void display(GLAutoDrawable drawable) {
+        GL3 gl = drawable.getGL().getGL3();
+        render(gl);
+    }
+
+    // ------------ Scene Creation and Modification ------------ \\
+
+    private void initialise(GL3 gl) {
 
         int[] textureRobot = TextureLibrary.loadTexture(gl, "textures/textureRobot.jpg");
         int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular.jpg");
@@ -129,8 +66,6 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureRingSpecular = TextureLibrary.loadTexture(gl, "textures/textureRingSpecular.jpg");
         int[] textureRingGem = TextureLibrary.loadTexture(gl, "textures/textureRingGem.jpg");
         int[] textureRingGemSpecular = TextureLibrary.loadTexture(gl, "textures/textureRingGemSpecular.jpg");
-
-
         int[] textureFloor = TextureLibrary.loadTexture(gl, "textures/textureFloor.jpg");
         int[] textureWallLeft = TextureLibrary.loadTexture(gl, "textures/textureWallLeft.jpg");
         int[] textureWallRight = TextureLibrary.loadTexture(gl, "textures/textureWallRight.jpg");
@@ -142,7 +77,6 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureCeiling = TextureLibrary.loadTexture(gl, "textures/textureCeiling.jpg");
         int[] textureOutsideDay = TextureLibrary.loadTexture(gl, "textures/textureOutsideDay.jpg");
         int[] textureOutsideNight = TextureLibrary.loadTexture(gl, "textures/textureOutsideNight.jpg");
-
         int[] textureLampBase = TextureLibrary.loadTexture(gl, "textures/textureLampBase.jpg");
         int[] textureLampBody = TextureLibrary.loadTexture(gl, "textures/textureLampBody.jpg");
         int[] textureDefaultSpecularLow = TextureLibrary.loadTexture(gl, "textures/textureDefaultSpecularLow.jpg");
@@ -193,7 +127,7 @@ public class Arty_GLEventListener implements GLEventListener {
             mesh.setCamera(camera);
         }
 
-        // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
+        // ------------ Objects ------------ \\
 
         robotHand = new RobotHand(cubeRobot, sphereRing, sphereRingGem);
         robotHand.initialise(gl);
@@ -205,6 +139,55 @@ public class Arty_GLEventListener implements GLEventListener {
 
         lamp2 = new Lamp(2, cubeLampBase, cubeLampBody, cubeRobot, new Vec3(gallerySize*0.4f, 0, -gallerySize*0.4f));
         lamp2.initialise(gl);
+    }
+
+    public void rotArmToAngle(int angle) {
+        robotHand.rotRHToAngle(angle);
+    }
+
+    public void changeHandPos(int keyframe){
+        robotHand.moveToKeyframe(keyframe);
+    }
+
+    // ------------ User Toggle Functions ------------ \\
+
+    public void toggleLamps() {
+        if (lampsOn) {
+            lamp1.setState(light, 0);
+            lamp2.setState(light, 0);
+            lampsOn = false;
+        } else {
+            lamp1.setState(light, 1);
+            lamp2.setState(light, 1);
+            lampsOn = true;
+        }
+    }
+
+    public void toggleWorldLight() {
+        worldLightOn = !worldLightOn;
+    }
+
+    public void toggleDayNight() {
+        dayNightCycle = !dayNightCycle;
+    }
+
+    public void toggleKeyframeSequence() {
+        robotHand.toggleKeyframeSequence();
+    }
+
+    public void toggleGlobalAnims() {
+        robotHand.toggleGlobalAnims();
+    }
+
+    // ------------ Scene Management ------------ \\
+
+    public void dispose(GLAutoDrawable drawable) {
+        GL3 gl = drawable.getGL().getGL3();
+
+        light.dispose(gl);
+        for (Mesh mesh : meshList) {
+            mesh.dispose(gl);
+        }
     }
 
     private void render(GL3 gl) {
@@ -246,13 +229,6 @@ public class Arty_GLEventListener implements GLEventListener {
         light.setPerspective(perspective);
         for (Mesh mesh : meshList) {
             mesh.setPerspective(perspective);
-        }
-    }
-
-    private void disposeMeshes(GL3 gl) {
-        light.dispose(gl);
-        for (Mesh mesh : meshList) {
-            mesh.dispose(gl);
         }
     }
 }

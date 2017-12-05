@@ -1,11 +1,10 @@
-import gmaths.*;
-
-import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
+import gmaths.*;
+
 import java.util.ArrayList;
   
 public class Gallery {
@@ -13,7 +12,6 @@ public class Gallery {
     private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outsideDay, outsideNight;
     private ArrayList<Mesh> meshListGallery = new ArrayList<Mesh>();
     private float gallerySize;
-
 
     public Gallery (float gallerySize, Mesh floor, Mesh wallLeft, Mesh wallRight, Mesh wallFront,
                     Mesh wallBackTop, Mesh wallBackLeft, Mesh wallBackRight, Mesh wallBackBottom,
@@ -41,7 +39,6 @@ public class Gallery {
         meshListGallery.add(wallBackBottom);
         meshListGallery.add(ceiling);
     }
-
 
     private void  initMeshes(){
         floor.setModelMatrix(getFloorMatrix());
