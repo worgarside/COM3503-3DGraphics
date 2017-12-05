@@ -24,42 +24,6 @@ public class Light {
     private static ArrayList<Float> cutoff = new ArrayList<Float>();
     private static ArrayList<Float> exponent = new ArrayList<Float>();
 
-//    private Vec3 originalDiffuse[] = new Vec3[] {
-//            new Vec3(0.75f, 0.75f, 0.75f),
-//            new Vec3(0.75f, 0.75f, 0.75f),
-//            new Vec3(0.75f, 0.75f, 0.75f),
-//    };
-//
-//    private Vec3 originalSpecular[] = new Vec3[] {
-//            new Vec3(0.0f, 0.0f, 0.0f),
-//            new Vec3(1.0f, 1.0f, 1.0f),
-//            new Vec3(1.0f, 1.0f, 1.0f),
-//    };
-//
-//    private Vec3[] position = new Vec3[] {
-//            new Vec3(0f, 0f, 0f),
-//            new Vec3(0f, 0f, 0f),
-//            new Vec3(0f, 0f, 0f),
-//    };
-//
-//    private Vec3[] size = new Vec3[] {
-//            new Vec3(0.2f, 0.2f, 0.2f),
-//            new Vec3(1.38f, 1.38f, 1.38f),
-//            new Vec3(1.38f, 1.38f, 1.38f),
-//    };
-//
-//    private float[] bulbRotation = new float[] {0, 45, 45};
-//
-//    private Vec3[] direction = new Vec3[] {
-//            new Vec3(0.5f, 0.5f, 0.5f),
-//            new Vec3(0.5f, 0.5f, 0.5f),
-//            new Vec3(0.5f, 0.5f, 0.5f),
-//    };
-//
-//    private float[] cutoff = new float[] {0.5f, 0.5f, 0.5f};
-//
-//    private float[] exponent = new float[] {0.5f, 0.5f, 0.5f};
-
     // ------------ Constructor ------------ \\
 
     public Light(GL3 gl) {
@@ -79,10 +43,6 @@ public class Light {
             material.setDiffusePoint(i, originalDiffuse.get(i).x, originalDiffuse.get(i).y, originalDiffuse.get(i).z);
             material.setSpecularPoint(i, originalSpecular.get(i).x, originalSpecular.get(i).y, originalSpecular.get(i).z);
         }
-//        material.setAllDiffusePoints(DEFAULT_DIFFUSE.x, DEFAULT_DIFFUSE.y, DEFAULT_DIFFUSE.z);
-//        material.setAllSpecularPoints(DEFAULT_SPECULAR.x, DEFAULT_SPECULAR.y, DEFAULT_SPECULAR.z);
-//        material.setAllDiffuseSpots(DEFAULT_DIFFUSE.x, DEFAULT_DIFFUSE.y, DEFAULT_DIFFUSE.z);
-//        material.setAllSpecularSpots(DEFAULT_SPECULAR.x, DEFAULT_SPECULAR.y, DEFAULT_SPECULAR.z);
         model = new Mat4(1);
         shader = new Shader(gl, "shaders/vs_light_01.glsl", "shaders/fs_light_01.glsl");
         fillBuffers(gl);
@@ -190,6 +150,10 @@ public class Light {
     public void setPower(int lightNum, int powerLevel) {
         material.setDiffusePoint(lightNum, originalDiffuse.get(lightNum).x*powerLevel, originalDiffuse.get(lightNum).y*powerLevel, originalDiffuse.get(lightNum).z*powerLevel);
         material.setSpecularPoint(lightNum, originalSpecular.get(lightNum).x*powerLevel, originalSpecular.get(lightNum).y*powerLevel, originalSpecular.get(lightNum).z*powerLevel);
+    }
+
+    public String toString() {
+        return originalDiffuse.get(0) + ", " + originalSpecular.get(0) + ", " + position.get(0) + ", " + size.get(0) + ", " + direction.get(0) + ", " + bulbRotation.get(0) + ", " + cutoff.get(0) + ", " + exponent.get(0);
     }
 
     // ------------ Data ------------ \\

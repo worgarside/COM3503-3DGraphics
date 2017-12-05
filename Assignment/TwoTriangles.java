@@ -55,20 +55,27 @@ public class TwoTriangles extends Mesh {
 
         shader.setVec3(gl, "viewPos", camera.getPosition());
 
-        for (int i =0; i < Arty.lightCount; i++) {
+        for (int i = 0; i < Arty.lightCount; i++) {
             shader.setVec3(gl, "lightSources[" + i + "].position", light.getPosition(i));
             shader.setVec3(gl, "lightSources[" + i + "].ambient", SCENE_AMBIENT);
             shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint(i));
             shader.setVec3(gl, "lightSources[" + i + "].specular", light.getMaterial().getSpecularPoint(i));
             shader.setFloat(gl, "lightSources[" + i + "].falloffConstant", 1f);      // Change this number
             shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", 0.25f);        // Change this number
-            shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", 1f);     // Change this number
+            shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", 0.1f);     // Change this number
             shader.setVec3(gl, "lightSources[" + i + "].spotDirection", light.getDirection(i));
             shader.setFloat(gl, "lightSources[" + i + "].spotCutoff", light.getCutoff(i));
             shader.setFloat(gl, "lightSources[" + i + "].position", light.getExponent(i));
             shader.setVec3(gl, "material.diffuse", material.getDiffusePoint(i));
             shader.setVec3(gl, "material.specular", material.getSpecularPoint(i));
+            if (i == 0) {
+                System.out.println(light);
+                shader.setInt(gl, "lightSources[" + i + "].spotlight", 1);
+            }else{
+                shader.setInt(gl, "lightSources[" + i + "].spotlight", 0);
+            }
         }
+
 
         shader.setVec3(gl, "material.ambient", material.getAmbient());
         shader.setFloat(gl, "material.shininess", material.getShininess());

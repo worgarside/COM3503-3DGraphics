@@ -51,11 +51,13 @@ public class Sphere extends Mesh {
             shader.setVec3(gl, "lightSources[" + i + "].spotDirection", light.getDirection(i));
             shader.setFloat(gl, "lightSources[" + i + "].spotCutoff", light.getCutoff(i));
             shader.setFloat(gl, "lightSources[" + i + "].position", light.getExponent(i));
+            if (i == 0) {
+                shader.setInt(gl, "lightSources[" + i + "].spotlight", 1);
+            }else{
+                shader.setInt(gl, "lightSources[" + i + "].spotlight", 0);
+            }
         }
 
-        //shader.setVec3(gl, "material.ambient", material.getAmbient());
-        //shader.setVec3(gl, "material.diffuse", material.getDiffuse());
-        //shader.setVec3(gl, "material.specular", material.getSpecular());
         shader.setFloat(gl, "material.shininess", material.getShininess());
 
         shader.setInt(gl, "material.diffuse", 0);  // be careful to match these with GL_TEXTURE0 and GL_TEXTURE1

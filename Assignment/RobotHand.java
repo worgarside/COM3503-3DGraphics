@@ -21,9 +21,7 @@ public class RobotHand {
     private boolean keyframeAnimation = false;
     private boolean midAnimation = false;
     private boolean animationOn = true;
-    private boolean prmRotComplete = true;
-    private boolean secRotComplete = true;
-    private int currentKeyframe = -1;
+    private int currentKeyframe = 0;
 
     public void rotRHToAngle(int angle) {
         armRotateY.setTransform(Mat4Transform.rotateAroundY(angle));
@@ -50,8 +48,6 @@ public class RobotHand {
 
     private void updateCurrentAngles(){
         if (midAnimation) {
-            prmRotComplete = false;
-            secRotComplete = false;
             for (int d = 0; d < DIGIT_COUNT; d++) {
                 //Primary Angles
                 for (int p = 0; p < PHALANGE_COUNT; p++){
@@ -117,13 +113,13 @@ public class RobotHand {
     }
 
     public Vec3 getRingDir() {
-        float x, y, z;
-        // Default Values
-        x = -0.5f*2;
-        y = 9.75f*2;
-        z = -0.64f*2;
+        Mat4 ringGemMatrixTotal = new Mat4(1);
+        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(armRotateY));
+        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalRotZ[3][0]));
+        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalRotX[3][0]));
 
-        return new Vec3(x, y, z);
+        return rotationFromMat4(ringGemMatrixTotal);
+//        return new Vec3(4, 4, 4);
     }
 
     // ***************************************************
@@ -406,5 +402,32 @@ public class RobotHand {
         float y = values[1][3];
         float z = values[2][3];
         return new Vec3(x, y, z);
+    }
+
+    private Vec3 rotationFromMat4(Mat4 matrix) {
+        float[][] values = matrix.getValues();
+        double x, y, z;
+
+        y = Math.asin( values[0][2] );
+
+        if( y < Math.PI/2 )
+        {
+            if( y > -Math.PI/2 )
+            {
+                x = Math.atan( -values[1][2]/values[2][2] );
+                z = Math.atan( -values[0][1]/values[0][0] );
+            }
+            else
+            {
+                x = -Math.atan( values[1][2]/values[2][2] );
+                z = 0;
+            }
+        }
+        else
+        {
+            x = Math.atan( values[1][2]/values[2][2] );
+            z = 0;
+        }
+        return new Vec3((float) x, (float) y, (float) z);
     }
 }

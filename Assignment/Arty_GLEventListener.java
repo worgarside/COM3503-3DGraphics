@@ -22,7 +22,6 @@ public class Arty_GLEventListener implements GLEventListener {
     * METHODS DEFINED BY GLEventListener
     */
 
-    /* Initialisation */
     public void init(GLAutoDrawable drawable) {
         GL3 gl = drawable.getGL().getGL3();
         System.err.println("Chosen GLCapabilities: " + drawable.getChosenGLCapabilities());
@@ -109,7 +108,6 @@ public class Arty_GLEventListener implements GLEventListener {
     private boolean lampsOn = true;
 
     private void initialise(GL3 gl) {
-//        createRandomNumbers();
         int[] textureFloor = TextureLibrary.loadTexture(gl, "textures/textureFloor.jpg");
         int[] textureRobot = TextureLibrary.loadTexture(gl, "textures/textureRobot.jpg");
         int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular.jpg");
@@ -131,7 +129,6 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureDefaultSpecularLow = TextureLibrary.loadTexture(gl, "textures/textureDefaultSpecularLow.jpg");
         int[] textureDefaultSpecularHigh = TextureLibrary.loadTexture(gl, "textures/textureDefaultSpecularHigh.jpg");
 
-        // make meshes
         sphere = new Sphere(gl, textureRobot, textureRobotSpecular);
         cubeRobot = new Cube(gl, textureRobot, textureRobotSpecular);
         sphereRing = new Sphere(gl, textureRing, textureRingSpecular);
@@ -195,6 +192,7 @@ public class Arty_GLEventListener implements GLEventListener {
         updatePerspectiveMatrices();
 
         light.setPosition(0, robotHand.getRingPos()); //set spotlight pos
+        light.setDirection(0, robotHand.getRingDir()); //set spotlight pos
         light.setPosition(1, lamp1.getLightBulbPos()); //set bulb pos
         light.setPosition(2, lamp2.getLightBulbPos()); //set bulb pos
 

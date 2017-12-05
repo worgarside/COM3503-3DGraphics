@@ -49,6 +49,11 @@ public class Cube extends Mesh {
             shader.setVec3(gl, "lightSources[" + i + "].spotDirection", light.getDirection(i));
             shader.setFloat(gl, "lightSources[" + i + "].spotCutoff", light.getCutoff(i));
             shader.setFloat(gl, "lightSources[" + i + "].position", light.getExponent(i));
+            if (i == 0) {
+                shader.setInt(gl, "lightSources[" + i + "].spotlight", 1);
+            }else{
+                shader.setInt(gl, "lightSources[" + i + "].spotlight", 0);
+            }
         }
 
         shader.setFloat(gl, "material.shininess", material.getShininess());
