@@ -10,12 +10,14 @@ import java.util.ArrayList;
   
 public class Gallery {
 
-    private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outside;
+    private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outsideDay, outsideNight;
     private ArrayList<Mesh> meshListGallery = new ArrayList<Mesh>();
     private float gallerySize;
 
 
-    public Gallery (float gallerySize, Mesh floor, Mesh wallLeft, Mesh wallRight, Mesh wallFront, Mesh wallBackTop, Mesh wallBackLeft, Mesh wallBackRight, Mesh wallBackBottom, Mesh ceiling, Mesh outside) {
+    public Gallery (float gallerySize, Mesh floor, Mesh wallLeft, Mesh wallRight, Mesh wallFront,
+                    Mesh wallBackTop, Mesh wallBackLeft, Mesh wallBackRight, Mesh wallBackBottom,
+                    Mesh ceiling, Mesh outsideDay, Mesh outsideNight) {
         this.floor = floor;
         this.wallLeft = wallLeft;
         this.wallRight = wallRight;
@@ -25,7 +27,8 @@ public class Gallery {
         this.wallBackRight = wallBackRight;
         this.wallBackBottom = wallBackBottom;
         this.ceiling = ceiling;
-        this.outside = outside;
+        this.outsideDay = outsideDay;
+        this.outsideNight = outsideNight;
         this.gallerySize = gallerySize;
 
         meshListGallery.add(floor);
@@ -37,7 +40,6 @@ public class Gallery {
         meshListGallery.add(wallBackRight);
         meshListGallery.add(wallBackBottom);
         meshListGallery.add(ceiling);
-        meshListGallery.add(outside);
     }
 
 
@@ -51,13 +53,19 @@ public class Gallery {
         wallBackRight.setModelMatrix(getWallBackRightMatrix());
         wallBackBottom.setModelMatrix(getWallBackBottomMatrix());
         ceiling.setModelMatrix(getCeilingMatrix());
-        outside.setModelMatrix(getOutsideMatrix());
+        outsideDay.setModelMatrix(getOutsideMatrix());
+        outsideNight.setModelMatrix(getOutsideMatrix());
     }
 
     public void render(GL3 gl) {
         initMeshes();
         for (Mesh mesh : meshListGallery) {
             mesh.render(gl);
+        }
+        if (Arty.night){
+            outsideNight.render(gl);
+        }else{
+            outsideDay.render(gl);
         }
     }
 

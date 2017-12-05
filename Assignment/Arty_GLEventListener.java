@@ -81,13 +81,7 @@ public class Arty_GLEventListener implements GLEventListener {
     }
 
     public void toggleWorldLight() {
-        if (worldLightOn) {
-            light.setPower(3, 0);
-            worldLightOn = false;
-        } else {
-            light.setPower(3, 1);
-            worldLightOn = true;
-        }
+        worldLightOn = !worldLightOn;
     }
 
 
@@ -124,6 +118,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private boolean worldLightOn = true;
     private boolean dayNightCycle = true;
     private double time = 0;
+    private float worldLightPower = 1;
 
     private void initialise(GL3 gl) {
 
@@ -176,7 +171,7 @@ public class Arty_GLEventListener implements GLEventListener {
         wallBackBottom = new TwoTriangles(gl, textureWallBackBottom);
         ceiling = new TwoTriangles(gl, textureCeiling);
         outsideDay = new TwoTriangles(gl, textureOutsideDay);
-        outsideNight = new TwoTriangles(gl, textureOutsideDay);
+        outsideNight = new TwoTriangles(gl, textureOutsideNight);
 
         meshList.add(floor);
         meshList.add(wallLeft);
@@ -188,6 +183,7 @@ public class Arty_GLEventListener implements GLEventListener {
         meshList.add(wallBackBottom);
         meshList.add(ceiling);
         meshList.add(outsideDay);
+        meshList.add(outsideNight);
 
         light = new Light(gl);
         light.setCamera(camera);
@@ -202,7 +198,7 @@ public class Arty_GLEventListener implements GLEventListener {
         robotHand = new RobotHand(cubeRobot, sphereRing, sphereRingGem);
         robotHand.initialise(gl);
 
-        gallery = new Gallery(gallerySize, floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outsideDay);
+        gallery = new Gallery(gallerySize, floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outsideDay, outsideNight);
 
         lamp1 = new Lamp(1, cubeLampBase, cubeLampBody, cubeRobot, new Vec3(-gallerySize*0.4f, 0, -gallerySize*0.4f));
         lamp1.initialise(gl);
@@ -229,6 +225,19 @@ public class Arty_GLEventListener implements GLEventListener {
         if (dayNightCycle){
             time = System.currentTimeMillis()/1000.0 % 60;
             Arty.updateClock((int) time);
+            if (time < 30) {
+                Arty.night = false;
+                worldLightPower = 1f;
+            }else{
+                Arty.night = true;
+                worldLightPower = 0.2f;
+            }
+        }
+
+        if (worldLightOn) {
+            light.setPower(3, 0);
+        } else {
+            light.setPower(3, worldLightPower);
         }
     }
 

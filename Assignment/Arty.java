@@ -30,6 +30,7 @@ public class Arty extends JFrame implements ActionListener {
     static Keyframe neutralKeyframe;
     private static JPanel panel = new JPanel();
     private static RotatedIcon clockRot;
+    public static boolean night = false;
 
     public static void main(String[] args) {
         readLightData();
