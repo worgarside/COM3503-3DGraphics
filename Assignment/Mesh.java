@@ -104,8 +104,9 @@ public abstract class Mesh {
       shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", light.getFallOffLinear(i));
       shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", light.getFallOffQuadratic(i));
       shader.setVec3(gl, "lightSources[" + i + "].spotDirection", light.getDirection(i));
-      shader.setFloat(gl, "lightSources[" + i + "].spotCutoff", (float)Math.cos(0.1f));//light.getCutOff(i));
-      shader.setFloat(gl, "lightSources[" + i + "].position", (float)Math.cos(0.3f));//light.getOuterCutOff(i));
+      shader.setFloat(gl, "lightSources[" + i + "].spotCutoff", light.getCutOff(i));
+      shader.setFloat(gl, "lightSources[" + i + "].spotOuterCutOff", light.getOuterCutOff(i));
+      System.out.println((float)Math.cos(0.3f));
       shader.setInt(gl, "lightSources[" + i + "].spotlight", light.getSpotlight(i));
   }
 

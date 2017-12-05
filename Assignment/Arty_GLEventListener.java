@@ -90,6 +90,12 @@ public class Arty_GLEventListener implements GLEventListener {
         }
     }
 
+
+    public void toggleDayNight() {
+        dayNightCycle = !dayNightCycle;
+        System.out.println(dayNightCycle);
+    }
+
     public void toggleKeyframeSequence() {
         robotHand.toggleKeyframeSequence();
     }
@@ -107,7 +113,7 @@ public class Arty_GLEventListener implements GLEventListener {
     private Camera camera;
     private Mat4 perspective;
     private Mesh sphere, cubeRobot, sphereRing, sphereRingGem, cubeLampBase, cubeLampBody;
-    private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outside;
+    private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outsideDay, outsideNight;
     private Light light;
     private RobotHand robotHand;
     private Gallery gallery;
@@ -116,24 +122,32 @@ public class Arty_GLEventListener implements GLEventListener {
     private float gallerySize = 24f;
     private boolean lampsOn = true;
     private boolean worldLightOn = true;
+    private boolean dayNightCycle = true;
+    private double time = 0;
 
     private void initialise(GL3 gl) {
-        int[] textureFloor = TextureLibrary.loadTexture(gl, "textures/textureFloor.jpg");
+
+
         int[] textureRobot = TextureLibrary.loadTexture(gl, "textures/textureRobot.jpg");
         int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular.jpg");
         int[] textureRing = TextureLibrary.loadTexture(gl, "textures/textureRing.jpg");
         int[] textureRingSpecular = TextureLibrary.loadTexture(gl, "textures/textureRingSpecular.jpg");
         int[] textureRingGem = TextureLibrary.loadTexture(gl, "textures/textureRingGem.jpg");
         int[] textureRingGemSpecular = TextureLibrary.loadTexture(gl, "textures/textureRingGemSpecular.jpg");
+
+
+        int[] textureFloor = TextureLibrary.loadTexture(gl, "textures/textureFloor.jpg");
+        int[] textureWallLeft = TextureLibrary.loadTexture(gl, "textures/textureWallLeft.jpg");
+        int[] textureWallRight = TextureLibrary.loadTexture(gl, "textures/textureWallRight.jpg");
+        int[] textureWallFront = TextureLibrary.loadTexture(gl, "textures/textureWallFront.jpg");
         int[] textureWallBackTop = TextureLibrary.loadTexture(gl, "textures/textureWallBackTop.jpg");
         int[] textureWallBackLeft = TextureLibrary.loadTexture(gl, "textures/textureWallBackLeft.jpg");
         int[] textureWallBackRight = TextureLibrary.loadTexture(gl, "textures/textureWallBackRight.jpg");
         int[] textureWallBackBottom = TextureLibrary.loadTexture(gl, "textures/textureWallBackBottom.jpg");
-        int[] textureWallFront = TextureLibrary.loadTexture(gl, "textures/textureWallFront.jpg");
-        int[] textureWallLeft = TextureLibrary.loadTexture(gl, "textures/textureWallLeft.jpg");
-        int[] textureWallRight = TextureLibrary.loadTexture(gl, "textures/textureWallRight.jpg");
         int[] textureCeiling = TextureLibrary.loadTexture(gl, "textures/textureCeiling.jpg");
-        int[] textureOutside = TextureLibrary.loadTexture(gl, "textures/textureOutside.jpg");
+        int[] textureOutsideDay = TextureLibrary.loadTexture(gl, "textures/textureOutsideDay.jpg");
+        int[] textureOutsideNight = TextureLibrary.loadTexture(gl, "textures/textureOutsideNight.jpg");
+
         int[] textureLampBase = TextureLibrary.loadTexture(gl, "textures/textureLampBase.jpg");
         int[] textureLampBody = TextureLibrary.loadTexture(gl, "textures/textureLampBody.jpg");
         int[] textureDefaultSpecularLow = TextureLibrary.loadTexture(gl, "textures/textureDefaultSpecularLow.jpg");
@@ -161,7 +175,8 @@ public class Arty_GLEventListener implements GLEventListener {
         wallBackRight = new TwoTriangles(gl, textureWallBackRight);
         wallBackBottom = new TwoTriangles(gl, textureWallBackBottom);
         ceiling = new TwoTriangles(gl, textureCeiling);
-        outside = new TwoTriangles(gl, textureOutside);
+        outsideDay = new TwoTriangles(gl, textureOutsideDay);
+        outsideNight = new TwoTriangles(gl, textureOutsideDay);
 
         meshList.add(floor);
         meshList.add(wallLeft);
@@ -172,8 +187,7 @@ public class Arty_GLEventListener implements GLEventListener {
         meshList.add(wallBackRight);
         meshList.add(wallBackBottom);
         meshList.add(ceiling);
-        meshList.add(outside);
-
+        meshList.add(outsideDay);
 
         light = new Light(gl);
         light.setCamera(camera);
@@ -188,7 +202,7 @@ public class Arty_GLEventListener implements GLEventListener {
         robotHand = new RobotHand(cubeRobot, sphereRing, sphereRingGem);
         robotHand.initialise(gl);
 
-        gallery = new Gallery(gallerySize, floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outside);
+        gallery = new Gallery(gallerySize, floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outsideDay);
 
         lamp1 = new Lamp(1, cubeLampBase, cubeLampBody, cubeRobot, new Vec3(-gallerySize*0.4f, 0, -gallerySize*0.4f));
         lamp1.initialise(gl);
@@ -202,7 +216,7 @@ public class Arty_GLEventListener implements GLEventListener {
         updatePerspectiveMatrices();
 
         light.setPosition(0, robotHand.getRingPos()); //set spotlight pos
-        light.setDirection(0, new Vec3(0,0,-8));//robotHand.getRingDir()); //set spotlight pos
+        light.setDirection(0, robotHand.getRingDir()); //set spotlight pos
         light.setPosition(1, lamp1.getLightBulbPos()); //set bulb pos
         light.setPosition(2, lamp2.getLightBulbPos()); //set bulb pos
 
@@ -211,6 +225,11 @@ public class Arty_GLEventListener implements GLEventListener {
         gallery.render(gl);
         lamp1.render(gl);
         lamp2.render(gl);
+
+        if (dayNightCycle){
+            time = System.currentTimeMillis()/1000.0 % 60;
+            Arty.updateClock((int) time);
+        }
     }
 
     private void updatePerspectiveMatrices() {

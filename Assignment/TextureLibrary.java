@@ -31,7 +31,7 @@ public final class TextureLibrary {
       gl.glBindTexture(GL.GL_TEXTURE_2D, 0); 
     }
     catch(Exception e) {
-      System.out.println("Error loading texture " + filename); 
+      System.out.println("Error loading texture " + filename + ": " + e);
     }
     return textureId;
   }

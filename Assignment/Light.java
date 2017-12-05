@@ -88,8 +88,8 @@ public class Light {
         this.cutOff.set(i, cutoff);
     }
 
-    public void setExponent(int i, float exp){
-        outerCutOff.set(i, exp);
+    public void setOuterCutOff(int i, float exp){
+        this.outerCutOff.set(i, exp);
     }
 
     public void setPerspective(Mat4 perspective) {

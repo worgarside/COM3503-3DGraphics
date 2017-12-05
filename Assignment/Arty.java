@@ -28,6 +28,8 @@ public class Arty extends JFrame implements ActionListener {
     private static final String KEYFRAME_DATA_FILE = "keyframes.csv";
     static ArrayList<Keyframe> keyframes = new ArrayList<Keyframe>();
     static Keyframe neutralKeyframe;
+    private static JPanel panel = new JPanel();
+    private static RotatedIcon clockRot;
 
     public static void main(String[] args) {
         readLightData();
@@ -48,8 +50,11 @@ public class Arty extends JFrame implements ActionListener {
         canvas.addMouseMotionListener(new MyMouseInput(camera));
         canvas.addKeyListener(new MyKeyboardInput(camera));
         getContentPane().add(canvas, BorderLayout.CENTER);
-        JPanel panel = new JPanel();
+        panel.setPreferredSize(new Dimension(WIDTH, 110));
         JButton btn = new JButton();
+
+
+        createClockFace(panel);
 
         JLabel posLabel  = new JLabel("Position: ");
         panel.add(posLabel);
@@ -79,11 +84,15 @@ public class Arty extends JFrame implements ActionListener {
         btn = new JButton("Toggle All Animations");
         btn.addActionListener(this);
         panel.add(btn);
+        btn = new JButton("Toggle Day/Night Cycle");
+        btn.addActionListener(this);
+        panel.add(btn);
         btn = new JButton("Exit");
         btn.addActionListener(this);
         panel.add(btn);
 
         this.add(panel, BorderLayout.SOUTH);
+
 
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -95,6 +104,7 @@ public class Arty extends JFrame implements ActionListener {
         });
         animator = new FPSAnimator(canvas, 60);
         animator.start();
+        updateClock(45);
     }
 
     ChangeListener sliderListener = new ChangeListener(){
@@ -124,6 +134,9 @@ public class Arty extends JFrame implements ActionListener {
                 break;
             case "toggle all animations":
                 glEventListener.toggleGlobalAnims();
+                break;
+            case "toggle day/night cycle":
+                glEventListener.toggleDayNight();
                 break;
             case "exit":
                 System.exit(0);
@@ -214,6 +227,31 @@ public class Arty extends JFrame implements ActionListener {
                 ie.printStackTrace();
             }
         }
+    }
+
+    private static void createClockFace(JPanel panel) {
+        JPanel clockPanel = new JPanel();
+        LayoutManager overlay = new OverlayLayout(clockPanel);
+        clockPanel.setLayout(overlay);
+        clockPanel.setPreferredSize(new Dimension(90, 90));
+
+        JLabel clockFace = new JLabel(new ImageIcon("textures/clockFace.png"));
+        clockFace.setLayout(new BorderLayout());
+        clockPanel.add(clockFace);
+
+        ImageIcon clockIcon = new ImageIcon("textures/pointer.png");
+
+        clockRot = new RotatedIcon(clockIcon, 0);
+        JLabel clockLabel = new JLabel("", clockRot, JLabel.CENTER);
+
+        clockFace.add(clockLabel);
+        clockPanel.add( clockFace, BorderLayout.CENTER );
+        panel.add(clockPanel);
+    }
+
+    public static void updateClock(int seconds){
+        clockRot.setDegrees(seconds*6);
+        panel.repaint();
     }
 }
 

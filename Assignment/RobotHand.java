@@ -119,7 +119,6 @@ public class RobotHand {
         ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalRotX[3][0]));
 
         return rotationFromMat4(ringGemMatrixTotal);
-//        return new Vec3(4, 4, 4);
     }
 
     // ***************************************************
