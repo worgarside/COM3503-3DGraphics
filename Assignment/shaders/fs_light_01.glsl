@@ -2,6 +2,8 @@
 
 out vec4 fragColor;
 
+uniform float lightColor;
+
 void main() {
-  fragColor = vec4(1.0f);
+  fragColor = vec4(lightColor);
 }

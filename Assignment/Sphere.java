@@ -41,17 +41,7 @@ public class Sphere extends Mesh {
 
 
         for (int i =0; i < Arty.lightCount; i++) {
-            shader.setVec3(gl, "lightSources[" + i + "].position", light.getPosition(i));
-            shader.setVec3(gl, "lightSources[" + i + "].ambient", SCENE_AMBIENT);
-            shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint(i));  //new Vec3(1f, 0.2f, 0.2f));/
-            shader.setVec3(gl, "lightSources[" + i + "].specular", light.getMaterial().getSpecularPoint(i));
-            shader.setFloat(gl, "lightSources[" + i + "].falloffConstant", 1f);      // Change this number
-            shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", 0.25f);        // Change this number
-            shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", 0.1f);     // Change this number
-            shader.setVec3(gl, "lightSources[" + i + "].spotDirection", light.getDirection(i));
-            shader.setFloat(gl, "lightSources[" + i + "].spotCutoff", light.getCutOff(i));
-            shader.setFloat(gl, "lightSources[" + i + "].position", light.getOuterCutOff(i));
-            shader.setFloat(gl, "lightSources[" + i + "].spotlight", light.getSpotlight(i));
+            super.setShaderValues(gl, shader, i, SCENE_AMBIENT);
         }
 
         shader.setFloat(gl, "material.shininess", material.getShininess());

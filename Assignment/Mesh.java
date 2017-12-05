@@ -88,23 +88,26 @@ public abstract class Mesh {
     gl.glBindVertexArray(0);
   }
   
-  // public abstract void display(int indent);
-  
+
   public abstract void render(GL3 gl, Mat4 model); 
   
   public void render(GL3 gl) {
     render(gl, model);
   }
-  
-  //public abstract void render(GL3 gl, Light light, Vec3 viewPosition, Mat4 perspective, Mat4 view);
-  /*public void render(GL3 gl, Light light, Vec3 viewPosition, Mat4 perspective, Mat4 view) {
-    setViewPosition(viewPosition);
-    setView(view);
-    setPerspective(perspective);
-    setLight(light);
-    render(gl, this.model);
+
+  public void setShaderValues(GL3 gl, Shader shader, int i, Vec3 ambient){
+      shader.setVec3(gl, "lightSources[" + i + "].position", light.getPosition(i));
+      shader.setVec3(gl, "lightSources[" + i + "].ambient", ambient);
+      shader.setVec3(gl, "lightSources[" + i + "].diffuse", light.getMaterial().getDiffusePoint(i));
+      shader.setVec3(gl, "lightSources[" + i + "].specular", light.getMaterial().getSpecularPoint(i));
+      shader.setFloat(gl, "lightSources[" + i + "].falloffConstant", light.getFallOffConstant(i));
+      shader.setFloat(gl, "lightSources[" + i + "].falloffLinear", light.getFallOffLinear(i));
+      shader.setFloat(gl, "lightSources[" + i + "].falloffQuadratic", light.getFallOffQuadratic(i));
+      shader.setVec3(gl, "lightSources[" + i + "].spotDirection", light.getDirection(i));
+      shader.setFloat(gl, "lightSources[" + i + "].spotCutoff", (float)Math.cos(0.1f));//light.getCutOff(i));
+      shader.setFloat(gl, "lightSources[" + i + "].position", (float)Math.cos(0.3f));//light.getOuterCutOff(i));
+      shader.setInt(gl, "lightSources[" + i + "].spotlight", light.getSpotlight(i));
   }
-  */
-  
+
   
 }

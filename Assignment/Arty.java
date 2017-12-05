@@ -143,6 +143,7 @@ public class Arty extends JFrame implements ActionListener {
                     }
                     lightData.add(dataFloats);
                     lightCount ++;
+                    System.out.println(lightCount);
                 }
             }
         } catch(Exception ee) {

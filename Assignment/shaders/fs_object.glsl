@@ -1,11 +1,11 @@
 #version 330 core
 
-const int lightSourceCount = 3;
-vec3 sceneAmbient = vec3(0.2,0.2,0.2);
+const int lightSourceCount = 4;
+
 in vec3 fragPos;
 in vec3 ourNormal;
 in vec2 ourTexCoord;
-in vec3 position; // position of the vertex (and fragment) in world space
+in vec3 position;
 out vec4 fragColor;
 
 uniform vec3 viewPos;
