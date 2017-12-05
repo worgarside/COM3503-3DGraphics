@@ -9,7 +9,6 @@ public class Cube extends Mesh {
     private int[] textureSpecular;
     private static final Vec3 SCENE_AMBIENT = new Vec3(0.1f, 0.1f, 0.1f);
 
-
     public Cube(GL3 gl, int[] texture, int[] textureSpecular) {
         super(gl);
         super.vertices = this.vertices;

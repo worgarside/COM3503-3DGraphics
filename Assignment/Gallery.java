@@ -10,7 +10,7 @@ import java.util.ArrayList;
 public class Gallery {
 
     private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outsideDay, outsideNight;
-    private ArrayList<Mesh> meshListGallery = new ArrayList<Mesh>();
+    private ArrayList<Mesh> meshList = new ArrayList<Mesh>();
     private float gallerySize;
 
     public Gallery (float gallerySize, Mesh floor, Mesh wallLeft, Mesh wallRight, Mesh wallFront,
@@ -29,15 +29,15 @@ public class Gallery {
         this.outsideNight = outsideNight;
         this.gallerySize = gallerySize;
 
-        meshListGallery.add(floor);
-        meshListGallery.add(wallLeft);
-        meshListGallery.add(wallRight);
-        meshListGallery.add(wallFront);
-        meshListGallery.add(wallBackTop);
-        meshListGallery.add(wallBackLeft);
-        meshListGallery.add(wallBackRight);
-        meshListGallery.add(wallBackBottom);
-        meshListGallery.add(ceiling);
+        meshList.add(floor);
+        meshList.add(wallLeft);
+        meshList.add(wallRight);
+        meshList.add(wallFront);
+        meshList.add(wallBackTop);
+        meshList.add(wallBackLeft);
+        meshList.add(wallBackRight);
+        meshList.add(wallBackBottom);
+        meshList.add(ceiling);
     }
 
     private void  initMeshes(){
@@ -56,7 +56,7 @@ public class Gallery {
 
     public void render(GL3 gl) {
         initMeshes();
-        for (Mesh mesh : meshListGallery) {
+        for (Mesh mesh : meshList) {
             mesh.render(gl);
         }
         if (Arty.night){

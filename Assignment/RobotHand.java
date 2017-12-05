@@ -28,7 +28,7 @@ public class RobotHand {
     private int[][] angleX = new int[DIGIT_COUNT][PHALANGE_COUNT];                          // Current angle of phalange
     private TransformNode[][] phalRotX = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating phalanges about X-axis
     private TransformNode[][] phalRotZ = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating proximal phalanges about Z-axis
-    private TransformNode armRotateY, palmTranslate, ringGemTranslate, ringTranslate;       // TransformNodes for one-off objects
+    private TransformNode armRotateY, palmTranslate, ringGemTranslate, ringTranslate, spotlightTranslate;       // TransformNodes for one-off objects
     private int[][] currentPrmAngles = new int[DIGIT_COUNT][PHALANGE_COUNT];                // current primary angles of digits
     private int[] currentSecAngles = new int[DIGIT_COUNT];                                  // current secondary angles of digits
     private int[][] desiredPrmAngles = new int[DIGIT_COUNT][PHALANGE_COUNT];                // target primary angles for animation
@@ -36,11 +36,9 @@ public class RobotHand {
     private TransformNode phalTLate[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];   // TranslationNodes for digits
     private TransformNode phalTForm[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];   // TransformNodes for digits
 
-    private Mat4 ringGemMatrix = new Mat4(1);
     private Mat4 m = new Mat4(1);
-    private Mat4 armMatrix = new Mat4(1);
-    private Mat4 palmMatrix = new Mat4(1);
-    private Mat4 digit3ProxMatrix = new Mat4(1);
+    private TransformNode ringGemTransform;
+    private NameNode spotlightBeacon;
 
     // ------------ Constructor and Initialiser ------------ \\
 
@@ -147,11 +145,6 @@ public class RobotHand {
                     m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
                 }
 
-                // Save the matrix used for the phalange to get ring position
-                if ((d==3) && (p==0)){
-                    digit3ProxMatrix = m;
-                }
-
                 phalTForm[d][p] = new TransformNode("phalTForm[" + d + "][" + Integer.toString(p) + "]", m);
                 if (d==0) {
                     phalRotX[d][p] = new TransformNode("phalRotX[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundX(currentSecAngles[d]));
@@ -177,26 +170,31 @@ public class RobotHand {
 
         // ------------ Arm & Palm ------------ \\
 
-        armMatrix = Mat4Transform.scale(armWidth, armHeight, armDepth); // Sets dimensions of arm
-        armMatrix = Mat4.multiply(armMatrix, Mat4Transform.translate(0,0.5f,0)); // Move up by 0.5*height for origin
-        TransformNode armTransform = new TransformNode("arm transform", armMatrix);
+        m = new Mat4(1);
+        m = Mat4Transform.scale(armWidth, armHeight, armDepth); // Sets dimensions of arm
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0)); // Move up by 0.5*height for origin
+        TransformNode armTransform = new TransformNode("arm transform", m);
         armRotateY = new TransformNode("arm rotate",Mat4Transform.rotateAroundY(0));
 
+        m = new Mat4(1);
         palmTranslate = new TransformNode("palm translate", Mat4Transform.translate(0, armHeight, 0));
-        palmMatrix = Mat4.multiply(palmMatrix, Mat4Transform.scale(palmWidth, palmHeight, palmDepth));
-        palmMatrix = Mat4.multiply(palmMatrix, Mat4Transform.translate(0,0.5f,0));
-        TransformNode palmTransform = new TransformNode("palm transform", palmMatrix);
+        m = Mat4.multiply(m, Mat4Transform.scale(palmWidth, palmHeight, palmDepth));
+        m = Mat4.multiply(m, Mat4Transform.translate(0,0.5f,0));
+        TransformNode palmTransform = new TransformNode("palm transform", m);
 
-        // ------------ Ring Node Gen ------------ \\
+        // ------------ Ring & Spotlight ------------ \\
 
         ringTranslate = new TransformNode("ring translate", Mat4Transform.translate(0, 0.5f*phalLrgHeight, 0));
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.scale(1.8f*phalLrgWidth, 0.4f*phalLrgHeight, 1.8f*phalLrgDepth));
         TransformNode ringTransform = new TransformNode("ring transform", m);
         ringGemTranslate = new TransformNode("ringGem translate", Mat4Transform.translate(0, 0, -0.8f*phalLrgDepth));
-        ringGemMatrix = new Mat4(1);
-        ringGemMatrix = Mat4.multiply(ringGemMatrix, Mat4Transform.scale(0.4f, 0.4f, 0.4f));
-        TransformNode ringGemTransform = new TransformNode("ringGem transform", ringGemMatrix);
+        m = new Mat4(1);
+        m = Mat4.multiply(m, Mat4Transform.scale(0.4f, 0.4f, 0.4f));
+        ringGemTransform = new TransformNode("ringGem transform", m);
+
+        spotlightTranslate = new TransformNode("spotlight translate", Mat4Transform.translate(0,0,1));
+        spotlightBeacon = new NameNode("Spotlight Beacon");
 
         // ------------ Scene Graph ------------ \\
 
@@ -258,6 +256,8 @@ public class RobotHand {
                                                         ringGemTranslate.addChild(ringGem);
                                                             ringGem.addChild(ringGemTransform);
                                                                 ringGemTransform.addChild(ringGemShape);
+                                                            ringGem.addChild(spotlightTranslate);
+                                                                spotlightTranslate.addChild(spotlightBeacon);
         robotHand.update();
     }
 
@@ -289,25 +289,15 @@ public class RobotHand {
     // ------------ Getters ------------ \\
 
     public Vec3 getRingPos() {
-        Mat4 ringGemMatrixTotal = new Mat4(1);
-        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(armRotateY));
-        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(palmTranslate));
-        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalTLate[3][0]));
-        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalRotZ[3][0]));
-        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalRotX[3][0]));
-        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(ringTranslate));
-        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(ringGemTranslate));
-
-        return coordsFromMat4(ringGemMatrixTotal);
+        return ringGemTransform.getWorldTransform().getCoords();
     }
 
     public Vec3 getRingDir() {
-        Mat4 ringGemMatrixTotal = new Mat4(1);
-        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(armRotateY));
-        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalRotZ[3][0]));
-        ringGemMatrixTotal = Mat4.multiply(ringGemMatrixTotal, transformNodeToMat4(phalRotX[3][0]));
-
-        return rotationFromMat4(ringGemMatrixTotal);
+        Vec3 spotlightBeaconPos = spotlightBeacon.getWorldTransform().getCoords();
+        Vec3 spotlightOrigin = getRingPos();
+        Vec3 direction = Vec3.subtract(spotlightOrigin, spotlightBeaconPos);
+        System.out.println(direction);
+        return direction;
     }
 
     // ------------ Model Manipulation/Drawing ------------ \\
@@ -381,41 +371,5 @@ public class RobotHand {
 
         robotHand.update();
         robotHand.draw(gl);
-    }
-
-    // ------------ Matrix Maths Functions ------------ \\
-
-    private Mat4 transformNodeToMat4(TransformNode tNode) {
-        Mat4 matrix = tNode.getMat4();
-        return matrix;
-    }
-
-    private Vec3 coordsFromMat4(Mat4 matrix) {
-        float[][] values = matrix.getValues();
-        float x = values[0][3];
-        float y = values[1][3];
-        float z = values[2][3];
-        return new Vec3(x, y, z);
-    }
-
-    private Vec3 rotationFromMat4(Mat4 matrix) {
-        float[][] values = matrix.getValues();
-        double x, y, z;
-
-        y = Math.asin( values[0][2] );
-
-        if( y < Math.PI/2 ) {
-            if( y > -Math.PI/2 ) {
-                x = Math.atan( -values[1][2]/values[2][2] );
-                z = Math.atan( -values[0][1]/values[0][0] );
-            } else {
-                x = -Math.atan( values[1][2]/values[2][2] );
-                z = 0;
-            }
-        } else {
-            x = Math.atan( values[1][2]/values[2][2] );
-            z = 0;
-        }
-        return new Vec3((float) x, (float) y, (float) z);
     }
 }

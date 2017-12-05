@@ -45,6 +45,9 @@ public class Arty extends JFrame implements ActionListener {
     public Arty(String textForTitleBar) {
         super(textForTitleBar);
         GLCapabilities glcapabilities = new GLCapabilities(GLProfile.get(GLProfile.GL3));
+        glcapabilities.setSampleBuffers(true);
+        glcapabilities.setNumSamples(4);
+
         canvas = new GLCanvas(glcapabilities);
         camera = new Camera(new Vec3(-4f,12f,24f), new Vec3(0f,8f,0f), Camera.DEFAULT_UP);
         glEventListener = new Arty_GLEventListener(camera);
