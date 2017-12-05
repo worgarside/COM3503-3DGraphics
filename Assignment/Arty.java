@@ -23,7 +23,6 @@ public class Arty extends JFrame implements ActionListener {
     private Camera camera;
     private static final String CSV_DELIM = ",";
     private static final String LIGHT_DATA_FILE = "lightData.csv";
-    private static final int LIGHT_DATA_COUNT = 18;
     static ArrayList<float[]> lightData = new ArrayList<float[]>();
     static int lightCount = 0;
     private static final String KEYFRAME_DATA_FILE = "keyframes.csv";
@@ -138,8 +137,8 @@ public class Arty extends JFrame implements ActionListener {
             while ((line = br.readLine()) != null) {
                 String[] dataString = line.split(CSV_DELIM);
                 if(dataString.length > 0 ) {
-                    float[] dataFloats = new float[LIGHT_DATA_COUNT];
-                    for (int i = 0; i < LIGHT_DATA_COUNT; i++) {
+                    float[] dataFloats = new float[dataString.length];
+                    for (int i = 0; i < dataString.length; i++) {
                         dataFloats[i] = Float.parseFloat(dataString[i]);
                     }
                     lightData.add(dataFloats);

@@ -376,7 +376,6 @@ public class RobotHand {
         if (animationOn){
             if ((keyframeAnimation) && (!midAnimation)) {
                 currentKeyframe++;
-                System.out.println("Next Keyframe!   "  + currentKeyframe);
                 if (currentKeyframe > Arty.keyframes.size()-1){
                     currentKeyframe = 0;
                 }

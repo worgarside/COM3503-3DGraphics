@@ -21,8 +21,9 @@ public class Light {
     private static ArrayList<Vec3> size = new ArrayList<Vec3>();
     private static ArrayList<Vec3> direction = new ArrayList<Vec3>();
     private static ArrayList<Float> bulbRotation = new ArrayList<Float>();
-    private static ArrayList<Float> cutoff = new ArrayList<Float>();
-    private static ArrayList<Float> exponent = new ArrayList<Float>();
+    private static ArrayList<Float> cutOff = new ArrayList<Float>();
+    private static ArrayList<Float> outerCutOff = new ArrayList<Float>();
+    private static ArrayList<Integer> spotlight = new ArrayList<Integer>();
 
     // ------------ Constructor ------------ \\
 
@@ -37,8 +38,9 @@ public class Light {
             size.add(new Vec3(Arty.lightData.get(i)[9], Arty.lightData.get(i)[10], Arty.lightData.get(i)[11]));
             direction.add(new Vec3(Arty.lightData.get(i)[12], Arty.lightData.get(i)[13], Arty.lightData.get(i)[14]));
             bulbRotation.add(Arty.lightData.get(i)[15]);
-            cutoff.add(Arty.lightData.get(i)[16]);
-            exponent.add(Arty.lightData.get(i)[17]);
+            cutOff.add(Arty.lightData.get(i)[16]);
+            outerCutOff.add(Arty.lightData.get(i)[17]);
+            spotlight.add(Math.round(Arty.lightData.get(i)[18]));
 
             material.setDiffusePoint(i, originalDiffuse.get(i).x, originalDiffuse.get(i).y, originalDiffuse.get(i).z);
             material.setSpecularPoint(i, originalSpecular.get(i).x, originalSpecular.get(i).y, originalSpecular.get(i).z);
@@ -76,11 +78,11 @@ public class Light {
     }
 
     public void setCutoff(int i, float cutoff){
-        this.cutoff.set(i, cutoff);
+        this.cutOff.set(i, cutoff);
     }
 
     public void setExponent(int i, float exp){
-        exponent.set(i, exp);
+        outerCutOff.set(i, exp);
     }
 
     public void setPerspective(Mat4 perspective) {
@@ -113,12 +115,16 @@ public class Light {
         return direction.get(i);
     }
 
-    public float getCutoff(int i){
-        return cutoff.get(i);
+    public float getCutOff(int i){
+        return cutOff.get(i);
     }
 
-    public float getExponent(int i){
-        return exponent.get(i);
+    public float getOuterCutOff(int i){
+        return outerCutOff.get(i);
+    }
+
+    public int getSpotlight(int i) {
+        return spotlight.get(i);
     }
 
     // ------------ Methods ------------ \\
@@ -128,14 +134,16 @@ public class Light {
         Mat4 m = new Mat4(1);
 
         for (int i = 0; i < Arty.lightCount; i++) {
-            m = new Mat4(1);
-            m = Mat4.multiply(Mat4Transform.scale(size.get(i)), m);
-            m = Mat4.multiply(Mat4Transform.rotateAroundY(bulbRotation.get(i)), m);
-            m = Mat4.multiply(Mat4Transform.translate(position.get(i)), m);
-            Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), m));
-            shader.use(gl);
-            shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
-            gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
+            if (spotlight.get(i) != 1) {
+                m = new Mat4(1);
+                m = Mat4.multiply(Mat4Transform.scale(size.get(i)), m);
+                m = Mat4.multiply(Mat4Transform.rotateAroundY(bulbRotation.get(i)), m);
+                m = Mat4.multiply(Mat4Transform.translate(position.get(i)), m);
+                Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), m));
+                shader.use(gl);
+                shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
+                gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
+            }
         }
 
         gl.glBindVertexArray(0);
@@ -153,7 +161,7 @@ public class Light {
     }
 
     public String toString() {
-        return originalDiffuse.get(0) + ", " + originalSpecular.get(0) + ", " + position.get(0) + ", " + size.get(0) + ", " + direction.get(0) + ", " + bulbRotation.get(0) + ", " + cutoff.get(0) + ", " + exponent.get(0);
+        return originalDiffuse.get(0) + ", " + originalSpecular.get(0) + ", " + position.get(0) + ", " + size.get(0) + ", " + direction.get(0) + ", " + bulbRotation.get(0) + ", " + cutOff.get(0) + ", " + outerCutOff.get(0) + ", " + spotlight.get(0);
     }
 
     // ------------ Data ------------ \\
