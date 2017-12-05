@@ -408,21 +408,15 @@ public class RobotHand {
 
         y = Math.asin( values[0][2] );
 
-        if( y < Math.PI/2 )
-        {
-            if( y > -Math.PI/2 )
-            {
+        if( y < Math.PI/2 ) {
+            if( y > -Math.PI/2 ) {
                 x = Math.atan( -values[1][2]/values[2][2] );
                 z = Math.atan( -values[0][1]/values[0][0] );
-            }
-            else
-            {
+            } else {
                 x = -Math.atan( values[1][2]/values[2][2] );
                 z = 0;
             }
-        }
-        else
-        {
+        } else {
             x = Math.atan( values[1][2]/values[2][2] );
             z = 0;
         }

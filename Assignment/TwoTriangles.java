@@ -6,7 +6,7 @@ import com.jogamp.opengl.*;
 public class TwoTriangles extends Mesh {
 
     private int[] textureId;
-    private static final Vec3 SCENE_AMBIENT = new Vec3(0.05f, 0.05f, 0.05f);
+    private static final Vec3 SCENE_AMBIENT = new Vec3(0.25f, 0.25f, 0.25f);
 
     public TwoTriangles(GL3 gl, int[] textureId) {
         super(gl);
@@ -15,8 +15,8 @@ public class TwoTriangles extends Mesh {
         this.textureId = textureId;
         material.setAmbient(SCENE_AMBIENT);
 
-        material.setAllDiffusePoints(10.75f, 0.75f, 0.75f);
-        material.setAllDiffuseSpots(10f, 1f, 1f);
+        material.setAllDiffusePoints(0.75f, 0.75f, 0.75f);
+        material.setAllDiffuseSpots(1f, 1f, 1f);
         material.setAllSpecularSpots(0.05f, 0.05f, 0.05f);
         material.setAllSpecularSpots(0.5f, 0.5f, 0.5f);
 
@@ -37,6 +37,7 @@ public class TwoTriangles extends Mesh {
             case 16 : // textureOutsideDay
             case 17 : // textureOutsideNight
                 material.setAllSpecularPoints(0f, 0f, 0f);
+                material.setAllSpecularSpots(0f, 0f, 0f);
                 break;
         }
 
@@ -61,7 +62,6 @@ public class TwoTriangles extends Mesh {
             shader.setVec3(gl, "material.diffuse", material.getDiffusePoint(i));
             shader.setVec3(gl, "material.specular", material.getSpecularPoint(i));
         }
-
 
         shader.setVec3(gl, "material.ambient", material.getAmbient());
         shader.setFloat(gl, "material.shininess", material.getShininess());

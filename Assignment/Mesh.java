@@ -87,7 +87,6 @@ public abstract class Mesh {
     gl.glBufferData(GL.GL_ELEMENT_ARRAY_BUFFER, Integer.BYTES * indices.length, ib, GL.GL_STATIC_DRAW);
     gl.glBindVertexArray(0);
   }
-  
 
   public abstract void render(GL3 gl, Mat4 model); 
   
@@ -106,9 +105,6 @@ public abstract class Mesh {
       shader.setVec3(gl, "lightSources[" + i + "].spotDirection", light.getDirection(i));
       shader.setFloat(gl, "lightSources[" + i + "].spotCutoff", light.getCutOff(i));
       shader.setFloat(gl, "lightSources[" + i + "].spotOuterCutOff", light.getOuterCutOff(i));
-      System.out.println((float)Math.cos(0.3f));
       shader.setInt(gl, "lightSources[" + i + "].spotlight", light.getSpotlight(i));
   }
-
-  
 }
