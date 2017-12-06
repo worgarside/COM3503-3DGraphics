@@ -45,6 +45,8 @@ public class Arty extends JFrame implements ActionListener {
     public Arty(String textForTitleBar) {
         super(textForTitleBar);
         GLCapabilities glcapabilities = new GLCapabilities(GLProfile.get(GLProfile.GL3));
+
+        // Use MSAA for cleaner model
         glcapabilities.setSampleBuffers(true);
         glcapabilities.setNumSamples(4);
 

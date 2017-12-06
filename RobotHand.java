@@ -11,12 +11,13 @@ import java.util.Arrays;
 public class RobotHand {
 
     // ------------ Constants and Variables ------------ \\
+
     static final int DIGIT_COUNT = 5;
     static final int PHALANGE_COUNT = 3;
     private boolean keyframeAnimation = false;
     private boolean midAnimation = false;
     private boolean animationOn = true;
-    private int currentKeyframe = 0;
+    private int currentKeyframe = 0; // flag for which imported keyframe is displayed
 
     private Mesh cubeRobot, sphereRing, sphereRingGem;
     private SGNode robotHand;
@@ -26,18 +27,19 @@ public class RobotHand {
     private int[] maxSecAngle = new int[DIGIT_COUNT];                                       // Maximum angle prox can be (most acute)
     private int[] minSecAngle = new int[DIGIT_COUNT];                                       // Minimum angle prox can be (most obtuse)
     private int[][] angleX = new int[DIGIT_COUNT][PHALANGE_COUNT];                          // Current angle of phalange
-    private TransformNode[][] phalRotX = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating phalanges about X-axis
-    private TransformNode[][] phalRotZ = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating proximal phalanges about Z-axis
-    private TransformNode armRotateY, palmTranslate, ringGemTranslate, ringTranslate, spotlightTranslate;       // TransformNodes for one-off objects
+    private TransformNode[][] rotateXPhal = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating phalanges about X-axis
+    private TransformNode[][] rotateZPhal = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];    // TransformNodes for rotating proximal phalanges about Z-axis
+    private TransformNode rotateYArm, translatePalm;                                        // TransformNodes for one-off objects
+    private TransformNode translateRingGem, translateRing, translateSpotlight;              // TransformNodes for one-off objects
     private int[][] currentPrmAngles = new int[DIGIT_COUNT][PHALANGE_COUNT];                // current primary angles of digits
     private int[] currentSecAngles = new int[DIGIT_COUNT];                                  // current secondary angles of digits
     private int[][] desiredPrmAngles = new int[DIGIT_COUNT][PHALANGE_COUNT];                // target primary angles for animation
     private int[] desiredSecAngles = new int[DIGIT_COUNT];                                  // target secondary angles for animation
-    private TransformNode phalTLate[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];   // TranslationNodes for digits
-    private TransformNode phalTForm[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];   // TransformNodes for digits
+    private TransformNode translatePhal[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];   // TranslationNodes for digits
+    private TransformNode scalePhal[][] = new TransformNode[DIGIT_COUNT][PHALANGE_COUNT];   // TransformNodes for digits
 
     private Mat4 m = new Mat4(1);
-    private TransformNode ringGemTransform;
+    private TransformNode scaleRingGem;
     private NameNode spotlightBeacon;
 
     // ------------ Constructor and Initialiser ------------ \\
@@ -51,7 +53,7 @@ public class RobotHand {
     /*
         Contains all MeshNodes, NameNodes, TransformNodes to create a RobotHand object.
         Also contains the Scene Graph and calculations for initial positions and rotations.
-    */
+     */
     public void initialise(GL3 gl) {
 
         // ------------ Dimensions & Positions ------------ \\
@@ -101,11 +103,11 @@ public class RobotHand {
 
         // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
 
-        MeshNode phalangeShape[][] = new MeshNode[DIGIT_COUNT][PHALANGE_COUNT];
-        MeshNode armShape = new MeshNode("Cube(arm)", cubeRobot);
-        MeshNode palmShape = new MeshNode("Cube(palm)", cubeRobot);
-        MeshNode ringShape = new MeshNode("Cube(ring)", sphereRing);
-        MeshNode ringGemShape = new MeshNode("Cube(ringGem)", sphereRingGem);
+        MeshNode shapePhal[][] = new MeshNode[DIGIT_COUNT][PHALANGE_COUNT];
+        MeshNode shapeArm = new MeshNode("Cube(shapeArm)", cubeRobot);
+        MeshNode shapePalm = new MeshNode("Cube(shapePalm)", cubeRobot);
+        MeshNode shapeRing = new MeshNode("Sphere(shapeRing)", sphereRing);
+        MeshNode shapeRingGem = new MeshNode("Sphere(shapeRingGem)", sphereRingGem);
 
         robotHand = new NameNode("root");
         NameNode digit[][] = new NameNode[DIGIT_COUNT][PHALANGE_COUNT];
@@ -116,13 +118,18 @@ public class RobotHand {
 
         // ------------ Initialise all Arrays & Generate Digit Node ------------ \\
 
+        /*
+        Loops across all digits and up the phalanges to initialise all Nodes, Angles, and Keyframe Data
+         */
         for (int d = 0; d < DIGIT_COUNT; d++) {
+
             // Set boundaries for digit rotations
             maxSecAngle[d] = 20;
             minSecAngle[d] = -20;
 
             for (int p = 0; p < PHALANGE_COUNT; p++) {
-                // Initialise neutral position if it has been defined
+
+                // Initialise neutral keyframe if it has been defined
                 if (Arty.neutralKeyframe != null) {
                     desiredPrmAngles[d][p] = Arty.neutralKeyframe.getPrmAngles()[d][p];
                     currentPrmAngles[d][p] = Arty.neutralKeyframe.getPrmAngles()[d][p];
@@ -132,9 +139,9 @@ public class RobotHand {
                 maxPrmAngle[d][p] = 90;
                 minPrmAngle[d][p] = -5;
 
-                phalangeShape[d][p] = new MeshNode("Cube(digit" + d + "-phal" + p + ")", cubeRobot);
+                shapePhal[d][p] = new MeshNode("Cube(digit" + d + "-phal" + p + ")", cubeRobot);
                 digit[d][p] = new NameNode("digit[" + d + "][" + p + "]");
-                phalTLate[d][p] = new TransformNode("phalTLate[" + d + "][" + p + "]",
+                translatePhal[d][p] = new TransformNode("translatePhal[" + d + "][" + p + "]",
                         Mat4Transform.translate(phalTranslations[d][p][0], phalTranslations[d][p][1], phalTranslations[d][p][2]));
 
                 m = new Mat4(1);
@@ -145,17 +152,17 @@ public class RobotHand {
                     m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
                 }
 
-                phalTForm[d][p] = new TransformNode("phalTForm[" + d + "][" + Integer.toString(p) + "]", m);
+                scalePhal[d][p] = new TransformNode("scalePhal[" + d + "][" + Integer.toString(p) + "]", m);
                 if (d == 0) {
-                    phalRotX[d][p] = new TransformNode("phalRotX[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundX(currentSecAngles[d]));
-                    phalRotZ[d][p] = new TransformNode("phalRotZ[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundZ(currentPrmAngles[d][p]));
+                    rotateXPhal[d][p] = new TransformNode("rotateXPhal[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundX(currentSecAngles[d]));
+                    rotateZPhal[d][p] = new TransformNode("rotateZPhal[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundZ(currentPrmAngles[d][p]));
                 } else {
-                    phalRotX[d][p] = new TransformNode("phalRotX[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundX(currentPrmAngles[d][p]));
-                    phalRotZ[d][p] = new TransformNode("phalRotZ[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundZ(currentSecAngles[d]));
+                    rotateXPhal[d][p] = new TransformNode("rotateXPhal[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundX(currentPrmAngles[d][p]));
+                    rotateZPhal[d][p] = new TransformNode("rotateZPhal[" + d + "][" + Integer.toString(p) + "]", Mat4Transform.rotateAroundZ(currentSecAngles[d]));
                 }
             }
 
-            // Initialise neutral position if it has been defined
+            // Initialise neutral keyframe if it has been defined
             if (Arty.neutralKeyframe != null) {
                 desiredSecAngles[d] = Arty.neutralKeyframe.getSecAngles()[d];
                 currentSecAngles[d] = Arty.neutralKeyframe.getSecAngles()[d];
@@ -173,100 +180,104 @@ public class RobotHand {
         m = new Mat4(1);
         m = Mat4Transform.scale(armWidth, armHeight, armDepth); // Sets dimensions of arm
         m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0)); // Move up by 0.5 * height for origin
-        TransformNode armTransform = new TransformNode("arm transform", m);
-        armRotateY = new TransformNode("arm rotate", Mat4Transform.rotateAroundY(0));
+        TransformNode scaleArm = new TransformNode("arm transform", m);
+        rotateYArm = new TransformNode("arm rotate", Mat4Transform.rotateAroundY(0));
 
         m = new Mat4(1);
-        palmTranslate = new TransformNode("palm translate", Mat4Transform.translate(0, armHeight, 0));
+        translatePalm = new TransformNode("palm translate", Mat4Transform.translate(0, armHeight, 0));
         m = Mat4.multiply(m, Mat4Transform.scale(palmWidth, palmHeight, palmDepth));
         m = Mat4.multiply(m, Mat4Transform.translate(0, 0.5f, 0));
-        TransformNode palmTransform = new TransformNode("palm transform", m);
+        TransformNode scalePalm = new TransformNode("palm transform", m);
 
         // ------------ Ring & Spotlight ------------ \\
 
-        ringTranslate = new TransformNode("ring translate", Mat4Transform.translate(0, 0.5f * phalLrgHeight, 0));
+        translateRing = new TransformNode("ring translate", Mat4Transform.translate(0, 0.5f * phalLrgHeight, 0));
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.scale(1.8f * phalLrgWidth, 0.4f * phalLrgHeight, 1.8f * phalLrgDepth));
-        TransformNode ringTransform = new TransformNode("ring transform", m);
-        ringGemTranslate = new TransformNode("ringGem translate", Mat4Transform.translate(0, 0, -0.8f * phalLrgDepth));
+        TransformNode scaleRing = new TransformNode("ring transform", m);
+        translateRingGem = new TransformNode("ringGem translate", Mat4Transform.translate(0, 0, -0.8f * phalLrgDepth));
         m = new Mat4(1);
         m = Mat4.multiply(m, Mat4Transform.scale(0.4f, 0.4f, 0.4f));
-        ringGemTransform = new TransformNode("ringGem transform", m);
+        scaleRingGem = new TransformNode("ringGem transform", m);
 
-        spotlightTranslate = new TransformNode("spotlight translate", Mat4Transform.translate(0, 0, 1));
+        // Nodes for setting direction of the Spotlight
+        translateSpotlight = new TransformNode("spotlight translate", Mat4Transform.translate(0, 0, 1));
         spotlightBeacon = new NameNode("Spotlight Beacon");
 
         // ------------ Scene Graph ------------ \\
 
         robotHand.addChild(arm);
-            arm.addChild(armRotateY);
-                armRotateY.addChild(armTransform);
-                    armTransform.addChild(armShape);
-                armRotateY.addChild(palm);
+            arm.addChild(rotateYArm);
+                rotateYArm.addChild(scaleArm);
+                    scaleArm.addChild(shapeArm);
+                rotateYArm.addChild(palm);
 
-                    palm.addChild(palmTranslate);
-                        palmTranslate.addChild(palmTransform);
-                            palmTransform.addChild(palmShape);
+                    palm.addChild(translatePalm);
+                        translatePalm.addChild(scalePalm);
+                            scalePalm.addChild(shapePalm);
 
-                        palmTranslate.addChild(phalTLate[0][0]);
-                            phalTLate[0][0].addChild(digit[0][0]);
-                                digit[0][0].addChild(phalRotX[0][0]);
-                                    phalRotX[0][0].addChild(phalRotZ[0][0]);
-                                        phalRotZ[0][0].addChild(phalTForm[0][0]);
-                                            phalTForm[0][0].addChild(phalangeShape[0][0]);
+                        translatePalm.addChild(translatePhal[0][0]);
+                            translatePhal[0][0].addChild(digit[0][0]);
+                                digit[0][0].addChild(rotateXPhal[0][0]);
+                                    rotateXPhal[0][0].addChild(rotateZPhal[0][0]);
+                                        rotateZPhal[0][0].addChild(scalePhal[0][0]);
+                                            scalePhal[0][0].addChild(shapePhal[0][0]);
 
-                                        phalRotZ[0][0].addChild(phalTLate[0][1]);
-                                            phalTLate[0][1].addChild(digit[0][1]);
-                                                digit[0][1].addChild(phalRotZ[0][1]);
-                                                    phalRotZ[0][1].addChild(phalTForm[0][1]);
-                                                        phalTForm[0][1].addChild(phalangeShape[0][1]);
+                                        rotateZPhal[0][0].addChild(translatePhal[0][1]);
+                                            translatePhal[0][1].addChild(digit[0][1]);
+                                                digit[0][1].addChild(rotateZPhal[0][1]);
+                                                    rotateZPhal[0][1].addChild(scalePhal[0][1]);
+                                                        scalePhal[0][1].addChild(shapePhal[0][1]);
 
-                                                    phalRotZ[0][1].addChild(phalTLate[0][2]);
-                                                        phalTLate[0][2].addChild(digit[0][2]);
-                                                            digit[0][2].addChild(phalRotZ[0][2]);
-                                                                phalRotZ[0][2].addChild(phalTForm[0][2]);
-                                                                    phalTForm[0][2].addChild(phalangeShape[0][2]);
+                                                    rotateZPhal[0][1].addChild(translatePhal[0][2]);
+                                                        translatePhal[0][2].addChild(digit[0][2]);
+                                                            digit[0][2].addChild(rotateZPhal[0][2]);
+                                                                rotateZPhal[0][2].addChild(scalePhal[0][2]);
+                                                                    scalePhal[0][2].addChild(shapePhal[0][2]);
 
                         for (int d = 1; d < DIGIT_COUNT; d++) {
-                            palmTranslate.addChild(phalTLate[d][0]);
-                                phalTLate[d][0].addChild(digit[d][0]);
-                                    digit[d][0].addChild(phalRotZ[d][0]);
-                                        phalRotZ[d][0].addChild(phalRotX[d][0]);
-                                            phalRotX[d][0].addChild(phalTForm[d][0]);
-                                                phalTForm[d][0].addChild(phalangeShape[d][0]);
+                            translatePalm.addChild(translatePhal[d][0]);
+                                translatePhal[d][0].addChild(digit[d][0]);
+                                    digit[d][0].addChild(rotateZPhal[d][0]);
+                                        rotateZPhal[d][0].addChild(rotateXPhal[d][0]);
+                                            rotateXPhal[d][0].addChild(scalePhal[d][0]);
+                                                scalePhal[d][0].addChild(shapePhal[d][0]);
 
-                                            phalRotX[d][0].addChild(phalTLate[d][1]);
-                                                phalTLate[d][1].addChild(digit[d][1]);
-                                                    digit[d][1].addChild(phalRotX[d][1]);
-                                                        phalRotX[d][1].addChild(phalTForm[d][1]);
-                                                            phalTForm[d][1].addChild(phalangeShape[d][1]);
+                                            rotateXPhal[d][0].addChild(translatePhal[d][1]);
+                                                translatePhal[d][1].addChild(digit[d][1]);
+                                                    digit[d][1].addChild(rotateXPhal[d][1]);
+                                                        rotateXPhal[d][1].addChild(scalePhal[d][1]);
+                                                            scalePhal[d][1].addChild(shapePhal[d][1]);
 
-                                                        phalRotX[d][1].addChild(phalTLate[d][2]);
-                                                            phalTLate[d][2].addChild(digit[d][2]);
-                                                                digit[d][2].addChild(phalRotX[d][2]);
-                                                                    phalRotX[d][2].addChild(phalTForm[d][2]);
-                                                                        phalTForm[d][2].addChild(phalangeShape[d][2]);
+                                                        rotateXPhal[d][1].addChild(translatePhal[d][2]);
+                                                            translatePhal[d][2].addChild(digit[d][2]);
+                                                                digit[d][2].addChild(rotateXPhal[d][2]);
+                                                                    rotateXPhal[d][2].addChild(scalePhal[d][2]);
+                                                                        scalePhal[d][2].addChild(shapePhal[d][2]);
                         }
 
-                                            phalRotX[3][0].addChild(ringTranslate);
-                                                ringTranslate.addChild(ring);
-                                                    ring.addChild(ringTransform);
-                                                        ringTransform.addChild(ringShape);
-                                                    ring.addChild(ringGemTranslate);
-                                                        ringGemTranslate.addChild(ringGem);
-                                                            ringGem.addChild(ringGemTransform);
-                                                                ringGemTransform.addChild(ringGemShape);
-                                                            ringGem.addChild(spotlightTranslate);
-                                                                spotlightTranslate.addChild(spotlightBeacon);
+                                            rotateXPhal[3][0].addChild(translateRing);
+                                                translateRing.addChild(ring);
+                                                    ring.addChild(scaleRing);
+                                                        scaleRing.addChild(shapeRing);
+                                                    ring.addChild(translateRingGem);
+                                                        translateRingGem.addChild(ringGem);
+                                                            ringGem.addChild(scaleRingGem);
+                                                                scaleRingGem.addChild(shapeRingGem);
+                                                            ringGem.addChild(translateSpotlight);
+                                                                translateSpotlight.addChild(spotlightBeacon);
         robotHand.update();
+        robotHand.print(1, true);
     }
 
     // ------------ User Controlled Functions ------------ \\
 
-    public void rotRHToAngle(int angle) {
-        armRotateY.setTransform(Mat4Transform.rotateAroundY(angle));
+    // Changes rotation of Arm around Y-axis
+    public void setArmAngle(int angle) {
+        rotateYArm.setTransform(Mat4Transform.rotateAroundY(angle));
     }
 
+    // Moves the robotHand to the keyframe at line [keyframe] in the data csv
     public void moveToKeyframe(int keyframe) {
         for (int d = 0; d < DIGIT_COUNT; d++) {
             for (int p = 0; p < PHALANGE_COUNT; p++) {
@@ -278,10 +289,12 @@ public class RobotHand {
         currentKeyframe = keyframe;
     }
 
+    // Toggles all animations
     public void toggleGlobalAnims() {
         animationOn = !animationOn;
     }
 
+    // Toggles the robotHand's loop through the imported keyframes
     public void toggleKeyframeSequence() {
         keyframeAnimation = !keyframeAnimation;
     }
@@ -289,9 +302,10 @@ public class RobotHand {
     // ------------ Getters ------------ \\
 
     public Vec3 getRingPos() {
-        return ringGemTransform.getWorldTransform().getCoords();
+        return scaleRingGem.getWorldTransform().getCoords();
     }
 
+    // Returns the difference between the spotlight and the 'beacon' (+1 in the relative Z-axis) as direction
     public Vec3 getRingDir() {
         Vec3 spotlightBeaconPos = spotlightBeacon.getWorldTransform().getCoords();
         Vec3 spotlightOrigin = getRingPos();
@@ -301,10 +315,15 @@ public class RobotHand {
 
     // ------------ Model Manipulation/Drawing ------------ \\
 
+    /*
+    Updates current angles of phalanges to match the target angles. It increments 1 degree per render loop to
+    interpolate smoothly between keyframes. Also checks if the maximum rotation of that phalange has been reached
+     */
     private void updateCurrentAngles() {
         if (midAnimation) {
             for (int d = 0; d < DIGIT_COUNT; d++) {
-                //Primary Angles
+
+                // Primary Angles
                 for (int p = 0; p < PHALANGE_COUNT; p++) {
                     if (currentPrmAngles[d][p] - desiredPrmAngles[d][p] < 0) {
                         if (currentPrmAngles[d][p] < maxPrmAngle[d][p]) {
@@ -321,7 +340,7 @@ public class RobotHand {
                     }
                 }
 
-                //Secondary Angles
+                // Secondary Angles
                 if (currentSecAngles[d] - desiredSecAngles[d] < 0) {
                     if (currentSecAngles[d] < maxSecAngle[d]) {
                         currentSecAngles[d]++;
@@ -336,19 +355,21 @@ public class RobotHand {
                     }
                 }
             }
+            // If all desired angles have been reach, set the midAnimation flag to false
             midAnimation = !((Arrays.deepEquals(currentPrmAngles, desiredPrmAngles)) && (Arrays.equals(currentSecAngles, desiredSecAngles)));
         }
     }
 
-    private void updateFingerPositions() {
+    // Updates the actual world-space Nodes to match the current angles set in the above function
+    private void updateDigitPositions() {
         for (int d = 0; d < DIGIT_COUNT; d++) {
             for (int p = 0; p < PHALANGE_COUNT; p++) {
                 if (d != 0) {
-                    phalRotX[d][p].setTransform(Mat4Transform.rotateAroundX(currentPrmAngles[d][p]));
-                    phalRotZ[d][p].setTransform(Mat4Transform.rotateAroundZ(currentSecAngles[d]));
+                    rotateXPhal[d][p].setTransform(Mat4Transform.rotateAroundX(currentPrmAngles[d][p]));
+                    rotateZPhal[d][p].setTransform(Mat4Transform.rotateAroundZ(currentSecAngles[d]));
                 }else{
-                    phalRotZ[d][p].setTransform(Mat4Transform.rotateAroundZ(currentPrmAngles[d][p]));
-                    phalRotX[d][p].setTransform(Mat4Transform.rotateAroundX(currentSecAngles[d]));
+                    rotateZPhal[d][p].setTransform(Mat4Transform.rotateAroundZ(currentPrmAngles[d][p]));
+                    rotateXPhal[d][p].setTransform(Mat4Transform.rotateAroundX(currentSecAngles[d]));
                 }
             }
         }
@@ -356,16 +377,21 @@ public class RobotHand {
 
     public void render(GL3 gl) {
         if (animationOn) {
+            // If the keyframe toggle is true and no animation is taking place...
             if ((keyframeAnimation) && (!midAnimation)) {
+                // ... move to the next keyframe
                 currentKeyframe++;
+
+                // Keeps the currentKeyframe value from surpassing the length of the csv
                 if (currentKeyframe > Arty.keyframes.size()-1) {
                     currentKeyframe = 0;
                 }
                 moveToKeyframe(currentKeyframe);
             }
 
+            // Only updates digits if animation is toggled on
             updateCurrentAngles();
-            updateFingerPositions();
+            updateDigitPositions();
         }
 
         robotHand.update();

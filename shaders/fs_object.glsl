@@ -15,8 +15,7 @@ struct LightSource {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
-    float falloffConstant, falloffLinear, falloffQuadratic;
-    float spotCutOff, spotOuterCutOff;
+    float falloffConstant, falloffLinear, falloffQuadratic, spotCutOff, spotOuterCutOff;
     vec3 spotDirection;
     int spotlight;
 };
