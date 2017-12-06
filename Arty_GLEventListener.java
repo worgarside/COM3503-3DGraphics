@@ -12,12 +12,13 @@ public class Arty_GLEventListener implements GLEventListener {
     private float aspect;
     private Camera camera;
     private Mat4 perspective;
-    private Mesh sphere, cubeRobot, sphereRing, sphereRingGem, cubeLampBase, cubeLampBody;
+    private Mesh sphere, cubeRobot, sphereRing, sphereRingGem, cubeLampBase, cubeLampBody, cubeWindowFrame;
     private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outsideDay, outsideNight;
     private Light light;
     private RobotHand robotHand;
     private Gallery gallery;
     private Lamp lamp1, lamp2;
+    private WindowFrame windowFrame;
     private ArrayList<Mesh> meshList = new ArrayList<Mesh>();
     private float gallerySize = 24f;
     private boolean lampsOn = true;
@@ -81,6 +82,7 @@ public class Arty_GLEventListener implements GLEventListener {
         int[] textureLampBody = TextureLibrary.loadTexture(gl, "textures/textureLampBody.jpg");
         int[] textureDefaultSpecularLow = TextureLibrary.loadTexture(gl, "textures/textureDefaultSpecularLow.jpg");
         int[] textureDefaultSpecularHigh = TextureLibrary.loadTexture(gl, "textures/textureDefaultSpecularHigh.jpg");
+        int[] textureWindowFrame = TextureLibrary.loadTexture(gl, "textures/textureWindowFrame.jpg");
 
         sphere = new Sphere(gl, textureRobot, textureRobotSpecular);
         cubeRobot = new Cube(gl, textureRobot, textureRobotSpecular);
@@ -88,12 +90,14 @@ public class Arty_GLEventListener implements GLEventListener {
         sphereRingGem = new Sphere(gl, textureRingGem, textureRingGemSpecular);
         cubeLampBase = new Cube(gl, textureLampBase, textureDefaultSpecularLow);
         cubeLampBody = new Cube(gl, textureLampBody, textureDefaultSpecularLow);
+        cubeWindowFrame = new Cube(gl, textureWindowFrame, textureDefaultSpecularLow);
         meshList.add(sphere);
         meshList.add(cubeRobot);
         meshList.add(sphereRing);
         meshList.add(sphereRingGem);
         meshList.add(cubeLampBase);
         meshList.add(cubeLampBody);
+        meshList.add(cubeWindowFrame);
 
         floor = new TwoTriangles(gl, textureFloor);
         wallLeft = new TwoTriangles(gl, textureWallLeft);
@@ -139,6 +143,9 @@ public class Arty_GLEventListener implements GLEventListener {
 
         lamp2 = new Lamp(2, cubeLampBase, cubeLampBody, cubeRobot, new Vec3(gallerySize * 0.4f, 0, -gallerySize * 0.4f));
         lamp2.initialise(gl);
+
+        windowFrame = new WindowFrame(cubeWindowFrame, gallerySize);
+        windowFrame.initialise(gl);
     }
 
     public void rotArmToAngle(int angle) {
@@ -204,6 +211,7 @@ public class Arty_GLEventListener implements GLEventListener {
         gallery.render(gl);
         lamp1.render(gl);
         lamp2.render(gl);
+        windowFrame.render(gl);
 
         if (dayNightCycle){
             time = System.currentTimeMillis() / 1000.0 % 60;
