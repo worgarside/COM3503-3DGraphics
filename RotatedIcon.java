@@ -17,10 +17,10 @@ import javax.swing.Icon;
  * <li>ABOUT_CENTER - the icon is rotated by the specified degrees about its center.
  * </ul>
  *
+ * @author Rob Camick
  * Accessed at: https://tips4java.wordpress.com/2009/04/06/rotated-icon/
  * This is NOT my work - the author is Rob Camick. It is only being used to reduce time spent on
- * the clockFace, as due to it ont being an essential part of the Assignment, I would rather spend more
- * time on the other parts.
+ * the clockFace
  *
  */
 public class RotatedIcon implements Icon

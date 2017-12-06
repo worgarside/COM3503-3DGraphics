@@ -3,34 +3,48 @@ import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 
+/**
+ * Sphere.java
+ * Sphere class with functions for setting up shader data and rendering spherical meshes
+ *
+ * @author Will Garside // worgarside@gmail.com
+ * @version 1.0 2017-12-06
+ */
 public class Sphere extends Mesh {
 
-    private int[] textureId1;
-    private int[] textureId2;
+    private int[] textureMain;
+    private int[] textureSpec;
     private static final Vec3 SCENE_AMBIENT = new Vec3(0.2f, 0.2f, 0.2f);
 
-    public Sphere(GL3 gl, int[] textureId1, int[] textureId2) {
+    /**
+     * Constructor for Sphere object
+     *
+     * @param gl - graphics library
+     * @param textureMain - main texture for Sphere
+     * @param textureSpec - specular texture for Sphere
+     */
+    public Sphere(GL3 gl, int[] textureMain, int[] textureSpec) {
         super(gl);
         createVertices();
         super.vertices = this.vertices;
         super.indices = this.indices;
-        this.textureId1 = textureId1;
-        this.textureId2 = textureId2;
-        material.setAmbient(1.0f, 0.5f, 0.31f);
+        this.textureMain = textureMain;
+        this.textureSpec = textureSpec;
 
-        material.setAllDiffusePoints(1.0f, 0.5f, 0.31f);
-        material.setAllSpecularPoints(0.5f, 0.5f, 0.5f);
-
-        material.setAllDiffuseSpots(1.0f, 0.5f, 0.31f);
-        material.setAllSpecularSpots(0.5f, 0.5f, 0.5f);
+        material.setAmbient(SCENE_AMBIENT);
 
         material.setShininess(32.0f);
         shader = new Shader(gl, "shaders/vs_object.glsl", "shaders/fs_object.glsl");
         fillBuffers(gl);
     }
 
+    /**
+     * Initialise matrices and vectors and sends them to the shaders
+     *
+     * @param gl - grpahics library
+     * @param model - the model matrix used for the Sphere
+     */
     public void render(GL3 gl, Mat4 model) {
-        //Mat4 model = getObjectModelMatrix();
         Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), model));
 
         shader.use(gl);
@@ -39,41 +53,43 @@ public class Sphere extends Mesh {
 
         shader.setVec3(gl, "viewPos", camera.getPosition());
 
-
         for (int i =0; i < Arty.lightCount; i++) {
             super.setShaderValues(gl, shader, i, SCENE_AMBIENT);
         }
 
         shader.setFloat(gl, "material.shininess", material.getShininess());
-
         shader.setInt(gl, "material.diffuse", 0);
         shader.setInt(gl, "material.specular", 1);
 
         gl.glActiveTexture(GL.GL_TEXTURE0);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, textureId1[0]);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, textureMain[0]);
         gl.glActiveTexture(GL.GL_TEXTURE1);
-        gl.glBindTexture(GL.GL_TEXTURE_2D, textureId2[0]);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, textureSpec[0]);
 
         gl.glBindVertexArray(vertexArrayId[0]);
         gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);
         gl.glBindVertexArray(0);
     }
 
+    /**
+     * Removes the Meshes from memory on system exit
+     *
+     * @param gl
+     */
     public void dispose(GL3 gl) {
         super.dispose(gl);
-        gl.glDeleteBuffers(1, textureId1, 0);
-        gl.glDeleteBuffers(1, textureId2, 0);
+        gl.glDeleteBuffers(1, textureMain, 0);
+        gl.glDeleteBuffers(1, textureSpec, 0);
     }
 
-    // ***************************************************
-  /* THE DATA
-   */
-    // anticlockwise/counterclockwise ordering
-
+    // ------------ Data ------------ \\
 
     private float[] vertices;
     private int[] indices;
 
+    /**
+     * Creates vertices for the Sphere object for rendering
+     */
     private void createVertices() {
         int XLONG = 30;
         int YLAT = 30;
@@ -110,7 +126,6 @@ public class Sphere extends Mesh {
                 indices[j * (XLONG - 1) * 6 + i * 6 + 5] = (j + 1) * XLONG + i;
             }
         }
-
     }
 
 }

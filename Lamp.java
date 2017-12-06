@@ -1,43 +1,58 @@
-import gmaths.*;
-
-import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
+import gmaths.*;
 
+/**
+ * Lamp.java
+ * Creates an Lamp object
+ *
+ * @author Will Garside // worgarside@gmail.com
+ * @version 1.0 2017-12-06
+ */
 public class Lamp {
 
-    public Lamp(int lightNum, Mesh cubeBase, Mesh cubeBody, Mesh cubeHead, Vec3 position) {
+    /**
+     * Constructor for Lamp object
+     *
+     * @param lightNum - the lightSource reference number
+     * @param cubeBase - Mesh for the Lamp base
+     * @param cubeBody - Mesh for the Lamp body and arms
+     * @param position - a Vec3 to set the position of the Lamp in the scene
+     */
+    public Lamp(int lightNum, Mesh cubeBase, Mesh cubeBody, Vec3 position) {
         this.lightNum = lightNum;
         this.cubeBase = cubeBase;
         this.cubeBody = cubeBody;
-        this.cubeHead = cubeHead;
         this.position = position;
     }
 
+    /**
+     * Getter for the NameNode bulb world position for setting the lightSource's position
+     *
+     * @return bulb world position as a Vec3
+     */
     public Vec3 getLightBulbPos() {
-        lightBulbMatrix = new Mat4(1);
-        lightBulbMatrix = Mat4.multiply(lightBulbMatrix, transformNodeToMat4(baseTranslate));
-        lightBulbMatrix = Mat4.multiply(lightBulbMatrix, transformNodeToMat4(bodyTranslate));
-        lightBulbMatrix = Mat4.multiply(lightBulbMatrix, transformNodeToMat4(bulbTranslate));
-
-        return coordsFromMat4(lightBulbMatrix);
+        return bulb.getWorldTransform().getCoords();
     }
 
-    // ***************************************************
-    /* THE SCENE
-    */
-
     private int lightNum;
-    private Mesh cubeBase, cubeBody, cubeHead;
+    private Mesh cubeBase, cubeBody;
     private Vec3 position;
     private SGNode lamp;
     private Mat4 lightBulbMatrix = new Mat4(1);
     private TransformNode bodyTranslate, baseTranslate, bulbTranslate;
     private static final int LAMP_ARM_COUNT = 4;
+    private NameNode bulb;
 
+    /**
+     * Initialises all Nodes for creating a Lamp object
+     * Generates scene graph
+     *
+     * @param gl - graphics library
+     */
     public void initialise(GL3 gl) {
 
         // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
@@ -48,6 +63,7 @@ public class Lamp {
         lamp = new NameNode("root");
         NameNode base = new NameNode("base");
         NameNode body = new NameNode("body");
+        bulb = new NameNode("bulb");
 
         // ------------ Dimensions + Positions ------------ \\
 
@@ -117,26 +133,27 @@ public class Lamp {
                                     armScale[i].addChild(armShape[i]);
                         }
 
+                        bodyTranslate.addChild(bulbTranslate);
+                            bulbTranslate.addChild(bulb);
+
         lamp.update();
     }
 
+    /**
+     * Renders the lamp object in the scene
+     *
+     * @param gl - graphics library
+     */
     public void render(GL3 gl) {
         lamp.draw(gl);
     }
 
-    private Mat4 transformNodeToMat4(TransformNode tNode) {
-        Mat4 matrix = tNode.getMat4();
-        return matrix;
-    }
-
-    private Vec3 coordsFromMat4(Mat4 matrix) {
-        float[][] values = matrix.getValues();
-        float x = values[0][3];
-        float y = values[1][3];
-        float z = values[2][3];
-        return new Vec3(x, y, z);
-    }
-
+    /**
+     * Sets the on/off state for the Lamp
+     *
+     * @param light - the Light object being edited
+     * @param state - the on/off state for the lamp
+     */
     public void setState(Light light, int state) {
         light.setPower(lightNum, state);
     }

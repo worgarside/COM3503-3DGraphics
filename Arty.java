@@ -12,6 +12,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Arty.java
+ * Creates a frame containing a JOGL-powered canvas and controls for the scene
+ *
+ * @author Will Garside // worgarside@gmail.com
+ * @version 1.0 2017-12-06
+ */
 public class Arty extends JFrame implements ActionListener {
 
     private static final int WIDTH = 1080;
@@ -31,8 +38,12 @@ public class Arty extends JFrame implements ActionListener {
     private static JPanel panel = new JPanel();
     private static RotatedIcon clockRot;
     public static boolean night = false;
-    private ArrayList<JLabel> labelList = new ArrayList<JLabel>();
 
+    /**
+     * Initialises the Arty frame
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         readLightData();
         readKeyframeData();
@@ -42,8 +53,13 @@ public class Arty extends JFrame implements ActionListener {
         arty.setVisible(true);
     }
 
-    public Arty(String textForTitleBar) {
-        super(textForTitleBar);
+    /**
+     * Constructor for Arty frame, sets up the JOGL canvas and the control panel
+     *
+     * @param frameTitle - title of frame
+     */
+    public Arty(String frameTitle) {
+        super(frameTitle);
         GLCapabilities glcapabilities = new GLCapabilities(GLProfile.get(GLProfile.GL3));
 
         // Use MSAA for cleaner model
@@ -63,9 +79,7 @@ public class Arty extends JFrame implements ActionListener {
         GridBagConstraints gbc = new GridBagConstraints();
 
         createClockFace(panel, gbc);
-
         createControls(panel, gbc);
-
         this.add(panel, BorderLayout.SOUTH);
 
         addWindowListener(new WindowAdapter() {
@@ -80,13 +94,21 @@ public class Arty extends JFrame implements ActionListener {
         animator.start();
     }
 
+    /**
+     * Listener for Arm Bearing slider to set Robot Hand bearing value
+     */
     ChangeListener sliderListener = new ChangeListener() {
         public void stateChanged(ChangeEvent event) {
-            JSlider source = (JSlider) event.getSource();
-            glEventListener.rotArmToAngle(source.getValue());
+            JSlider sliderArmBearing = (JSlider) event.getSource();
+            glEventListener.rotArmToAngle(sliderArmBearing.getValue());
         }
     };
 
+    /**
+     * Function called on button press to run function in the scene
+     *
+     * @param e - the event taking place
+     */
     public void actionPerformed(ActionEvent e) {
         for (int i = 0; i < keyframes.size(); i++) {
             if (e.getActionCommand().equalsIgnoreCase(keyframes.get(i).getName())) {
@@ -116,6 +138,9 @@ public class Arty extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * Reads the data provided in lightData.csv to add to set up the lights and their properties
+     */
     private static void readLightData() {
         BufferedReader br = null;
 
@@ -148,6 +173,9 @@ public class Arty extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     *  Reads the data provided in keyframes.csv to add to an ArrayList of keyframes for the RobotHand
+     */
     private static void readKeyframeData() {
         BufferedReader br = null;
 
@@ -199,6 +227,12 @@ public class Arty extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * Creates a clockFace to represent the Day/Night cycle used in the scene
+     *
+     * @param panel - the panel that the clockFace is added to
+     * @param gbc - GridBagConstraints used in the panel
+     */
     private static void createClockFace(JPanel panel, GridBagConstraints gbc) {
         JPanel clockPanel = new JPanel();
         LayoutManager overlay = new OverlayLayout(clockPanel);
@@ -223,19 +257,22 @@ public class Arty extends JFrame implements ActionListener {
         panel.add(clockPanel, gbc);
     }
 
+    /**
+     * Creates the controls for the scene and adds them to a JPanel in the frame
+     *
+     * @param panel - the panel that the controls are added to
+     * @param gbc - GridBagConstraints used in the panel
+     */
     private void createControls(JPanel panel, GridBagConstraints gbc) {
         // Create buttons for each keyframe defined in KEYFRAME_DATA_FILE
         JButton btn = new JButton();
         JLabel posLabel  = new JLabel("Positions");
         JLabel armLabel  = new JLabel("Arm Bearing");
         JLabel toggleLabel = new JLabel("Toggle Controls");
-        labelList.add(posLabel);
-        labelList.add(armLabel);
-        labelList.add(toggleLabel);
 
-        for (JLabel label : labelList) {
-            label.setHorizontalAlignment(SwingConstants.CENTER);
-        }
+        posLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        armLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        toggleLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
         JPanel posBtnPanel = new JPanel();
         for (int i = 0; i < keyframes.size(); i++) {
@@ -298,12 +335,22 @@ public class Arty extends JFrame implements ActionListener {
         panel.add(btn);
     }
 
+    /**
+     * Updates the Day/Night clock
+     *
+     * @param seconds - current seconds value displayed on the clock
+     */
     public static void updateClock(int seconds) {
         clockRot.setDegrees(seconds*6);
         panel.repaint();
     }
 }
 
+/**
+ * Allows use of keybaord to move through scene
+ *
+ * @author Dr. Steve Maddock
+ */
 class MyKeyboardInput extends KeyAdapter  {
     private Camera camera;
 
@@ -326,6 +373,11 @@ class MyKeyboardInput extends KeyAdapter  {
     }
 }
 
+/**
+ * Allows use of mouse to control camera
+ *
+ * @author Dr. Steve Maddock
+ */
 class MyMouseInput extends MouseMotionAdapter {
     private Point lastpoint;
     private Camera camera;

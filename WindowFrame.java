@@ -1,24 +1,42 @@
-import gmaths.*;
-
-import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.*;
 import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
+import gmaths.*;
 
+/**
+ * WindowFrame.java
+ * Creates a WindowFrame object for the window in the Gallery
+ *
+ * @author Will Garside // worgarside@gmail.com
+ * @version 1.0 2017-12-06
+ */
 public class WindowFrame {
-
-    public WindowFrame(Mesh cubeWindowFrame, float gallerySize) {
-        this.cubeWindowFrame = cubeWindowFrame;
-        this.gallerySize = gallerySize;
-    }
 
     private SGNode windowFrame;
     private Mesh cubeWindowFrame;
     private float gallerySize;
     private TransformNode translateTop, translateLeft, translateRight, translateBottom;
 
+    /**
+     * Constructor for the WindorFrame object
+     * Sets the size of the window and the Mesh used on the objects
+     *
+     * @param cubeWindowFrame
+     * @param gallerySize
+     */
+    public WindowFrame(Mesh cubeWindowFrame, float gallerySize) {
+        this.cubeWindowFrame = cubeWindowFrame;
+        this.gallerySize = gallerySize;
+    }
+
+    /**
+     * Initialises the WindowFrame by creating all Nodes for creating a Lamp object
+     * Also generates scene graph
+     *
+     * @param gl
+     */
     public void initialise(GL3 gl) {
 
         // ------------ MeshNodes, NameNodes, TranslationNodes, TransformationNodes ------------ \\
@@ -87,10 +105,13 @@ public class WindowFrame {
         windowFrame.update();
     }
 
+    /**
+     * Renders the WindowFrame in the JOGL scene
+     *
+     * @param gl - graphics library
+     */
     public void render(GL3 gl) {
         windowFrame.draw(gl);
     }
-
-
 
 }

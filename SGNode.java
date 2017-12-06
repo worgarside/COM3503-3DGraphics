@@ -2,6 +2,13 @@ import gmaths.*;
 import java.util.ArrayList;
 import com.jogamp.opengl.*;
 
+/**
+ * SGNode.java
+ * Object for creation and modification of Scene Graph Nodes
+ *
+ * @author Dr. Steve Maddock
+ * @version 1.0 2017-12-06
+ */
 public class SGNode {
 
     protected String name;
@@ -54,6 +61,11 @@ public class SGNode {
         }
     }
 
+    /**
+     * Gets world transform matrix of SGNode
+     *
+     * @return Transformation Matrix as Mat4
+     */
     public Mat4 getWorldTransform() {
         return worldTransform;
     }

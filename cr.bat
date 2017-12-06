@@ -1,6 +1,6 @@
 @echo off
 
-del *.class
+del /S *.class
 
 javac Arty.java
 

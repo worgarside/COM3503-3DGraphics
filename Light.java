@@ -4,6 +4,13 @@ import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 import java.util.ArrayList;
 
+/**
+ * Light.java
+ * Light object used for illuminating the scene
+ *
+ * @author Will Garside // worgarside@gmail.com
+ * @version 1.0 2017-12-06
+ */
 public class Light {
 
     public static final Vec3 DEFAULT_AMBIENT = new Vec3(0.2f, 0.2f, 0.2f);
@@ -23,18 +30,23 @@ public class Light {
     private static ArrayList<Float> bulbRotation = new ArrayList<Float>();
     private static ArrayList<Float> cutOff = new ArrayList<Float>();
     private static ArrayList<Float> outerCutOff = new ArrayList<Float>();
-    private static ArrayList<Integer> spotlight = new ArrayList<Integer>();
+    private static ArrayList<Integer> spotlightFlag = new ArrayList<Integer>();
     private static ArrayList<Float> fallOffConstant = new ArrayList<Float>();
     private static ArrayList<Float> fallOffLinear = new ArrayList<Float>();
     private static ArrayList<Float> fallOffQuadratic = new ArrayList<Float>();
     private float lampColor = 1.0f;
 
-    // ------------ Constructor ------------ \\
 
+    /**
+     * Constructor for the Light object, sets all properties
+     *
+     * @param gl - graphics library
+     */
     public Light(GL3 gl) {
         material = new Material();
         material.setAmbient(DEFAULT_AMBIENT);
 
+        // For each lightSource, set the values imported from the csv file
         for(int i = 0; i < Arty.lightCount; i++) {
             originalDiffuse.add(new Vec3(Arty.lightData.get(i)[0], Arty.lightData.get(i)[1], Arty.lightData.get(i)[2]));
             originalSpecular.add(new Vec3(Arty.lightData.get(i)[3], Arty.lightData.get(i)[4], Arty.lightData.get(i)[5]));
@@ -44,7 +56,7 @@ public class Light {
             bulbRotation.add(Arty.lightData.get(i)[15]);
             cutOff.add(Arty.lightData.get(i)[16]);
             outerCutOff.add(Arty.lightData.get(i)[17]);
-            spotlight.add(Math.round(Arty.lightData.get(i)[18]));
+            spotlightFlag.add(Math.round(Arty.lightData.get(i)[18]));
             fallOffConstant.add(Arty.lightData.get(i)[19]);
             fallOffLinear.add(Arty.lightData.get(i)[20]);
             fallOffQuadratic.add(Arty.lightData.get(i)[21]);
@@ -58,102 +70,227 @@ public class Light {
     }
 
     // ------------ Setters ------------ \\
+
+    /**
+     * Sets the position of the lightSource
+     *
+     * @param i - lightSource reference number
+     * @param pos - world coordinates of lightSource
+     */
     public void setPosition(int i, Vec3 pos) {
         position.get(i).x = pos.x;
         position.get(i).y = pos.y;
         position.get(i).z = pos.z;
     }
 
+    /**
+     * Sets the material the lightSource is shining on
+     *
+     * @param m - the material
+     */
     public void setMaterial(Material m) {
         material = m;
     }
 
+    /**
+     * Sets the size of the light bulb
+     *
+     * @param i - lightSource reference number
+     * @param size - size of the bulb as a Vec3
+     */
     public void setSize(int i, Vec3 size) {
         this.size.get(i).x = size.x;
         this.size.get(i).y = size.y;
         this.size.get(i).z = size.z;
     }
 
+    /**
+     * Sets the Y rotation of the bulb
+     *
+     * @param i - lightSource reference number
+     * @param rot - rotation value in degrees
+     */
     public void setRotation(int i, float rot) {
         bulbRotation.set(i, rot);
     }
 
+    /**
+     * Sets the direction that the light is shining in
+     * Only used for spotlight
+     *
+     * @param i - lightSource reference number
+     * @param dir - the direction as a Vec3
+     */
     public void setDirection(int i, Vec3 dir) {
         direction.get(i).x = dir.x;
         direction.get(i).y = dir.y;
         direction.get(i).z = dir.z;
     }
 
+    /**
+     * Sets the cutOff value for the spotlight
+     *
+     * @param i - lightSource reference number
+     * @param cutoff - cutOff angle
+     */
     public void setCutoff(int i, float cutoff) {
         this.cutOff.set(i, cutoff);
     }
 
-    public void setOuterCutOff(int i, float exp) {
-        this.outerCutOff.set(i, exp);
+    /**
+     * Sets the outCutOff value for the spotlight
+     *
+     * @param i - lightSource reference number
+     * @param outerCutOff - outerCutOff angle
+     */
+    public void setOuterCutOff(int i, float outerCutOff) {
+        this.outerCutOff.set(i, outerCutOff);
     }
 
+    /**
+     * Sets the perspective view of the Light
+     *
+     * @param perspective - the perspective Matrix as a Mat4
+     */
     public void setPerspective(Mat4 perspective) {
         this.perspective = perspective;
     }
 
+    /**
+     * Sets the reference camera for the light
+     *
+     * @param camera - the Camera object for the user
+     */
     public void setCamera(Camera camera) {
         this.camera = camera;
     }
 
     // ------------ Getters ------------ \\
 
+    /**
+     * Gets the position of the light
+     *
+     * @param i - lightSource reference number
+     * @return the world space coords as a Vec3
+     */
     public Vec3 getPosition(int i) {
         return position.get(i);
     }
 
+    /**
+     * Gets the material the light is shining on
+     *
+     * @return the material as a Material object
+     */
     public Material getMaterial() {
         return material;
     }
 
+    /**
+     * Gets the size of the light bulb
+     *
+     * @param i - lightSource reference number
+     * @return the size as a Vec3
+     */
     public Vec3 getSize(int i) {
         return size.get(i);
     }
 
+    /**
+     * Gets the rotation of the light bulb
+     *
+     * @param i - lightSource reference number
+     * @return the rotation angle as a float
+     */
     public float getRotation(int i) {
         return bulbRotation.get(i);
     }
 
+    /**
+     * Gets the direction the light is shining in
+     *
+     * @param i - lightSource reference number
+     * @return the direction as a Vec3
+     */
     public Vec3 getDirection(int i) {
         return direction.get(i);
     }
 
+    /**
+     * Gets the cutOff angle for the spotlight
+     *
+     * @param i - lightSource reference number
+     * @return the cutOff angle as a float
+     */
     public float getCutOff(int i) {
         return cutOff.get(i);
     }
 
+    /**
+     * Gets the outerCutOff value for the spotlight
+     *
+     * @param i - lightSource reference number
+     * @return the outerCutOff as a float
+     */
     public float getOuterCutOff(int i) {
         return outerCutOff.get(i);
     }
 
+    /**
+     * Gets the spotlight flag for a lightSource (i.e. whether it's a spotlight or a point light)
+     *
+     * @param i - lightSource reference number
+     * @return the flag as an int
+     */
     public int getSpotlight(int i) {
-        return spotlight.get(i);
+        return spotlightFlag.get(i);
     }
 
+    /**
+     * gets the constant fallOff value for the lightSource
+     *
+     * @param i - lightSource reference number
+     * @return constant fallOff value as a float
+     */
     public float getFallOffConstant(int i) {
         return fallOffConstant.get(i);
     }
 
+    /**
+     * gets the linear fallOff value for the lightSource
+     *
+     * @param i - lightSource reference number
+     * @return linear fallOff value as a float
+     */
     public float getFallOffLinear(int i) {
         return fallOffLinear.get(i);
     }
 
+    /**
+     * gets the quadratic fallOff value for the lightSource
+     *
+     * @param i - lightSource reference number
+     * @return quadratic fallOff value as a float
+     */
     public float getFallOffQuadratic(int i) {
         return fallOffQuadratic.get(i);
     }
 
     // ------------ Methods ------------ \\
 
+    /**
+     * Renders the light bulb for a particular source
+     * The spotlight is omitted as the bulb 'is' the ringGem
+     *
+     * @param gl - graphics library
+     */
     public void render(GL3 gl) {
         gl.glBindVertexArray(vertexArrayId[0]);
         Mat4 m = new Mat4(1);
 
         for (int i = 0; i < Arty.lightCount; i++) {
-            if (spotlight.get(i) != 1) {
+            // Check that the light is not a spotlight, then render the bulb
+            if (spotlightFlag.get(i) != 1) {
                 m = new Mat4(1);
                 m = Mat4.multiply(Mat4Transform.scale(size.get(i)), m);
                 m = Mat4.multiply(Mat4Transform.rotateAroundY(bulbRotation.get(i)), m);
@@ -170,22 +307,29 @@ public class Light {
         gl.glBindVertexArray(0);
     }
 
+    /**
+     * Removes the Meshes from memory on system exit
+     *
+     * @param gl - graphics library
+     */
     public void dispose(GL3 gl) {
         gl.glDeleteBuffers(1, vertexBufferId, 0);
         gl.glDeleteVertexArrays(1, vertexArrayId, 0);
         gl.glDeleteBuffers(1, elementBufferId, 0);
     }
 
-    public void setPower(int lightNum, float powerLevel) {
-        material.setDiffusePoint(lightNum, originalDiffuse.get(lightNum).x * powerLevel, originalDiffuse.get(lightNum).y * powerLevel, originalDiffuse.get(lightNum).z * powerLevel);
-        material.setSpecularPoint(lightNum, originalSpecular.get(lightNum).x * powerLevel, originalSpecular.get(lightNum).y * powerLevel, originalSpecular.get(lightNum).z * powerLevel);
-        if (lightNum != 3) {
+    /**
+     * Sets the power level/brightness of a particular light source
+     *
+     * @param i - lightSource reference number
+     * @param powerLevel - the continuous power level of the lightSource
+     */
+    public void setPower(int i, float powerLevel) {
+        material.setDiffusePoint(i, originalDiffuse.get(i).x * powerLevel, originalDiffuse.get(i).y * powerLevel, originalDiffuse.get(i).z * powerLevel);
+        material.setSpecularPoint(i, originalSpecular.get(i).x * powerLevel, originalSpecular.get(i).y * powerLevel, originalSpecular.get(i).z * powerLevel);
+        if (i != 3) {
             lampColor = powerLevel + 0.1f;
         }
-    }
-
-    public String toString() {
-        return originalDiffuse.get(0) + ", " + originalSpecular.get(0) + ", " + position.get(0) + ", " + size.get(0) + ", " + direction.get(0) + ", " + bulbRotation.get(0) + ", " + cutOff.get(0) + ", " + outerCutOff.get(0) + ", " + spotlight.get(0);
     }
 
     // ------------ Data ------------ \\
@@ -225,6 +369,11 @@ public class Light {
     private int[] vertexArrayId = new int[1];
     private int[] elementBufferId = new int[1];
 
+    /**
+     * Sends the data to the GPU buffers
+     *
+     * @param gl - graphics library
+     */
     private void fillBuffers(GL3 gl) {
         gl.glGenVertexArrays(1, vertexArrayId, 0);
         gl.glBindVertexArray(vertexArrayId[0]);

@@ -3,6 +3,14 @@ import java.nio.*;
 import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
 
+/**
+ * Mesh.java
+ * A Mesh object for texturing the scene objects, and used in processing illumination data
+ *
+ * @author Will Garside // worgarside@gmail.com
+ * @author Dr. Steve Maddock
+ * @version 1.0 2017-12-06
+ */
 public abstract class Mesh {
 
     protected float[] vertices;
@@ -23,33 +31,69 @@ public abstract class Mesh {
     protected Mat4 perspective;
     protected Light light;
 
+    /**
+     * Constructor for the Mesh class
+     *
+     * @param gl
+     */
     public Mesh(GL3 gl) {
         material = new Material();
         model = new Mat4(1);
     }
 
+    // ------------ Setters ------------ \\
+
+    /**
+     * Sets the Matrix used by the Mesh
+     *
+     * @param m - the Matrix used as a Mat4
+     */
     public void setModelMatrix(Mat4 m) {
         model = m;
     }
 
+    /**
+     * Sets the camera used by the users
+     *
+     * @param camera - Camera object from Arty.java
+     */
     public void setCamera(Camera camera) {
         this.camera = camera;
     }
 
+    /**
+     *
+     * @param perspective
+     */
     public void setPerspective(Mat4 perspective) {
         this.perspective = perspective;
     }
 
+    /**
+     * Sets the Light shining on the Mesh
+     *
+     * @param light - the Light object shining on the Mesh
+     */
     public void setLight(Light light) {
         this.light = light;
     }
 
+    /**
+     * Removes the Mesh from memory on system exit
+     *
+     * @param gl - graphics library
+     */
     public void dispose(GL3 gl) {
         gl.glDeleteBuffers(1, vertexBufferId, 0);
         gl.glDeleteVertexArrays(1, vertexArrayId, 0);
         gl.glDeleteBuffers(1, elementBufferId, 0);
     }
 
+    /**
+     * Send data to the GPU buffers
+     *
+     * @param gl - graphics library
+     */
     protected void fillBuffers(GL3 gl) {
         gl.glGenVertexArrays(1, vertexArrayId, 0);
         gl.glBindVertexArray(vertexArrayId[0]);
@@ -88,12 +132,31 @@ public abstract class Mesh {
         gl.glBindVertexArray(0);
     }
 
+    /**
+     * Renders the Mesh object
+     *
+     * @param gl - graphics library
+     * @param model - the model of the Mesh as a Mat4
+     */
     public abstract void render(GL3 gl, Mat4 model);
 
+    /**
+     * Renders the Mesh object
+     *
+     * @param gl - graphics library
+     */
     public void render(GL3 gl) {
         render(gl, model);
     }
 
+    /**
+     * Sends data to the Shaders for TwoTriangles, Cube, and Sphere objects
+     *
+     * @param gl - graphics library
+     * @param shader - the shader recieving data
+     * @param i - the lightSource reference number
+     * @param ambient - the ambient value of the scene
+     */
     public void setShaderValues(GL3 gl, Shader shader, int i, Vec3 ambient) {
         shader.setVec3(gl, "lightSources[" + i + "].position", light.getPosition(i));
         shader.setVec3(gl, "lightSources[" + i + "].ambient", ambient);

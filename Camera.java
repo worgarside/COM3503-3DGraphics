@@ -2,6 +2,12 @@ import gmaths.*;
 import java.awt.event.*;
 import com.jogamp.opengl.awt.GLCanvas;
 
+/**
+ * Camera.java
+ * Camera class for user viewing of scene
+ *
+ * @author Dr. Steve Maddock
+ */
 public class Camera {
 
     public enum CameraType {X, Z};
@@ -105,5 +111,4 @@ public class Camera {
         up = Vec3.crossProduct(right, front);
         up.normalize();
     }
-
 }

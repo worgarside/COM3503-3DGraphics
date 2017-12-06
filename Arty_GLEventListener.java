@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 /**
  * Arty_GLEventListener.java
- * Purpose: Contains all GL initialisation and interaction for Arty.java
+ * Contains all GL initialisation and interaction for Arty.java
  *
  * @author Will Garside // worgarside@gmail.com
  * @version 1.0 2017-12-06
@@ -37,10 +37,20 @@ public class Arty_GLEventListener implements GLEventListener {
 
     // ------------ Constructor & GL Functions ------------ \\
 
+    /**
+     * Constructor for JOGL Event Listener
+     *
+     * @param camera
+     */
     public Arty_GLEventListener(Camera camera) {
         this.camera = camera;
     }
 
+    /**
+     * initialises JOGL Event Listener
+     *
+     * @param drawable
+     */
     public void init(GLAutoDrawable drawable) {
         GL3 gl = drawable.getGL().getGL3();
         gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -54,12 +64,26 @@ public class Arty_GLEventListener implements GLEventListener {
         initialise(gl);
     }
 
+    /**
+     * Allows reshape of Arty frame
+     *
+     * @param drawable
+     * @param x
+     * @param y
+     * @param width
+     * @param height
+     */
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
         GL3 gl = drawable.getGL().getGL3();
         gl.glViewport(x, y, width, height);
         aspect = (float)width/(float)height;
     }
 
+    /**
+     * Draws and renders scene
+     *
+     * @param drawable
+     */
     public void display(GLAutoDrawable drawable) {
         GL3 gl = drawable.getGL().getGL3();
         render(gl);
@@ -67,6 +91,12 @@ public class Arty_GLEventListener implements GLEventListener {
 
     // ------------ Scene Creation and Modification ------------ \\
 
+    /**
+     * Contains all the code needed to intialise the scene, including textures, meshes, all nodes and
+     * object initialisation.
+     *
+     * @param gl - the graphics library
+     */
     private void initialise(GL3 gl) {
 
         // ------------ Texture Imports & Mesh Creation ------------ \\
@@ -148,26 +178,39 @@ public class Arty_GLEventListener implements GLEventListener {
 
         gallery = new Gallery(gallerySize, floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outsideDay, outsideNight);
 
-        lamp1 = new Lamp(1, cubeLampBase, cubeLampBody, cubeRobot, new Vec3(-gallerySize * 0.4f, 0, -gallerySize * 0.4f));
+        lamp1 = new Lamp(1, cubeLampBase, cubeLampBody, new Vec3(-gallerySize * 0.4f, 0, -gallerySize * 0.4f));
         lamp1.initialise(gl);
 
-        lamp2 = new Lamp(2, cubeLampBase, cubeLampBody, cubeRobot, new Vec3(gallerySize * 0.4f, 0, -gallerySize * 0.4f));
+        lamp2 = new Lamp(2, cubeLampBase, cubeLampBody, new Vec3(gallerySize * 0.4f, 0, -gallerySize * 0.4f));
         lamp2.initialise(gl);
 
         windowFrame = new WindowFrame(cubeWindowFrame, gallerySize);
         windowFrame.initialise(gl);
     }
 
+    /**
+     * Set robot arm bearing
+     *
+     * @param angle - the new angle for the arm
+     */
     public void rotArmToAngle(int angle) {
-        robotHand.setArmAngle(angle);
+        robotHand.setArmBearing(angle);
     }
 
+    /**
+     * Move the RobotHand to match an imported keyframe
+     *
+     * @param keyframe - the keyframe to move the RobotHand to
+     */
     public void setHandKeyframe(int keyframe){
         robotHand.moveToKeyframe(keyframe);
     }
 
     // ------------ User Toggle Functions ------------ \\
 
+    /**
+     * Toggles lamps in scene
+     */
     public void toggleLamps() {
         if (lampsOn) {
             lamp1.setState(light, 0);
@@ -180,24 +223,41 @@ public class Arty_GLEventListener implements GLEventListener {
         }
     }
 
+    /**
+     * Toggles main world light
+     */
     public void toggleWorldLight() {
         worldLightOn = !worldLightOn;
     }
 
+    /**
+     * Toggles Day/Night cycle
+     */
     public void toggleDayNight() {
         dayNightCycle = !dayNightCycle;
     }
 
+    /**
+     * Toggles repeating loop of imported keyframes
+     */
     public void toggleKeyframeSequence() {
         robotHand.toggleKeyframeSequence();
     }
 
+    /**
+     * Toggles all animations in scene
+     */
     public void toggleGlobalAnims() {
         robotHand.toggleGlobalAnims();
     }
 
     // ------------ Scene Management ------------ \\
 
+    /**
+     * Removes all meshes from memory on system exit
+     *
+     * @param drawable
+     */
     public void dispose(GLAutoDrawable drawable) {
         GL3 gl = drawable.getGL().getGL3();
 
@@ -207,6 +267,12 @@ public class Arty_GLEventListener implements GLEventListener {
         }
     }
 
+    /**
+     * Renders all object in scene
+     * Progresses Day/Night cycle and sets world light brightness
+     *
+     * @param gl
+     */
     private void render(GL3 gl) {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         updatePerspectiveMatrices();

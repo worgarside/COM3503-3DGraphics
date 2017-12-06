@@ -1,5 +1,12 @@
 import com.jogamp.opengl.*;
 
+/**
+ * MeshNode.java
+ * A MeshNode for adding Meshes to the scene graph
+ *
+ * @author Dr. Steve Maddock
+ * @version 1.0 2017-12-06
+ */
 public class MeshNode extends SGNode {
 
     protected Mesh mesh;
@@ -15,5 +22,4 @@ public class MeshNode extends SGNode {
             children.get(i).draw(gl);
         }
     }
-
 }

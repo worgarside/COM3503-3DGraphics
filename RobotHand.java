@@ -57,9 +57,11 @@ public class RobotHand {
         this.sphereRingGem = sphereRingGem;
     }
 
-    /*
-        Contains all MeshNodes, NameNodes, TransformNodes to create a RobotHand object.
-        Also contains the Scene Graph and calculations for initial positions and rotations.
+    /**
+     * Contains all MeshNodes, NameNodes, TransformNodes to create a RobotHand object.
+     * Also contains the Scene Graph and calculations for initial positions and rotations.
+     *
+     * @param gl - grpahics library
      */
     public void initialise(GL3 gl) {
 
@@ -279,12 +281,20 @@ public class RobotHand {
 
     // ------------ User Controlled Functions ------------ \\
 
-    // Changes rotation of Arm around Y-axis
-    public void setArmAngle(int angle) {
+    /**
+     * Sets rotation of Arm around Y-axis
+     *
+     * @param angle - the angle that the arm is set to
+     */
+    public void setArmBearing(int angle) {
         rotateYArm.setTransform(Mat4Transform.rotateAroundY(angle));
     }
 
-    // Moves the robotHand to the keyframe at line [keyframe] in the data csv
+    /**
+     * Moves the robotHand to the keyframe at line [keyframe] in the data csv
+     *
+     * @param keyframe - the Keyframe reference number for the imported keyframes
+     */
     public void moveToKeyframe(int keyframe) {
         for (int d = 0; d < DIGIT_COUNT; d++) {
             for (int p = 0; p < PHALANGE_COUNT; p++) {
@@ -296,23 +306,39 @@ public class RobotHand {
         currentKeyframe = keyframe;
     }
 
-    // Toggles all animations
+    /**
+     * Toggles all animations in the scene
+     */
     public void toggleGlobalAnims() {
         animationOn = !animationOn;
     }
 
-    // Toggles the robotHand's loop through the imported keyframes
+    /**
+     * Toggles the robotHand's loop through the imported keyframes
+     */
     public void toggleKeyframeSequence() {
         keyframeAnimation = !keyframeAnimation;
     }
 
     // ------------ Getters ------------ \\
 
+    /**
+     * Gets the ring's current world-space position for the spotlight
+     *
+     * @return - ring position as a Vec3
+     */
     public Vec3 getRingPos() {
         return scaleRingGem.getWorldTransform().getCoords();
     }
 
-    // Returns the difference between the spotlight and the 'beacon' (+1 in the relative Z-axis) as direction
+    //
+
+    /**
+     * Gets the vector between the spotlight and the 'beacon' (+1 in the relative Z-axis) as direction
+     * to get the spotlight direction
+     *
+     * @return - direction of spotlight as Vec3
+     */
     public Vec3 getRingDir() {
         Vec3 spotlightBeaconPos = spotlightBeacon.getWorldTransform().getCoords();
         Vec3 spotlightOrigin = getRingPos();
@@ -322,9 +348,9 @@ public class RobotHand {
 
     // ------------ Model Manipulation/Drawing ------------ \\
 
-    /*
-    Updates current angles of phalanges to match the target angles. It increments 1 degree per render loop to
-    interpolate smoothly between keyframes. Also checks if the maximum rotation of that phalange has been reached
+    /**
+     * Updates current angles of phalanges to match the target angles. It increments 1 degree per render loop to
+     * interpolate smoothly between keyframes. Also checks if the maximum rotation of that phalange has been reached
      */
     private void updateCurrentAngles() {
         if (midAnimation) {
@@ -367,7 +393,9 @@ public class RobotHand {
         }
     }
 
-    // Updates the actual world-space Nodes to match the current angles set in the above function
+    /**
+     * Updates the actual world-space Nodes to match the current angles set in the above function
+     */
     private void updateDigitPositions() {
         for (int d = 0; d < DIGIT_COUNT; d++) {
             for (int p = 0; p < PHALANGE_COUNT; p++) {
@@ -382,6 +410,11 @@ public class RobotHand {
         }
     }
 
+    /**
+     * Renders the robotHand, checking for the animationOn flag and keyframeSequence flag
+     *
+     * @param gl - graphics library
+     */
     public void render(GL3 gl) {
         if (animationOn) {
             // If the keyframe toggle is true and no animation is taking place...
