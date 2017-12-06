@@ -1,1 +1,19 @@
 # COM3503 Robot Hand Assignment
+3D Graphics Assignment submitted for Dr. Steve Maddock as part of the COM3503 course at the University of Sheffield.
+
+#### Overview
+
+This is a JOGL-based scene of an Art Gallery with a large Robot Hand dominating the room. The Hand can be controlled with a number of buttons present in the applet.
+
+The structure of the hand is shown in the image below, and shows how arrays have been used in creating and modifying the RobotHand object.
+
+![RobotHand](RobotHand.png  "RobotHand")
+
+Each `digit` has primary angles and secondary angles
+- The primary angles are those which every joint can bend in (i.e. for the fingers, the X rotation)
+- The secondary angles are those which on the proximal joint can bend in (i.e. for the fingers, the Z rotation)
+
+There are two `csv` files included in this project:
+- `lightData.csv` is used in setting the color, position, angle and direction of the Light sources and their 'bulbs'
+- `keyframes.csv` is for setting the Keyframes that the Robot Hand can move to by adjusting the primary and secondary angles
+	- The rotations are limited by minimum and maximum values
