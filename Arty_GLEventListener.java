@@ -61,6 +61,7 @@ public class Arty_GLEventListener implements GLEventListener {
 
     private void initialise(GL3 gl) {
 
+        // Import all textures
         int[] textureRobot = TextureLibrary.loadTexture(gl, "textures/textureRobot.jpg");
         int[] textureRobotSpecular = TextureLibrary.loadTexture(gl, "textures/textureRobotSpecular.jpg");
         int[] textureRing = TextureLibrary.loadTexture(gl, "textures/textureRing.jpg");

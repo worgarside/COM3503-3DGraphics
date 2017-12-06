@@ -1,11 +1,5 @@
-import gmaths.*;
-
-import java.nio.*;
-import com.jogamp.common.nio.*;
 import com.jogamp.opengl.*;
-import com.jogamp.opengl.util.*;
-import com.jogamp.opengl.util.awt.*;
-import com.jogamp.opengl.util.glsl.*;
+import gmaths.*;
 
 public class WindowFrame {
 
@@ -40,7 +34,7 @@ public class WindowFrame {
         float frameDepth = 0.75f;
         float windowSize = (0.5f * gallerySize) + frameHeight;
 
-        // ------------ Initialise ------------ \\
+        // ------------ Node Generation ------------ \\
 
         translateTop = new TransformNode("top translate", Mat4Transform.translate(0, (gallerySize / 4) * 3, -gallerySize / 2));
         Mat4 m = Mat4Transform.scale(windowSize, frameHeight, frameDepth);

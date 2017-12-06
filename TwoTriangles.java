@@ -17,7 +17,7 @@ public class TwoTriangles extends Mesh {
 
         material.setAllDiffusePoints(0.75f, 0.75f, 0.75f);
         material.setAllDiffuseSpots(1f, 1f, 1f);
-        material.setAllSpecularSpots(0.05f, 0.05f, 0.05f);
+        material.setAllSpecularPoints(0.05f, 0.05f, 0.05f);
         material.setAllSpecularSpots(0.5f, 0.5f, 0.5f);
 
         switch(textureId[0]) {
