@@ -17,3 +17,5 @@ There are two `csv` files included in this project:
 - `lightData.csv` is used in setting the color, position, angle and direction of the Light sources and their 'bulbs'
 - `keyframes.csv` is for setting the Keyframes that the Robot Hand can move to by adjusting the primary and secondary angles
 	- The rotations are limited by minimum and maximum values
+	
+##### \*All parts of the assigment described in the brief have been attempted\*
