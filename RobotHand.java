@@ -276,7 +276,6 @@ public class RobotHand {
                                                             ringGem.addChild(translateSpotlight);
                                                                 translateSpotlight.addChild(spotlightBeacon);
         robotHand.update();
-        robotHand.print(1, true);
     }
 
     // ------------ User Controlled Functions ------------ \\
