@@ -7,7 +7,7 @@ public class Sphere extends Mesh {
 
     private int[] textureId1;
     private int[] textureId2;
-    private static final Vec3 SCENE_AMBIENT = new Vec3(0.5f, 0.5f, 0.5f);
+    private static final Vec3 SCENE_AMBIENT = new Vec3(0.2f, 0.2f, 0.2f);
 
     public Sphere(GL3 gl, int[] textureId1, int[] textureId2) {
         super(gl);
@@ -16,11 +16,12 @@ public class Sphere extends Mesh {
         super.indices = this.indices;
         this.textureId1 = textureId1;
         this.textureId2 = textureId2;
-        material.setAmbient(SCENE_AMBIENT);
+        material.setAmbient(1.0f, 0.5f, 0.31f);
 
-        material.setAllDiffusePoints(1f, 1f, 1f);
-        material.setAllDiffuseSpots(1f, 1f, 1f);
-        material.setAllSpecularPoints(0.05f, 0.05f, 0.05f);
+        material.setAllDiffusePoints(1.0f, 0.5f, 0.31f);
+        material.setAllSpecularPoints(0.5f, 0.5f, 0.5f);
+
+        material.setAllDiffuseSpots(1.0f, 0.5f, 0.31f);
         material.setAllSpecularSpots(0.5f, 0.5f, 0.5f);
 
         material.setShininess(32.0f);
@@ -29,18 +30,23 @@ public class Sphere extends Mesh {
     }
 
     public void render(GL3 gl, Mat4 model) {
+        //Mat4 model = getObjectModelMatrix();
         Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), model));
+
         shader.use(gl);
         shader.setFloatArray(gl, "model", model.toFloatArrayForGLSL());
         shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
+
         shader.setVec3(gl, "viewPos", camera.getPosition());
 
-        for (int i = 0; i < Arty.lightCount; i++) {
+
+        for (int i =0; i < Arty.lightCount; i++) {
             super.setShaderValues(gl, shader, i, SCENE_AMBIENT);
         }
-        shader.setVec3(gl, "material.ambient", material.getAmbient());
+
         shader.setFloat(gl, "material.shininess", material.getShininess());
-        shader.setInt(gl, "material.diffuse", 0);  // be careful to match these with GL_TEXTURE0 and GL_TEXTURE1
+
+        shader.setInt(gl, "material.diffuse", 0);
         shader.setInt(gl, "material.specular", 1);
 
         gl.glActiveTexture(GL.GL_TEXTURE0);

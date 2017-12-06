@@ -7,7 +7,7 @@ public class Cube extends Mesh {
 
     private int[] texture;
     private int[] textureSpecular;
-    private static final Vec3 SCENE_AMBIENT = new Vec3(0.5f, 0.5f, 0.5f);
+    private static final Vec3 SCENE_AMBIENT = new Vec3(0.1f, 0.1f, 0.1f);
 
     public Cube(GL3 gl, int[] texture, int[] textureSpecular) {
         super(gl);
@@ -15,12 +15,13 @@ public class Cube extends Mesh {
         super.indices = this.indices;
         this.texture = texture;
         this.textureSpecular = textureSpecular;
-        material.setAmbient(SCENE_AMBIENT);
+        material.setAmbient(1.0f, 0.5f, 0.31f);
 
-        material.setAllDiffusePoints(1f, 1f, 1f);
-        material.setAllDiffuseSpots(1f, 1f, 1f);
-        material.setAllSpecularPoints(0.05f, 0.05f, 0.05f);
-        material.setAllSpecularSpots(0.5f, 0.5f, 0.5f);
+        material.setAllDiffusePoints(1.0f, 0.5f, 0.31f);
+        material.setAllSpecularPoints(0.5f, 0.5f, 0.5f);
+
+        material.setAllDiffuseSpots(1.0f, 0.5f, 0.31f);
+        material.setAllSpecularPoints(0.5f, 0.5f, 0.5f);
 
         material.setShininess(32.0f);
         shader = new Shader(gl, "shaders/vs_object.glsl", "shaders/fs_object.glsl");
@@ -31,7 +32,6 @@ public class Cube extends Mesh {
         Mat4 mvpMatrix = Mat4.multiply(perspective, Mat4.multiply(camera.getViewMatrix(), model));
 
         shader.use(gl);
-
         shader.setFloatArray(gl, "model", model.toFloatArrayForGLSL());
         shader.setFloatArray(gl, "mvpMatrix", mvpMatrix.toFloatArrayForGLSL());
 
@@ -41,16 +41,14 @@ public class Cube extends Mesh {
             super.setShaderValues(gl, shader, i, SCENE_AMBIENT);
         }
 
-        shader.setVec3(gl, "material.ambient", material.getAmbient());
         shader.setFloat(gl, "material.shininess", material.getShininess());
-
         shader.setInt(gl, "material.diffuse", 0);  // be careful to match these with GL_TEXTURE0 and GL_TEXTURE1
         shader.setInt(gl, "material.specular", 1);
 
-        shader.setInt(gl, "first_texture", 0);
-
         gl.glActiveTexture(GL.GL_TEXTURE0);
         gl.glBindTexture(GL.GL_TEXTURE_2D, texture[0]);
+        gl.glActiveTexture(GL.GL_TEXTURE1);
+        gl.glBindTexture(GL.GL_TEXTURE_2D, textureSpecular[0]);
 
         gl.glBindVertexArray(vertexArrayId[0]);
         gl.glDrawElements(GL.GL_TRIANGLES, indices.length, GL.GL_UNSIGNED_INT, 0);

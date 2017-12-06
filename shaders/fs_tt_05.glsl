@@ -52,7 +52,6 @@ void main() {
                 float distance = length(lightSources[i].position - fragPos);
                 float falloff = 1.0 / (lightSources[i].falloffConstant + lightSources[i].falloffLinear * distance +
                 lightSources[i].falloffQuadratic * (distance * distance));
-
                 vec3 ambient  = lightSources[i].ambient * texture(first_texture, ourTexCoord).rgb;
                 vec3 diffuse  = lightSources[i].diffuse * diff * material.diffuse * intensity * texture(first_texture, ourTexCoord).rgb * falloff;
                 vec3 specular = lightSources[i].specular * spec * material.specular * intensity  * falloff;
@@ -63,12 +62,13 @@ void main() {
             vec3 ambient = lightSources[i].ambient  * material.ambient * texture(first_texture, ourTexCoord).rgb;
             vec3 lightDir = normalize(lightSources[i].position - fragPos);
             float diff = max(dot(norm, lightDir), 0.0);
-            vec3 diffuse = lightSources[i].diffuse * diff * material.diffuse * texture(first_texture, ourTexCoord).rgb;
+            vec3 diffuse = lightSources[i].diffuse * (diff * material.diffuse) * texture(first_texture, ourTexCoord).rgb;
             vec3 reflectDir = reflect(-lightDir, norm);
             float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
             vec3 specular = lightSources[i].specular * (spec * material.specular);
             result += ambient + diffuse + specular;
         }
     }
+
     fragColor = vec4(result, 1.0);
 }
