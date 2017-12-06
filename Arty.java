@@ -243,7 +243,7 @@ public class Arty extends JFrame implements ActionListener {
         }
 
         // Controls for rotating the entire model
-        JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 0);
+        JSlider armAngleSlider = new JSlider(JSlider.HORIZONTAL, 0, 720, 360);
         armAngleSlider.setPreferredSize(new Dimension(125, 25));
         armAngleSlider.addChangeListener(sliderListener);
         JPanel sliderPanel = new JPanel();

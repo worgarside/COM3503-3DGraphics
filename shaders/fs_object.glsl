@@ -35,37 +35,28 @@ void main() {
     vec3 result = vec3(0, 0, 0);
     vec3 norm = normalize(ourNormal);
     vec3 viewDir = normalize(viewPos - fragPos);
-
     for (int i = 0; i < lightSourceCount; i++) {
+        vec3 lightDir = normalize(lightSources[i].position - fragPos);
         if (lightSources[i].spotlight == 1) {
-            vec3 lightDir = normalize(lightSources[i].position - fragPos);
             float theta = dot(lightDir, normalize(-lightSources[i].spotDirection));
             float epsilon = (lightSources[i].spotCutOff - lightSources[i].spotOuterCutOff);
-            vec3 result = vec3(0,0,0);
-
             if(theta > lightSources[i].spotOuterCutOff) {
-
+                vec3 norm = normalize(ourNormal);
                 float diff = max(dot(norm, lightDir), 0.0);
-
+                vec3 viewDir = normalize(viewPos - fragPos);
                 vec3 reflectDir = reflect(-lightDir, norm);
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+                float distance    = length(lightSources[i].position - fragPos);
+                float fallOff = 1.0 / (lightSources[i].falloffConstant + lightSources[i].falloffLinear * distance + lightSources[i].falloffQuadratic * (distance * distance));
 
-                // intensity
-                float intensity = clamp((theta - lightSources[i].spotOuterCutOff) / epsilon, 0.0, 1.0);
+                vec3 ambient = lightSources[i].ambient * texture(material.diffuse, ourTexCoord).rgb;
+                vec3 diffuse = lightSources[i].diffuse * diff * texture(material.diffuse, ourTexCoord).rgb * fallOff;
+                vec3 specular = lightSources[i].specular * spec * texture(material.specular, ourTexCoord).rgb * fallOff;
 
-                float distance = length(lightSources[i].position - fragPos);
-                float falloff = 1.0 / (lightSources[i].falloffConstant + lightSources[i].falloffLinear * distance +
-                lightSources[i].falloffQuadratic * (distance * distance));
-
-                vec3 ambient  = lightSources[i].ambient * vec3(texture(material.diffuse, ourTexCoord));
-                vec3 diffuse  = lightSources[i].diffuse * diff * intensity * vec3(texture(material.diffuse, ourTexCoord)) * falloff;
-                vec3 specular = lightSources[i].specular * spec * intensity * vec3(texture(material.specular, ourTexCoord)) * falloff;
                 result += ambient + diffuse + specular;
             }
         } else {
-
             vec3 ambient = lightSources[i].ambient  * vec3(texture(material.diffuse, ourTexCoord));
-            vec3 lightDir = normalize(lightSources[i].position - fragPos);
             float diff = max(dot(norm, lightDir), 0.0);
             vec3 diffuse = lightSources[i].diffuse  * diff * vec3(texture(material.diffuse, ourTexCoord));
             vec3 reflectDir = reflect(-lightDir, norm);
@@ -74,9 +65,5 @@ void main() {
             result += ambient + diffuse + specular;
         }
     }
-
-
-
-
     fragColor = vec4(result, 1.0);
 }
