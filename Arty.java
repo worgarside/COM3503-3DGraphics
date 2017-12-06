@@ -90,7 +90,7 @@ public class Arty extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         for (int i = 0; i < keyframes.size(); i++) {
             if (e.getActionCommand().equalsIgnoreCase(keyframes.get(i).getName())) {
-                glEventListener.changeHandPos(i);
+                glEventListener.setHandKeyframe(i);
             }
         }
 

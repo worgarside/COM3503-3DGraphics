@@ -8,6 +8,13 @@ import com.jogamp.opengl.util.awt.*;
 import com.jogamp.opengl.util.glsl.*;
 import java.util.Arrays;
 
+/**
+ * RobotHand.java
+ * Purpose: Creates and Animates a Robot Hand
+ *
+ * @author Will Garside // worgarside@gmail.com
+ * @version 1.0 2017-12-06
+ */
 public class RobotHand {
 
     // ------------ Constants and Variables ------------ \\

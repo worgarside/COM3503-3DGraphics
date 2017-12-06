@@ -7,13 +7,21 @@ import gmaths.*;
 
 import java.util.ArrayList;
 
+/**
+ * Arty_GLEventListener.java
+ * Purpose: Contains all GL initialisation and interaction for Arty.java
+ *
+ * @author Will Garside // worgarside@gmail.com
+ * @version 1.0 2017-12-06
+ */
 public class Arty_GLEventListener implements GLEventListener {
 
     private float aspect;
     private Camera camera;
     private Mat4 perspective;
     private Mesh sphere, cubeRobot, sphereRing, sphereRingGem, cubeLampBase, cubeLampBody, cubeWindowFrame;
-    private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight, wallBackBottom, ceiling, outsideDay, outsideNight;
+    private Mesh floor, wallLeft, wallRight, wallFront, wallBackTop, wallBackLeft, wallBackRight,
+            wallBackBottom, ceiling, outsideDay, outsideNight;
     private Light light;
     private RobotHand robotHand;
     private Gallery gallery;
@@ -154,7 +162,7 @@ public class Arty_GLEventListener implements GLEventListener {
         robotHand.setArmAngle(angle);
     }
 
-    public void changeHandPos(int keyframe){
+    public void setHandKeyframe(int keyframe){
         robotHand.moveToKeyframe(keyframe);
     }
 
@@ -208,6 +216,7 @@ public class Arty_GLEventListener implements GLEventListener {
         light.setPosition(1, lamp1.getLightBulbPos()); //set bulb pos
         light.setPosition(2, lamp2.getLightBulbPos()); //set bulb pos
 
+        // Render all objects
         light.render(gl);
         robotHand.render(gl);
         gallery.render(gl);
@@ -215,6 +224,7 @@ public class Arty_GLEventListener implements GLEventListener {
         lamp2.render(gl);
         windowFrame.render(gl);
 
+        // Updates time to reflect Day/Night cycle by changing the outside scene and the world light brightness
         if (dayNightCycle){
             time = System.currentTimeMillis() / 1000.0 % 60;
             Arty.updateClock((int) time);
